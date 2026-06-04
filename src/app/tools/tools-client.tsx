@@ -1,0 +1,234 @@
+"use client";
+
+import React from "react";
+import Link from "next/link";
+import { ThemeToggle, Logo } from "@/components/shared";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { 
+  ArrowLeft, 
+  ArrowDown,
+  Sparkles, 
+  Minimize2, 
+  Scissors, 
+  Maximize2, 
+  RefreshCw, 
+  Crop,
+  Shield
+} from "lucide-react";
+
+const pipelineTools = [
+  {
+    name: "Image Compressor",
+    description: "Lossy and lossless client-side compression. Reduce file sizes by up to 90% while maintaining crisp details.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Minimize2,
+    href: "/tools/compressor",
+  },
+  {
+    name: "Background Remover",
+    description: "Instant AI-powered local subject extraction and backdrop removal running completely inside your browser sandbox.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Scissors,
+    href: "/tools/bg-remover",
+  },
+  {
+    name: "Image Resizer",
+    description: "Batch image dimension scaling by percentage, pixels, or ratio locks using high-quality resampling filters.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Maximize2,
+    href: "/tools/resizer",
+  },
+  {
+    name: "Format Converter",
+    description: "Convert image files between PNG, JPEG, and WebP formats instantly without server uploads.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: RefreshCw,
+    href: "/tools/converter",
+  },
+  {
+    name: "Image Cropper",
+    description: "Interactive precise crop ratios, bounding box adjustments, and rotation alignment with fluid real-time feedback.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Crop,
+    href: "/tools/cropper",
+  },
+  {
+    name: "EXIF Privacy Cleaner",
+    description: "Remove location data, camera info, and metadata from your images to protect privacy before sharing.",
+    status: "Coming Soon",
+    statusColor: "bg-warning/10 text-warning border-warning/20",
+    icon: Shield,
+    href: null,
+  },
+  {
+    name: "AI Upscaler",
+    description: "Enhance image resolution up to 4x using on-device AI. Sharper details, completely private.",
+    status: "Coming Soon",
+    statusColor: "bg-warning/10 text-warning border-warning/20",
+    icon: Sparkles,
+    href: null,
+  },
+];
+
+export default function ToolsHubPage() {
+  const handleScrollToPipeline = () => {
+    const section = document.getElementById("pipeline-section");
+    section?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none">
+      {/* Background Glows for Premium Vibe */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Header Bar */}
+      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
+        <div className="flex flex-col gap-1 items-start">
+          <div className="flex items-center gap-2">
+            <Logo className="w-8 h-8" />
+            <span className="font-extrabold text-xl tracking-tight text-foreground">
+              Alatify
+            </span>
+          </div>
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+            Back to home
+          </Link>
+        </div>
+        <ThemeToggle />
+      </header>
+
+      {/* Hero Section - Takes Full Screen Height minus Header */}
+      <section className="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-center text-center px-4 min-h-[calc(100vh-120px)] z-10">
+        <div className="space-y-6 flex flex-col items-center py-12">
+          {/* Top Announcement Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
+            <Sparkles className="w-3.5 h-3.5" />
+            Upcoming Features
+          </div>
+
+          {/* Heading */}
+          <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-foreground bg-clip-text">
+            Tools
+          </h1>
+
+          {/* Subtext - Blending the empty-state copy elegantly */}
+          <p className="text-base sm:text-lg text-muted-foreground font-medium leading-relaxed max-w-2xl">
+            A curated collection of privacy-first image tools that run entirely in your web browser. Zero server uploads, zero latencies, and absolute confidentiality. Our suite is launching in a matter of days, starting with our lightning-fast <strong className="text-foreground font-bold">Image Compressor</strong>, with the robust AI-powered <strong className="text-foreground font-bold">Background Remover</strong> and other key utilities following closely.
+          </p>
+        </div>
+
+        {/* Floating Scroll Indicator */}
+        <div 
+          onClick={handleScrollToPipeline}
+          className="absolute bottom-4 flex flex-col items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity animate-fade-in group"
+        >
+          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest transition-colors group-hover:text-primary">
+            Scroll to see what&apos;s coming
+          </span>
+          <ArrowDown className="w-4 h-4 text-primary animate-bounce" />
+        </div>
+      </section>
+
+      {/* Pipeline Section ("What we're building") */}
+      <section 
+        id="pipeline-section" 
+        className="w-full max-w-6xl mx-auto px-4 py-24 z-10 flex flex-col items-center gap-12 scroll-mt-6"
+      >
+        {/* Section Header */}
+        <div className="text-center space-y-2">
+          <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+            What we&apos;re building
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+            Our pipeline of upcoming utilities designed to run 100% locally on your device.
+          </p>
+        </div>
+
+        {/* 3+2 Centered Flex-wrapped Responsive Grid Layout */}
+        <div className="flex flex-wrap justify-center gap-6 w-full max-w-5xl">
+          {pipelineTools.map((tool) => {
+            const IconComponent = tool.icon;
+            const isAvailable = !!tool.href;
+            
+            const cardContent = (
+              <div className={cn(
+                "w-full h-full p-6 rounded-2xl bg-card/40 backdrop-blur-sm border shadow-sm flex flex-col justify-between gap-4 transition-all duration-350 group",
+                isAvailable 
+                  ? "border-border/60 hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
+                  : "border-border/30 opacity-70 cursor-not-allowed select-none"
+              )}>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className={cn(
+                        "w-9 h-9 rounded-xl bg-secondary flex items-center justify-center border transition-all duration-350",
+                        isAvailable 
+                          ? "text-muted-foreground group-hover:text-primary group-hover:scale-105 border-border"
+                          : "text-muted-foreground/60 border-border/40"
+                      )}>
+                        <IconComponent className={cn("w-4 h-4 transition-transform duration-350", isAvailable && "group-hover:scale-110")} />
+                      </div>
+                      <h3 className={cn(
+                        "font-extrabold text-sm transition-colors",
+                        isAvailable ? "text-foreground group-hover:text-primary" : "text-foreground/70"
+                      )}>
+                        {tool.name}
+                      </h3>
+                    </div>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${tool.statusColor}`}>
+                      {tool.status}
+                    </span>
+                  </div>
+                  <p className={cn("text-xs leading-relaxed", isAvailable ? "text-muted-foreground" : "text-muted-foreground/65")}>
+                    {tool.description}
+                  </p>
+                </div>
+              </div>
+            );
+
+            if (isAvailable && tool.href) {
+              return (
+                <Link 
+                  key={tool.name}
+                  href={tool.href}
+                  className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] block cursor-pointer"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
+
+            return (
+              <div 
+                key={tool.name}
+                className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] block"
+              >
+                {cardContent}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Natural ending CTA Button */}
+        <div className="pt-8">
+          <Link href="/">
+            <Button className="px-8 py-5 text-sm font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-95 transition-all duration-150 gap-2">
+              Back to home
+            </Button>
+          </Link>
+        </div>
+      </section>
+    </main>
+  );
+}

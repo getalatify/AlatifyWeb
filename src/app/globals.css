@@ -1,27 +1,90 @@
+/*
+ * ALATIFY DESIGN SYSTEM
+ * 
+ * Aesthetic Philosophy: Modern Dark Dashboard (Linear/Vercel style)
+ * Accent Palette: Privacy-first Emerald
+ * Surface Depth System (Layered system):
+ *   - Background: Base backdrop canvas
+ *   - Card: Primary containers and utility panels
+ *   - Popover: Overlays, modals, and context menus
+ *   - Canvas: Distinct workspace area for image operations
+ * Fully supports smooth light and dark mode toggles with CSS variables.
+ */
+
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 210 40% 98%;          /* #F8FAFC */
+    --foreground: 222 47% 11%;          /* #0F172A */
+    --card: 0 0% 100%;                  /* #FFFFFF */
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 161 94% 30%;             /* #059669 - emerald, darker for light mode */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 161 100% 24%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;    /* #64748B */
+    --accent: 161 94% 30%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 161 94% 30%;
+    --success-foreground: 0 0% 100%;
+    --warning: 32 95% 44%;              /* amber-600 */
+    --warning-foreground: 0 0% 100%;
+    --info: 200 98% 39%;                /* sky-600 */
+    --info-foreground: 0 0% 100%;
+    --border: 214 32% 91%;              /* #E2E8F0 */
+    --input: 214 32% 91%;
+    --ring: 161 94% 30%;
+    --canvas: 210 20% 96%;              /* image canvas - subtle distinct from bg */
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 223 39% 7%;           /* #0B0F19 */
+    --foreground: 220 14% 96%;          /* #F3F4F6 */
+    --card: 220 37% 14%;                /* #161F30 */
+    --card-foreground: 220 14% 96%;
+    --popover: 217 33% 17%;             /* #1E293B */
+    --popover-foreground: 220 14% 96%;
+    --primary: 160 84% 39%;             /* #10B981 */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 161 94% 30%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 220 14% 96%;
+    --muted: 220 37% 14%;
+    --muted-foreground: 220 9% 65%;     /* #9CA3AF */
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;              /* amber-500 */
+    --warning-foreground: 0 0% 100%;
+    --info: 199 89% 48%;                /* sky-500 */
+    --info-foreground: 0 0% 100%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 160 84% 39%;
+    --canvas: 220 44% 8%;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground overflow-x-hidden;
   }
 }
