@@ -3,7 +3,8 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, ImageUploader, DownloadButton, Logo } from "@/components/shared";
+import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
+import { ImageSourceInput } from "@/components/image-source-input";
 import { Button } from "@/components/ui/button";
 import { 
   ArrowLeft, 
@@ -480,7 +481,7 @@ export default function BgRemoverClient() {
         {!activeImage ? (
           /* BEFORE UPLOAD empty state centerpiece */
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
-            <ImageUploader onUpload={setActiveImage} className="w-full animate-fade-in" />
+            <ImageSourceInput onImageReady={setActiveImage} className="w-full animate-fade-in" />
           </section>
         ) : (
           /* WORKSPACE ACTIVE */
