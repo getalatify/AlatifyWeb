@@ -491,7 +491,7 @@ export default function BgRemoverClient() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full">
                 
                 {/* 1. ORIGINAL CARD PREVIEW */}
-                <div className="w-2/3 max-w-[280px] md:w-full md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4">
+                <div className="w-full max-w-md md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4">
                   <div className="flex items-center justify-between border-b border-border/40 pb-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                       <ImageIcon className="w-3.5 h-3.5" />
@@ -533,7 +533,7 @@ export default function BgRemoverClient() {
                 </div>
 
                 {/* 2. DYNAMIC WORKSPACE OUTPUT CARD */}
-                <div className="w-2/3 max-w-[280px] md:w-full md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4 relative min-h-[300px]">
+                <div className="w-full max-w-md md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4 relative min-h-[300px]">
                   
                   <div className="flex items-center justify-between border-b border-border/40 pb-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
