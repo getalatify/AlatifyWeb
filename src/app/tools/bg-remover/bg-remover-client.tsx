@@ -69,7 +69,7 @@ export default function BgRemoverClient() {
   const [error, setError] = useState<string | null>(null);
 
   // Performance & Tier States
-  const [modelType, setModelType] = useState<'unselected' | 'isnet_fp16' | 'isnet_quint8' | 'isnet'>('unselected');
+  const [modelType, setModelType] = useState<'isnet_fp16' | 'isnet_quint8' | 'isnet'>('isnet_fp16');
   const [wasAutoResized, setWasAutoResized] = useState<boolean>(false);
 
   // Original & Processed Image details
@@ -305,7 +305,7 @@ export default function BgRemoverClient() {
           imgVerify.src = url;
 
           const duration = durationFloat.toFixed(1);
-          const modelName = modelType === 'isnet_fp16' ? 'Quality — ISNet FP16' : modelType === 'isnet_quint8' ? 'Balanced — ISNet Quant8' : 'Speed — ISNet Base';
+          const modelName = modelType === 'isnet' ? 'Quality — ISNet Base' : modelType === 'isnet_fp16' ? 'Balanced — ISNet FP16' : 'Speed — ISNet Quant8';
           const originalFormat = activeImage ? getImageFormat(activeImage) : "";
           const imgDimensions = originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : "Unknown";
 
@@ -396,7 +396,7 @@ export default function BgRemoverClient() {
   useEffect(() => {
     setProcessedImage(null);
     setStage("idle");
-    setModelType("unselected");
+    setModelType("isnet_fp16");
   }, [activeImage]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -406,7 +406,7 @@ export default function BgRemoverClient() {
   };
 
   const handleRetry = () => {
-    if (activeImage && modelType !== "unselected") {
+    if (activeImage) {
       processImage(activeImage, modelType);
     }
   };
@@ -768,10 +768,9 @@ export default function BgRemoverClient() {
                       disabled={isProcessing}
                       className="w-full bg-secondary border border-border hover:border-primary/50 text-foreground text-xs rounded-xl p-2.5 outline-none transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <option value="unselected" disabled>Select AI Model Variant...</option>
-                      <option value="isnet_fp16">Quality — ISNet FP16 (Cleanest, ~22MB)</option>
-                      <option value="isnet_quint8">Balanced — ISNet Quant8 (Decent & Faster, ~10MB)</option>
-                      <option value="isnet">Speed — ISNet Base (Fastest tier, ~10MB)</option>
+                      <option value="isnet_quint8">Speed — ISNet Quant8 (Fastest, ~10MB)</option>
+                      <option value="isnet_fp16">Balanced — ISNet FP16 (Recommended, ~22MB)</option>
+                      <option value="isnet">Quality — ISNet Base (Highest accuracy, ~40MB)</option>
                     </select>
                   </div>
 
@@ -827,8 +826,8 @@ export default function BgRemoverClient() {
 
                 {/* Manual Remove Background Button */}
                 <Button
-                  onClick={() => activeImage && modelType !== "unselected" && processImage(activeImage, modelType)}
-                  disabled={isProcessing || modelType === 'unselected' || !activeImage}
+                  onClick={() => activeImage && processImage(activeImage, modelType)}
+                  disabled={isProcessing || !activeImage}
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isProcessing ? (
