@@ -370,7 +370,7 @@ export default function CropperClient() {
   const croppedDimensions = getCroppedDimensions();
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-hidden w-full max-w-full">
+    <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip">
       {/* CSS overrides for react-image-crop to match emerald Alatify design system */}
       <style dangerouslySetInnerHTML={{ __html: `
         .ReactCrop {

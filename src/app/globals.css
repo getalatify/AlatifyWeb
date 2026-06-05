@@ -85,13 +85,17 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    @apply bg-background text-foreground overflow-x-clip;
   }
 
-  /* Defensive: prevents horizontal scroll on mobile. 
-     Root causes identified separately, this is safety net. */
+  /* Defensive: prevents horizontal scroll on mobile without creating 
+     scroll containers (which would cause double scrollbars).
+     Uses overflow-x: clip which clips without scroll context. */
   html, body {
-    overflow-x: hidden;
-    max-width: 100vw;
+    overflow-x: clip;
   }
+
+  /* overflow-x: clip support: Chrome 90+, Firefox 81+, Safari 16+ (all 2021-2022).
+     Safe in 2026. Falls back to default (visible) on very old browsers, 
+     which would re-enable horizontal scroll but no rendering breakage. */
 }
