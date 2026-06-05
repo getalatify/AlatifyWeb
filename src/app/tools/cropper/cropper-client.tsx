@@ -7,6 +7,7 @@ import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
+import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import { 
   ArrowLeft, 
@@ -868,6 +869,7 @@ export default function CropperClient() {
 
           </section>
         )}
+        {!activeImage && <UrlInputHelp />}
       </div>
     </main>
   );

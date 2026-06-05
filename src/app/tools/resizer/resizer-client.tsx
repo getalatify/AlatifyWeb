@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
+import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import { 
   ArrowLeft, 
@@ -769,6 +770,7 @@ export default function ImageResizerPage() {
 
           </section>
         )}
+        {!activeImage && <UrlInputHelp />}
       </div>
     </main>
   );

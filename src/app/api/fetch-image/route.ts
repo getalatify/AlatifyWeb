@@ -88,29 +88,49 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     url = body.url;
     if (!url || typeof url !== 'string') {
-      return NextResponse.json({ error: 'Missing or invalid URL' }, { status: 400 });
+      return NextResponse.json({ 
+        error: "This doesn't look like a valid URL. URLs should start with https:// and point to an image file (like .jpg, .png, .webp)." 
+      }, { status: 400 });
     }
   } catch {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    return NextResponse.json({ 
+      error: "This doesn't look like a valid URL. URLs should start with https:// and point to an image file (like .jpg, .png, .webp)." 
+    }, { status: 400 });
   }
   
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(url);
   } catch {
-    return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
+    return NextResponse.json({ 
+      error: "This doesn't look like a valid URL. URLs should start with https:// and point to an image file (like .jpg, .png, .webp)." 
+    }, { status: 400 });
   }
   
   if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
     return NextResponse.json({ 
-      error: 'Only HTTP and HTTPS URLs are supported' 
+      error: "Only HTTP and HTTPS URLs are supported. Direct image links look like: https://images.example.com/photo.jpg" 
     }, { status: 400 });
   }
   
   if (isPrivateHost(parsedUrl.hostname)) {
     return NextResponse.json({ 
-      error: 'Internal or private URLs are not allowed' 
+      error: "Internal network URLs are not allowed for security reasons." 
     }, { status: 403 });
+  }
+
+  const hostnameLower = parsedUrl.hostname.toLowerCase();
+  if (
+    hostnameLower.includes('pinterest.com') ||
+    hostnameLower.includes('pinimg.com') ||
+    hostnameLower.includes('instagram.com') ||
+    hostnameLower.includes('cdninstagram.com') ||
+    hostnameLower.includes('facebook.com') ||
+    hostnameLower.includes('fbcdn.net')
+  ) {
+    return NextResponse.json({ 
+      error: "This website blocks external image access (common with Pinterest, Instagram, Facebook). Please download the image and use the Upload File tab." 
+    }, { status: 502 });
   }
   
   try {
@@ -124,8 +144,23 @@ export async function POST(req: NextRequest) {
     });
     
     if (!response.ok) {
+      if (response.status === 401) {
+        return NextResponse.json({ 
+          error: "This image requires login or is protected from external access. Try downloading the image and uploading it directly instead." 
+        }, { status: 502 });
+      }
+      if (response.status === 403) {
+        return NextResponse.json({ 
+          error: "This website blocks external image access (common with Pinterest, Instagram, Facebook). Please download the image and use the Upload File tab." 
+        }, { status: 502 });
+      }
+      if (response.status === 404) {
+        return NextResponse.json({ 
+          error: "Image not found at this URL. The link may have expired or been removed." 
+        }, { status: 502 });
+      }
       return NextResponse.json({ 
-        error: `Failed to fetch image (status ${response.status})` 
+        error: "Failed to fetch image. The URL might be incorrect, the server is down, or the source blocks external access." 
       }, { status: 502 });
     }
     
@@ -142,7 +177,7 @@ export async function POST(req: NextRequest) {
     const contentLength = parseInt(response.headers.get('content-length') || '0', 10);
     if (contentLength > MAX_SIZE) {
       return NextResponse.json({ 
-        error: `Image too large. Maximum ${Math.round(MAX_SIZE / 1024 / 1024)}MB allowed.` 
+        error: "Image is too large (over 4MB). Try a smaller resolution or compress the source image first." 
       }, { status: 413 });
     }
     
@@ -150,7 +185,7 @@ export async function POST(req: NextRequest) {
     
     if (arrayBuffer.byteLength > MAX_SIZE) {
       return NextResponse.json({ 
-        error: `Image too large. Maximum ${Math.round(MAX_SIZE / 1024 / 1024)}MB allowed.` 
+        error: "Image is too large (over 4MB). Try a smaller resolution or compress the source image first." 
       }, { status: 413 });
     }
 
@@ -165,12 +200,12 @@ export async function POST(req: NextRequest) {
         contentType = detected;
       } else {
         return NextResponse.json({ 
-          error: 'URL points to an unsupported or invalid image file format' 
+          error: "This URL doesn't point to an image directly. It might be a webpage URL. To get the direct image URL: right-click on the image → 'Copy Image Address' (not 'Copy Link Address')." 
         }, { status: 400 });
       }
     } else if (!cleanContentType.startsWith('image/')) {
       return NextResponse.json({ 
-        error: 'URL does not point to an image' 
+        error: "This URL doesn't point to an image directly. It might be a webpage URL. To get the direct image URL: right-click on the image → 'Copy Image Address' (not 'Copy Link Address')." 
       }, { status: 400 });
     }
 
@@ -194,11 +229,11 @@ export async function POST(req: NextRequest) {
     const errorName = error instanceof Error ? error.name : '';
     if (errorName === 'TimeoutError' || errorName === 'AbortError') {
       return NextResponse.json({ 
-        error: 'Request timed out. Try a different URL.' 
+        error: "Request timed out. The image source may be slow or unreachable. Try a different image URL." 
       }, { status: 504 });
     }
     return NextResponse.json({ 
-      error: 'Failed to fetch image. Check the URL and try again.' 
+      error: "Failed to fetch image. The URL might be incorrect, the server is down, or the source blocks external access." 
     }, { status: 500 });
   }
 }

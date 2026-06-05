@@ -176,7 +176,16 @@ export function ImageSourceInput({
       {error && (
         <div className="flex items-start gap-2.5 p-3.5 bg-destructive/5 border border-destructive/15 text-destructive rounded-xl text-xs leading-relaxed animate-fade-in">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-          <span>{error}</span>
+          <div className="flex-1">
+            <p>{error}</p>
+            <button 
+              type="button"
+              onClick={() => document.getElementById('url-help-section')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-[10px] font-bold underline mt-1.5 hover:no-underline block text-left"
+            >
+              Need help finding the right URL? ↓
+            </button>
+          </div>
         </div>
       )}
     </div>
