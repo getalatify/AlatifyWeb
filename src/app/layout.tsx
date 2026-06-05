@@ -87,6 +87,10 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
+// FUTURE REFACTOR NOTE: The 11 page files contain identical <main> wrapper Tailwind classes:
+// "relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-hidden w-full max-w-full"
+// This is a DRY violation. Future refactoring should move this <main> wrapper styling to a shared
+// component (e.g., a PageContainer) or directly here in RootLayout, so future pages do not duplicate these classes.
 export default function RootLayout({
   children,
 }: Readonly<{

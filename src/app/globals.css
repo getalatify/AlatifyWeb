@@ -87,4 +87,11 @@
   body {
     @apply bg-background text-foreground overflow-x-hidden;
   }
+
+  /* Defensive: prevents horizontal scroll on mobile. 
+     Root causes identified separately, this is safety net. */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
 }
