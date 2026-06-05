@@ -19,6 +19,16 @@ import {
   Sparkles
 } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
+import { cn } from "@/lib/utils";
+import { ProcessingOverlay } from "@/components/processing-overlay";
+
+function formatElapsed(seconds: number): string {
+  if (seconds < 60) return `${Math.floor(seconds)}s`;
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
 export default function BgRemoverClient() {
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
@@ -46,16 +56,21 @@ export default function BgRemoverClient() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // States
-  const [stage, setStage] = useState<'idle' | 'downloading' | 'processing' | 'complete' | 'error'>('idle');
+  const [stage, setStage] = useState<'idle' | 'initializing' | 'downloading' | 'processing' | 'complete' | 'error'>('idle');
+  const isProcessing = stage !== 'idle' && stage !== 'complete' && stage !== 'error';
+  const workerRef = useRef<Worker | null>(null);
+  const watchdogTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const heartbeatTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const [elapsed, setElapsed] = useState<number>(0);
+
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [downloadingFile, setDownloadingFile] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   // Performance & Tier States
   const [modelType, setModelType] = useState<'unselected' | 'isnet_fp16' | 'isnet_quint8' | 'isnet'>('unselected');
-  const [processingTime, setProcessingTime] = useState<number | null>(null);
   const [wasAutoResized, setWasAutoResized] = useState<boolean>(false);
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
 
   // Original & Processed Image details
   const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
@@ -90,166 +105,292 @@ export default function BgRemoverClient() {
     };
   }, [processedImage]);
 
-  // Timer for displaying elapsed processing time
+  // Timer for displaying elapsed processing time using Date.now() diff
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (stage === 'processing' || stage === 'downloading') {
-      const startTime = Date.now();
-      interval = setInterval(() => {
-        setElapsedTime(Math.round((Date.now() - startTime) / 1000));
-      }, 1000);
-    } else {
-      setElapsedTime(0);
-    }
+    if (!isProcessing) return;
+
+    startTimeRef.current = Date.now();
+    setElapsed(0);
+
+    const interval = setInterval(() => {
+      setElapsed((Date.now() - startTimeRef.current) / 1000);
+    }, 1000); // 1 second interval as requested
+
     return () => {
-      if (interval) clearInterval(interval);
+      clearInterval(interval);
     };
-  }, [stage]);
+  }, [isProcessing]);
+
+  // Prevent navigation/tab closure while processing
+  useEffect(() => {
+    if (!isProcessing) return;
+
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isProcessing]);
+
+  const clearWatchdogTimer = useCallback(() => {
+    if (watchdogTimerRef.current) {
+      clearTimeout(watchdogTimerRef.current);
+      watchdogTimerRef.current = null;
+    }
+  }, []);
+
+  const clearHeartbeatTimer = useCallback(() => {
+    if (heartbeatTimerRef.current) {
+      clearTimeout(heartbeatTimerRef.current);
+      heartbeatTimerRef.current = null;
+    }
+  }, []);
+
+  const startWatchdogTimer = useCallback(() => {
+    clearWatchdogTimer();
+    watchdogTimerRef.current = setTimeout(() => {
+      console.warn("Watchdog timeout triggered after 5 minutes of inactivity.");
+      if (workerRef.current) {
+        workerRef.current.terminate();
+        workerRef.current = null;
+      }
+      clearHeartbeatTimer();
+      setError(
+        "Processing took too long. This may happen on slower devices or with very large images. Try a smaller image or different model variant."
+      );
+      setStage("error");
+    }, 5 * 60 * 1000); // 5 minutes
+  }, [clearWatchdogTimer, clearHeartbeatTimer]);
+
+  const resetHeartbeatTimer = useCallback(() => {
+    clearHeartbeatTimer();
+    heartbeatTimerRef.current = setTimeout(() => {
+      console.warn("Heartbeat timeout triggered. Web Worker is unresponsive during loading.");
+      if (workerRef.current) {
+        workerRef.current.terminate();
+        workerRef.current = null;
+      }
+      clearWatchdogTimer();
+      setError(
+        "Model download stopped responding. Please check your network connection and try again."
+      );
+      setStage("error");
+    }, 30 * 1000); // 30 seconds
+  }, [clearHeartbeatTimer, clearWatchdogTimer]);
+
+  // Terminate worker if model changes
+  useEffect(() => {
+    if (workerRef.current) {
+      workerRef.current.terminate();
+      workerRef.current = null;
+    }
+    clearWatchdogTimer();
+    clearHeartbeatTimer();
+  }, [modelType, clearWatchdogTimer, clearHeartbeatTimer]);
+
+  // Clean up all timers and worker on component unmount
+  useEffect(() => {
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+      }
+      clearWatchdogTimer();
+      clearHeartbeatTimer();
+    };
+  }, [clearWatchdogTimer, clearHeartbeatTimer]);
+
+  const handleCancel = () => {
+    if (workerRef.current) {
+      workerRef.current.terminate();
+      workerRef.current = null;
+    }
+    clearWatchdogTimer();
+    clearHeartbeatTimer();
+
+    const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
+    const modelName = modelType === 'isnet_fp16' ? 'Quality' : modelType === 'isnet_quint8' ? 'Balanced' : 'Speed';
+    console.log(`[BG Remover] Cancelled at ${duration}s (${modelName} model)`);
+
+    setStage("idle");
+  };
+
+  // Helper trigger to replace file
+  const handleReplaceClick = () => {
+    if (isProcessing) return;
+    fileInputRef.current?.click();
+  };
+
+  // Function to lazily initialize the worker and set up listeners
+  const getWorker = useCallback(() => {
+    if (workerRef.current) {
+      return workerRef.current;
+    }
+
+    const worker = new Worker(new URL("@/workers/bg-remover.worker.ts", import.meta.url), {
+      type: "module",
+    });
+
+    worker.onmessage = (event: MessageEvent) => {
+      const msg = event.data;
+
+      if (msg.type === "heartbeat") {
+        resetHeartbeatTimer();
+        return;
+      }
+
+      if (msg.type === "request_image_bitmap") {
+        if (activeImage) {
+          createImageBitmap(activeImage)
+            .then((imageBitmap) => {
+              worker.postMessage({ type: "image_bitmap_response", imageBitmap }, [imageBitmap]);
+            })
+            .catch((err) => {
+              console.error("Failed to create ImageBitmap on main thread:", err);
+              worker.postMessage({ type: "image_bitmap_response", imageBitmap: null });
+            });
+        } else {
+          worker.postMessage({ type: "image_bitmap_response", imageBitmap: null });
+        }
+        return;
+      }
+
+      if (msg.type === "status") {
+        setStage(msg.stage);
+        return;
+      }
+
+      if (msg.type === "progress") {
+        setStage(msg.stage);
+        if (msg.stage === "downloading") {
+          setDownloadProgress(msg.percent);
+          setDownloadingFile(msg.file);
+          resetHeartbeatTimer();
+        } else if (msg.stage === "processing") {
+          clearHeartbeatTimer();
+        }
+        return;
+      }
+
+      if (msg.type === "success") {
+        clearWatchdogTimer();
+        clearHeartbeatTimer();
+
+        const durationFloat = (Date.now() - startTimeRef.current) / 1000;
+        setElapsed(durationFloat);
+
+        const outputBlob = msg.blob;
+        if (outputBlob) {
+          const outputFilename = "no-bg_" + (activeImage?.name || "image").replace(/\.[^/.]+$/, "") + ".png";
+          const fileObj = new File([outputBlob], outputFilename, {
+            type: "image/png"
+          });
+
+          // Read output dimensions
+          const url = URL.createObjectURL(outputBlob);
+          const imgVerify = new Image();
+          imgVerify.onload = () => {
+            setProcessedWidth(imgVerify.naturalWidth);
+            setProcessedHeight(imgVerify.naturalHeight);
+            URL.revokeObjectURL(url);
+          };
+          imgVerify.onerror = () => {
+            if (originalDimensions) {
+              setProcessedWidth(originalDimensions.width);
+              setProcessedHeight(originalDimensions.height);
+            }
+            URL.revokeObjectURL(url);
+          };
+          imgVerify.src = url;
+
+          const duration = durationFloat.toFixed(1);
+          const modelName = modelType === 'isnet_fp16' ? 'Quality — ISNet FP16' : modelType === 'isnet_quint8' ? 'Balanced — ISNet Quant8' : 'Speed — ISNet Base';
+          const originalFormat = activeImage ? getImageFormat(activeImage) : "";
+          const imgDimensions = originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : "Unknown";
+
+          console.log(
+            `[BG Remover] Completed in ${duration}s\n` +
+            `Model: ${modelName}\n` +
+            `Image: ${imgDimensions} ${originalFormat} (${formatBytes(activeImage?.size ?? 0)})\n` +
+            `Output: ${formatBytes(outputBlob.size)}`
+          );
+
+          setProcessedImage(fileObj);
+          setStage("complete");
+        }
+        return;
+      }
+
+      if (msg.type === "error") {
+        clearWatchdogTimer();
+        clearHeartbeatTimer();
+
+        const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
+        const errorMessage = msg.error;
+        console.log(`[BG Remover] Failed at ${duration}s — Error: ${errorMessage}`);
+
+        setError(msg.error);
+        setStage("error");
+        return;
+      }
+
+      if (msg.type === "cancelled") {
+        clearWatchdogTimer();
+        clearHeartbeatTimer();
+        setStage("idle");
+        return;
+      }
+    };
+
+    workerRef.current = worker;
+    return worker;
+  }, [activeImage, originalDimensions, modelType, resetHeartbeatTimer, clearHeartbeatTimer, clearWatchdogTimer]);
 
   // Core background removal processing function
   const processImage = useCallback(async (imageFile: File | Blob, selectedModel: 'isnet_fp16' | 'isnet_quint8' | 'isnet') => {
-    // Set initial loading stage
-    setStage("processing");
+    if (isProcessing) return;
+
     setError(null);
     setDownloadProgress(0);
     setDownloadingFile("");
     setProcessedImage(null);
-    setProcessingTime(null);
     setWasAutoResized(false);
-    setElapsedTime(0);
 
-    const startTime = performance.now();
+    // V2 Investigation Target:
+    // Since the Web Worker runs in a separate JavaScript context, the onnxruntime-web initWasm()
+    // single-call restriction may not apply. This means WebGPU could potentially be viable inside
+    // the worker. We should investigate this in V2. For now, we continue using CPU execution.
 
     try {
-      // Dynamic import to prevent build-time SSR issues on server
-      const imglyBg = await import("@imgly/background-removal");
-      const removeBackground = (imglyBg.removeBackground || (imglyBg as { default?: unknown }).default || imglyBg) as (
-        image: File | Blob,
-        options?: unknown
-      ) => Promise<Blob>;
-
-      if (typeof removeBackground !== "function") {
-        throw new Error("Background removal engine could not be initialized correctly.");
+      const worker = getWorker();
+      if (!worker) {
+        throw new Error("Failed to initialize background worker.");
       }
 
-      // Preprocessing: Auto-resize internally if image is large (> 2048px on longest side)
-      const maxDimension = 2048;
-      let processedBlobOrFile: File | Blob = imageFile;
+      setStage("initializing");
+      startWatchdogTimer();
+      startTimeRef.current = Date.now();
 
-      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const url = URL.createObjectURL(imageFile);
-        const tempImg = new Image();
-        tempImg.onload = () => {
-          URL.revokeObjectURL(url);
-          resolve(tempImg);
-        };
-        tempImg.onerror = (e) => {
-          URL.revokeObjectURL(url);
-          reject(e);
-        };
-        tempImg.src = url;
+      worker.postMessage({
+        type: "process",
+        imageFile,
+        selectedModel,
       });
 
-      if (img.naturalWidth > maxDimension || img.naturalHeight > maxDimension) {
-        setWasAutoResized(true);
-        const canvas = document.createElement("canvas");
-        let targetWidth = img.naturalWidth;
-        let targetHeight = img.naturalHeight;
-
-        if (targetWidth > targetHeight) {
-          targetHeight = Math.round((targetHeight * maxDimension) / targetWidth);
-          targetWidth = maxDimension;
-        } else {
-          targetWidth = Math.round((targetWidth * maxDimension) / targetHeight);
-          targetHeight = maxDimension;
-        }
-
-        canvas.width = targetWidth;
-        canvas.height = targetHeight;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-          const resizedBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
-          if (resizedBlob) {
-            processedBlobOrFile = resizedBlob;
-          }
-        }
-      }
-
-      const progressHandler = (key: string, current: number, total: number) => {
-        const isFetchOrDownload = key.includes("fetch") || key.includes("download");
-        const percent = Math.round((current / total) * 100);
-
-        if (isFetchOrDownload) {
-          setStage("downloading");
-          setDownloadProgress(percent);
-          const displayName = key.replace(/^(fetch|download):?/, "") || "neural weights";
-          setDownloadingFile(displayName);
-        } else {
-          setStage("processing");
-        }
-      };
-
-      const outputBlob = await removeBackground(processedBlobOrFile, {
-        model: selectedModel,
-        device: "cpu",
-        output: {
-          format: "image/png",
-          quality: 1
-        },
-        proxyToWorker: true,
-        progress: progressHandler
-      });
-
-      if (outputBlob) {
-        const outputFilename = "no-bg_" + ((imageFile as File).name || "image").replace(/\.[^/.]+$/, "") + ".png";
-        const fileObj = new File([outputBlob], outputFilename, {
-          type: "image/png"
-        });
-
-        // Read output dimensions
-        const url = URL.createObjectURL(outputBlob);
-        const imgVerify = new Image();
-        imgVerify.onload = () => {
-          setProcessedWidth(imgVerify.naturalWidth);
-          setProcessedHeight(imgVerify.naturalHeight);
-          URL.revokeObjectURL(url);
-        };
-        imgVerify.onerror = () => {
-          if (originalDimensions) {
-            setProcessedWidth(originalDimensions.width);
-            setProcessedHeight(originalDimensions.height);
-          }
-          URL.revokeObjectURL(url);
-        };
-        imgVerify.src = url;
-
-        // Record execution duration
-        const duration = parseFloat(((performance.now() - startTime) / 1000).toFixed(1));
-        setProcessingTime(duration);
-
-        setProcessedImage(fileObj);
-        setStage("complete");
-      } else {
-        throw new Error("Background removal engine returned an empty output.");
-      }
     } catch (err: unknown) {
-      console.error("AI Background Remover operation failed:", err);
-      let friendlyError = "AI model processing failed locally.";
       const errorObj = err as Error;
-      if (errorObj && errorObj.message) {
-        if (errorObj.message.includes("fetch") || errorObj.message.includes("network") || errorObj.message.includes("Failed to fetch")) {
-          friendlyError = "Network error: Failed to download the AI engine assets from CDN. Please check your internet connection.";
-        } else if (errorObj.message.includes("memory") || errorObj.message.includes("out of memory")) {
-          friendlyError = "Memory error: The image resolution is too high for your device's WebAssembly memory limit. Try a slightly smaller image.";
-        } else {
-          friendlyError = `Inference failed: ${errorObj.message}`;
-        }
-      }
-      setError(friendlyError);
+      console.error("AI Background Remover initiation failed:", errorObj);
+
+      const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
+      console.log(`[BG Remover] Failed at ${duration}s — Error: ${errorObj?.message || errorObj}`);
+
+      setError(errorObj?.message || "Failed to start background removal process.");
       setStage("error");
+      clearWatchdogTimer();
+      clearHeartbeatTimer();
     }
-  }, [originalDimensions]);
+  }, [isProcessing, getWorker, startWatchdogTimer, clearWatchdogTimer, clearHeartbeatTimer]);
 
   // Reset processed image on active image change
   useEffect(() => {
@@ -257,11 +398,6 @@ export default function BgRemoverClient() {
     setStage("idle");
     setModelType("unselected");
   }, [activeImage]);
-
-  // Helper trigger to replace file
-  const handleReplaceClick = () => {
-    fileInputRef.current?.click();
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -301,13 +437,18 @@ export default function BgRemoverClient() {
           </div>
           <Link
             href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
+            className={cn(
+              "flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group",
+              isProcessing && "pointer-events-none opacity-50"
+            )}
           >
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
             Back to tools
           </Link>
         </div>
-        <ThemeToggle />
+        <div className={cn(isProcessing && "pointer-events-none opacity-50")}>
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Hidden File Input for Replace */}
@@ -315,6 +456,7 @@ export default function BgRemoverClient() {
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
+        disabled={isProcessing}
         accept="image/png, image/jpeg, image/jpg, image/webp, image/gif, image/avif, image/bmp"
         className="hidden"
       />
@@ -462,12 +604,12 @@ export default function BgRemoverClient() {
                             <span className="text-[10px] text-muted-foreground leading-normal block font-medium">
                               This typically takes 1-3 minutes depending on your device and image size. Larger images take longer.
                             </span>
-                            {elapsedTime > 0 && (
+                            {elapsed > 0 && (
                               <span className="text-[10.5px] font-bold text-primary block animate-pulse mt-1">
-                                Elapsed: {elapsedTime}s
+                                Elapsed: {formatElapsed(elapsed)}
                               </span>
                             )}
-                            {elapsedTime > 5 && (
+                            {elapsed > 5 && (
                               <span className="text-[9px] text-muted-foreground leading-normal block font-medium animate-pulse mt-1.5">
                                 Still processing... Large images or slower CPUs can take a moment to compute.
                               </span>
@@ -484,7 +626,7 @@ export default function BgRemoverClient() {
                           <AlertCircle className="w-8 h-8 text-destructive animate-bounce" />
                           <div className="space-y-1">
                             <span className="text-xs font-extrabold text-destructive block">
-                              Extraction Failed
+                              Extraction Failed ({formatElapsed(elapsed)})
                             </span>
                             <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
                               {error || "An unexpected error occurred while extracting subject locally."}
@@ -543,11 +685,9 @@ export default function BgRemoverClient() {
                       {stage === 'complete' ? (
                         <span className="flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5 text-success fill-success/10" />
-                          Complete {processingTime ? `(${processingTime}s)` : ""}
+                          Complete · {formatElapsed(elapsed)}
                         </span>
-                      ) : stage === 'downloading' ? (
-                        "Loading engine..."
-                      ) : stage === 'processing' ? (
+                      ) : stage === 'initializing' || stage === 'downloading' || stage === 'processing' ? (
                         "AI Extraction..."
                       ) : stage === 'error' ? (
                         "Error occurred"
@@ -577,7 +717,7 @@ export default function BgRemoverClient() {
                     variant="outline"
                     size="sm"
                     onClick={handleReplaceClick}
-                    disabled={stage === 'downloading' || stage === 'processing'}
+                    disabled={isProcessing}
                     className="gap-1.5 text-xs border-border hover:bg-muted text-foreground flex-1 sm:flex-none"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
@@ -587,7 +727,7 @@ export default function BgRemoverClient() {
                     variant="ghost"
                     size="sm"
                     onClick={handleRemove}
-                    disabled={stage === 'downloading' || stage === 'processing'}
+                    disabled={isProcessing}
                     className="gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 flex-1 sm:flex-none"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -599,7 +739,10 @@ export default function BgRemoverClient() {
             </div>
 
             {/* AI INFO SIDEBAR */}
-            <div className="lg:col-span-1 p-4 sm:p-6 rounded-2xl bg-card border border-border/60 shadow-md space-y-5 sm:space-y-6 w-full flex flex-col justify-between">
+            <div className={cn(
+              "lg:col-span-1 p-4 sm:p-6 rounded-2xl bg-card border border-border/60 shadow-md space-y-5 sm:space-y-6 w-full flex flex-col justify-between transition-all duration-300",
+              isProcessing && "pointer-events-none opacity-50"
+            )}>
               
               <div className="space-y-5">
                 <div className="flex items-center gap-2 border-b border-border/40 pb-2.5 sm:pb-3">
@@ -622,7 +765,7 @@ export default function BgRemoverClient() {
                     <select
                       value={modelType}
                       onChange={(e) => setModelType(e.target.value as "isnet_fp16" | "isnet_quint8" | "isnet")}
-                      disabled={stage === 'downloading' || stage === 'processing'}
+                      disabled={isProcessing}
                       className="w-full bg-secondary border border-border hover:border-primary/50 text-foreground text-xs rounded-xl p-2.5 outline-none transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="unselected" disabled>Select AI Model Variant...</option>
@@ -640,14 +783,13 @@ export default function BgRemoverClient() {
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${
                         stage === 'complete' ? "bg-success" : 
-                        stage === 'downloading' || stage === 'processing' ? "bg-warning animate-pulse" :
+                        stage === 'initializing' || stage === 'downloading' || stage === 'processing' ? "bg-warning animate-pulse" :
                         stage === 'error' ? "bg-destructive" : "bg-muted"
                       }`} />
                       <span className="text-xs font-bold text-foreground">
                         {stage === 'idle' && "Awaiting input image"}
-                        {stage === 'downloading' && `Downloading model (${modelType === "isnet_fp16" ? "22MB" : "10MB"})`}
-                        {stage === 'processing' && `Removing background... ${elapsedTime > 0 ? `(${elapsedTime}s)` : ""}`}
-                        {stage === 'complete' && "Subject extracted (CPU)"}
+                        {(stage === 'initializing' || stage === 'downloading' || stage === 'processing') && `Removing background... (${formatElapsed(elapsed)})`}
+                        {stage === 'complete' && `Subject extracted (CPU) · ${formatElapsed(elapsed)}`}
                         {stage === 'error' && "Processing terminated"}
                       </span>
                     </div>
@@ -678,7 +820,7 @@ export default function BgRemoverClient() {
                     <CheckCircle2 className="w-4 h-4 text-success shrink-0 mt-0.5" />
                     <span>
                       Image background successfully extracted into transparent PNG format using offline WASM solver.
-                      {processingTime ? ` Model run completed in ${processingTime}s.` : ""}
+                      {elapsed > 0 ? ` Model run completed in ${elapsed.toFixed(1)}s.` : ""}
                     </span>
                   </div>
                 )}
@@ -686,10 +828,10 @@ export default function BgRemoverClient() {
                 {/* Manual Remove Background Button */}
                 <Button
                   onClick={() => activeImage && modelType !== "unselected" && processImage(activeImage, modelType)}
-                  disabled={stage === 'downloading' || stage === 'processing' || modelType === 'unselected' || !activeImage}
+                  disabled={isProcessing || modelType === 'unselected' || !activeImage}
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {stage === 'downloading' || stage === 'processing' ? (
+                  {isProcessing ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin animate-fade-in" />
                       {stage === 'downloading' ? "Downloading Model..." : "Extracting Subject..."}
@@ -705,8 +847,11 @@ export default function BgRemoverClient() {
                   file={processedImage}
                   filenamePrefix="no-bg"
                   originalFilename={(activeImage as File)?.name ?? "image"}
-                  disabled={stage !== 'complete' || !processedImage}
-                  className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+                  disabled={isProcessing || stage !== 'complete' || !processedImage}
+                  className={cn(
+                    "w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
+                    isProcessing && "pointer-events-none opacity-50"
+                  )}
                 >
                   <Download className="w-4 h-4" />
                   Download Transparent PNG
@@ -718,6 +863,13 @@ export default function BgRemoverClient() {
           </section>
         )}
       </div>
+
+      <ProcessingOverlay
+        isProcessing={isProcessing}
+        canCancel={true}
+        onCancel={handleCancel}
+        elapsed={elapsed}
+      />
     </main>
   );
 }
