@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Inter } from "next/font/google";
@@ -18,6 +18,12 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://getalatify.com'),
@@ -81,6 +87,10 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
+// FUTURE REFACTOR NOTE: The 11 page files contain identical <main> wrapper Tailwind classes:
+// "relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip"
+// This is a DRY violation. Future refactoring should move this <main> wrapper styling to a shared
+// component (e.g., a PageContainer) or directly here in RootLayout, so future pages do not duplicate these classes.
 export default function RootLayout({
   children,
 }: Readonly<{

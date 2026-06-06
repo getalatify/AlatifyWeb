@@ -3,9 +3,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import ReactCrop, { type Crop, type PixelCrop } from "react-image-crop";
+import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { ThemeToggle, ImageUploader, DownloadButton, Logo } from "@/components/shared";
+import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
+import { ImageSourceInput } from "@/components/image-source-input";
+import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import { 
   ArrowLeft, 
@@ -37,11 +39,59 @@ function rotateSize(width: number, height: number, rotation: number) {
 }
 
 // Core canvas cropping resolver for pre-rotated image
+// Helper function to downsample large image preview
+async function downsampleImage(imageUrl: string, maxDimension = 1920): Promise<{ blob: Blob; width: number; height: number; downsampled: boolean }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const { width, height } = img;
+      if (width <= maxDimension && height <= maxDimension) {
+        fetch(imageUrl)
+          .then((r) => r.blob())
+          .then((blob) => resolve({ blob, width, height, downsampled: false }))
+          .catch(reject);
+        return;
+      }
+
+      let targetWidth = width;
+      let targetHeight = height;
+      if (width > height) {
+        targetHeight = Math.round((height * maxDimension) / width);
+        targetWidth = maxDimension;
+      } else {
+        targetWidth = Math.round((width * maxDimension) / height);
+        targetHeight = maxDimension;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Failed to create canvas context"));
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve({ blob, width, height, downsampled: true });
+        } else {
+          reject(new Error("Failed to generate downsampled blob"));
+        }
+      }, "image/png");
+    };
+    img.onerror = (e) => reject(e);
+    img.src = imageUrl;
+  });
+}
+
+// Core canvas cropping resolver for original image using percent crop and rotation
 async function getCroppedImg(
   imageSrc: string,
-  pixelCrop: PixelCrop,
-  renderedWidth: number,
-  renderedHeight: number,
+  percentCrop: Crop,
+  rotation: number,
   format: "image/png" | "image/jpeg" = "image/png"
 ): Promise<Blob | null> {
   const image = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -52,35 +102,37 @@ async function getCroppedImg(
     img.src = imageSrc;
   });
 
+  const { width: bWidth, height: bHeight } = rotateSize(image.naturalWidth, image.naturalHeight, rotation);
+
+  // Convert percentages to actual pixel values relative to the rotated original image
+  const cropX = ((percentCrop.x || 0) * bWidth) / 100;
+  const cropY = ((percentCrop.y || 0) * bHeight) / 100;
+  const cropWidth = ((percentCrop.width || 0) * bWidth) / 100;
+  const cropHeight = ((percentCrop.height || 0) * bHeight) / 100;
+
   const canvas = document.createElement("canvas");
+  canvas.width = Math.round(cropWidth);
+  canvas.height = Math.round(cropHeight);
   const ctx = canvas.getContext("2d");
 
   if (!ctx) {
     return null;
   }
 
-  const scaleX = image.naturalWidth / renderedWidth;
-  const scaleY = image.naturalHeight / renderedHeight;
+  // Smooth scaling configuration
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
 
-  const cropX = pixelCrop.x * scaleX;
-  const cropY = pixelCrop.y * scaleY;
-  const cropWidth = pixelCrop.width * scaleX;
-  const cropHeight = pixelCrop.height * scaleY;
+  // Translate to crop origin relative to rotated size
+  ctx.translate(-cropX, -cropY);
 
-  canvas.width = cropWidth;
-  canvas.height = cropHeight;
+  // Apply rotation transformation
+  const rotRad = (rotation * Math.PI) / 180;
+  ctx.translate(bWidth / 2, bHeight / 2);
+  ctx.rotate(rotRad);
+  ctx.translate(-image.naturalWidth / 2, -image.naturalHeight / 2);
 
-  ctx.drawImage(
-    image,
-    cropX,
-    cropY,
-    cropWidth,
-    cropHeight,
-    0,
-    0,
-    cropWidth,
-    cropHeight
-  );
+  ctx.drawImage(image, 0, 0);
 
   // Export final image as Blob
   return new Promise((resolve) => {
@@ -133,7 +185,7 @@ export default function CropperClient() {
 
   // react-image-crop states
   const [crop, setCrop] = useState<Crop>();
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
+  const [completedPercentCrop, setCompletedPercentCrop] = useState<Crop | null>(null);
   const [zoom, setZoom] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
   const [aspect, setAspect] = useState<number | undefined>(undefined);
@@ -145,32 +197,71 @@ export default function CropperClient() {
     width: number;
     height: number;
   } | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string>("");
+  const [isPreviewDownsampled, setIsPreviewDownsampled] = useState<boolean>(false);
   const [exportFormat, setExportFormat] = useState<"image/png" | "image/jpeg">("image/png");
   const [croppedImage, setCroppedImage] = useState<Blob | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const rafRef = useRef<number>();
 
-  // Load original image dimensions
+  // Clean up RAF on unmount
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  // Manage downsampled preview URL lifecycle and cleanup
   useEffect(() => {
     if (!activeImageUrl) {
+      setPreviewImageUrl("");
+      setIsPreviewDownsampled(false);
       setOriginalDimensions(null);
       return;
     }
-    const img = new Image();
-    img.onload = () => {
-      setOriginalDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+
+    let active = true;
+    let createdUrl = "";
+
+    downsampleImage(activeImageUrl)
+      .then(({ blob, width, height, downsampled }) => {
+        if (!active) {
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        createdUrl = url;
+        setPreviewImageUrl(url);
+        setIsPreviewDownsampled(downsampled);
+        setOriginalDimensions({ width, height });
+      })
+      .catch((err) => {
+        console.error("Downsampling failed:", err);
+        if (active) {
+          setPreviewImageUrl(activeImageUrl);
+          setIsPreviewDownsampled(false);
+        }
+      });
+
+    return () => {
+      active = false;
+      if (createdUrl) {
+        URL.revokeObjectURL(createdUrl);
+      }
     };
-    img.src = activeImageUrl;
   }, [activeImageUrl]);
 
   // Pre-rotate source image on canvas and output a local Blob URL
   useEffect(() => {
-    if (!activeImageUrl) {
+    if (!previewImageUrl) {
       setRotatedImageUrl("");
       return;
     }
 
     setIsRotating(true);
+    let active = true;
+    let createdUrl = "";
+
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
@@ -192,32 +283,30 @@ export default function CropperClient() {
       ctx.drawImage(img, 0, 0);
 
       canvas.toBlob((blob) => {
-        if (blob) {
+        if (blob && active) {
           const url = URL.createObjectURL(blob);
-          setRotatedImageUrl((prev) => {
-            if (prev && prev.startsWith("blob:")) {
-              URL.revokeObjectURL(prev);
-            }
-            return url;
-          });
+          createdUrl = url;
+          setRotatedImageUrl(url);
         }
-        setIsRotating(false);
+        if (active) {
+          setIsRotating(false);
+        }
       }, "image/png");
     };
     img.onerror = () => {
-      setIsRotating(false);
-    };
-    img.src = activeImageUrl;
-  }, [activeImageUrl, rotation]);
-
-  // Clean up rotated URL on unmount
-  useEffect(() => {
-    return () => {
-      if (rotatedImageUrl && rotatedImageUrl.startsWith("blob:")) {
-        URL.revokeObjectURL(rotatedImageUrl);
+      if (active) {
+        setIsRotating(false);
       }
     };
-  }, [rotatedImageUrl]);
+    img.src = previewImageUrl;
+
+    return () => {
+      active = false;
+      if (createdUrl) {
+        URL.revokeObjectURL(createdUrl);
+      }
+    };
+  }, [previewImageUrl, rotation]);
 
   // Math helpers for responsive percentage crop
   function getInitialCrop(width: number, height: number, aspectValue: number | undefined): Crop {
@@ -250,25 +339,21 @@ export default function CropperClient() {
     };
   }
 
-  function percentToPixelCrop(percentCrop: Crop, width: number, height: number): PixelCrop {
-    const x = ((percentCrop.x || 0) * width) / 100;
-    const y = ((percentCrop.y || 0) * height) / 100;
-    const w = ((percentCrop.width || 0) * width) / 100;
-    const h = ((percentCrop.height || 0) * height) / 100;
-    return {
-      unit: "px",
-      x,
-      y,
-      width: w,
-      height: h,
-    };
-  }
-
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     const initialCrop = getInitialCrop(width, height, aspect);
     setCrop(initialCrop);
-    setCompletedCrop(percentToPixelCrop(initialCrop, width, height));
+    setCompletedPercentCrop(initialCrop);
+  };
+
+  const handleCropChange = (c: Crop, percentCrop: Crop) => {
+    // Console log for event frequency profiling as requested in Task 4
+    console.log('[Cropper] onChange fired', Date.now());
+
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setCrop(percentCrop);
+    });
   };
 
   // Update crop aspect ratio when preset changes
@@ -277,21 +362,18 @@ export default function CropperClient() {
       const { width, height } = imgRef.current;
       const initialCrop = getInitialCrop(width, height, aspect);
       setCrop(initialCrop);
-      setCompletedCrop(percentToPixelCrop(initialCrop, width, height));
+      setCompletedPercentCrop(initialCrop);
     }
   }, [aspect]);
 
   // Manual crop execution resolver
   const handleApplyCrop = async () => {
-    if (!rotatedImageUrl || !completedCrop || !imgRef.current) {
+    if (!activeImageUrl || !completedPercentCrop) {
       return;
     }
 
-    const renderedWidth = imgRef.current.width;
-    const renderedHeight = imgRef.current.height;
-
     // Avoid compiling empty crops
-    if (completedCrop.width === 0 || completedCrop.height === 0) {
+    if (completedPercentCrop.width === 0 || completedPercentCrop.height === 0) {
       return;
     }
 
@@ -299,10 +381,9 @@ export default function CropperClient() {
     setError(null);
     try {
       const croppedBlob = await getCroppedImg(
-        rotatedImageUrl,
-        completedCrop,
-        renderedWidth,
-        renderedHeight,
+        activeImageUrl,
+        completedPercentCrop,
+        rotation,
         exportFormat
       );
       if (!croppedBlob) {
@@ -326,7 +407,7 @@ export default function CropperClient() {
   useEffect(() => {
     setCroppedImage(null);
     setError(null);
-  }, [activeImage, completedCrop, exportFormat, zoom, rotation, aspect]);
+  }, [activeImage, completedPercentCrop, exportFormat, zoom, rotation, aspect]);
 
   // Reset helper
   const handleReset = () => {
@@ -338,7 +419,7 @@ export default function CropperClient() {
       const { width, height } = imgRef.current;
       const initialCrop = getInitialCrop(width, height, undefined);
       setCrop(initialCrop);
-      setCompletedCrop(percentToPixelCrop(initialCrop, width, height));
+      setCompletedPercentCrop(initialCrop);
     }
   };
 
@@ -358,24 +439,25 @@ export default function CropperClient() {
   const originalFormatStr = activeImage ? getImageFormat(activeImage) : "";
 
   const getCroppedDimensions = () => {
-    if (!completedCrop || !imgRef.current) return null;
-    const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
-    const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
+    if (!completedPercentCrop || !originalDimensions) return null;
+    const { width: bWidth, height: bHeight } = rotateSize(originalDimensions.width, originalDimensions.height, rotation);
     return {
-      width: Math.round(completedCrop.width * scaleX),
-      height: Math.round(completedCrop.height * scaleY),
+      width: Math.round(((completedPercentCrop.width || 0) * bWidth) / 100),
+      height: Math.round(((completedPercentCrop.height || 0) * bHeight) / 100),
     };
   };
 
   const croppedDimensions = getCroppedDimensions();
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none">
-      {/* CSS overrides for react-image-crop to match emerald Alatify design system */}
+    <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip">
       <style dangerouslySetInnerHTML={{ __html: `
         .ReactCrop {
           display: block;
           max-width: 100%;
+          will-change: transform;
+          transform: translateZ(0);
+          contain: layout style paint;
         }
         .ReactCrop__crop-selection {
           border: 1.5px dashed #10b981 !important;
@@ -387,6 +469,17 @@ export default function CropperClient() {
           width: 10px !important;
           height: 10px !important;
           border-radius: 50% !important;
+        }
+        .ReactCrop__drag-handle::after {
+          content: '';
+          position: absolute;
+          inset: -12px;
+          background: transparent;
+        }
+        @media (hover: none) {
+          .ReactCrop__drag-handle::after {
+            inset: -18px;
+          }
         }
         .ReactCrop__drag-handle:hover {
           background-color: #34d399 !important;
@@ -446,7 +539,7 @@ export default function CropperClient() {
         {!activeImage ? (
           /* BEFORE UPLOAD centerpiece */
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
-            <ImageUploader onUpload={setActiveImage} className="w-full animate-fade-in" />
+            <ImageSourceInput onImageReady={setActiveImage} className="w-full animate-fade-in" />
           </section>
         ) : (
           /* WORKSPACE ACTIVE */
@@ -455,7 +548,7 @@ export default function CropperClient() {
             {/* Interactive Cropper Area (2/3 width) */}
             <div className="lg:col-span-2 flex flex-col gap-4 sm:gap-6 w-full">
               
-              <div className="w-2/3 max-w-[280px] md:w-full md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4">
+              <div className="w-full max-w-md md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4">
                 <div className="flex items-center justify-between border-b border-border/40 pb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                     <ImageIcon className="w-3.5 h-3.5" />
@@ -479,8 +572,10 @@ export default function CropperClient() {
                     >
                       <ReactCrop
                         crop={crop}
-                        onChange={(c, percentCrop) => setCrop(percentCrop)}
-                        onComplete={(c) => setCompletedCrop(c)}
+                        onChange={(c, percentCrop) => handleCropChange(c, percentCrop)}
+                        onComplete={(c, percentCrop) => {
+                          setCompletedPercentCrop(percentCrop);
+                        }}
                         aspect={aspect}
                         minWidth={10}
                         minHeight={10}
@@ -532,7 +627,9 @@ export default function CropperClient() {
               {/* Action buttons footer */}
               <div className="flex items-center justify-between p-3 sm:p-4 bg-card rounded-2xl border border-border/60 shadow-sm w-full">
                 <span className="text-xs text-muted-foreground font-medium hidden sm:inline">
-                  Drag corners to resize, drag edge for 1D, drag inside to move
+                  {isPreviewDownsampled 
+                    ? "⚡ Preview optimized at 1920px · Export at full resolution"
+                    : "Drag corners to resize, drag edge for 1D, drag inside to move"}
                 </span>
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                   <Button
@@ -772,6 +869,7 @@ export default function CropperClient() {
 
           </section>
         )}
+        {!activeImage && <UrlInputHelp />}
       </div>
     </main>
   );

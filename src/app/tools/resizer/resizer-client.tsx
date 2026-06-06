@@ -3,7 +3,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, ImageUploader, DownloadButton, Logo } from "@/components/shared";
+import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
+import { ImageSourceInput } from "@/components/image-source-input";
+import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import { 
   ArrowLeft, 
@@ -325,7 +327,7 @@ export default function ImageResizerPage() {
   };
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none">
+    <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip">
       {/* Background Glows for Premium Vibe */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
@@ -378,7 +380,7 @@ export default function ImageResizerPage() {
         {!activeImage ? (
           /* BEFORE UPLOAD empty uploader centerpiece */
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
-            <ImageUploader onUpload={setActiveImage} className="w-full animate-fade-in" />
+            <ImageSourceInput onImageReady={setActiveImage} className="w-full animate-fade-in" />
           </section>
         ) : (
           /* WORKSPACE ACTIVE */
@@ -389,7 +391,7 @@ export default function ImageResizerPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full">
                 
                 {/* 1. ORIGINAL PREVIEW */}
-                <div className="w-2/3 max-w-[280px] md:w-full md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4">
+                <div className="w-full max-w-md md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4">
                   <div className="flex items-center justify-between border-b border-border/40 pb-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                       <ImageIcon className="w-3.5 h-3.5" />
@@ -431,7 +433,7 @@ export default function ImageResizerPage() {
                 </div>
 
                 {/* 2. RESIZED PREVIEW */}
-                <div className="w-2/3 max-w-[280px] md:w-full md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4 relative">
+                <div className="w-full max-w-md md:max-w-none mx-auto p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3 sm:gap-4 relative">
                   <div className="flex items-center justify-between border-b border-border/40 pb-2">
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                       <Maximize2 className="w-3.5 h-3.5" />
@@ -768,6 +770,7 @@ export default function ImageResizerPage() {
 
           </section>
         )}
+        {!activeImage && <UrlInputHelp />}
       </div>
     </main>
   );
