@@ -141,7 +141,7 @@ export function ImageSourceInput({
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="url"
-              placeholder="Paste image URL (e.g. https://images.unsplash.com/...)"
+              placeholder="Paste any image URL or webpage URL"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !fetching && handleUrlFetch()}
@@ -167,7 +167,7 @@ export function ImageSourceInput({
           <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 text-xs text-muted-foreground leading-relaxed">
             <p className="font-semibold text-foreground mb-1">🛡 Privacy Policy Note</p>
             <p>
-              We briefly fetch the image URL on our server to bypass CORS browser restrictions. No files are stored or cached, and your data is processed entirely client-side inside your browser sandbox. Max image file size is {maxSizeMB}MB.
+              We fetch the URL on your behalf. If you paste a webpage URL, we&apos;ll automatically find the main image on that page. All processing then happens entirely in your browser. Max image file size is {maxSizeMB}MB.
             </p>
           </div>
         </div>

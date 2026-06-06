@@ -13,9 +13,17 @@ export function UrlInputHelp() {
         </h2>
       </div>
       
-      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-6">
-        URLs to images are different from URLs to webpages displaying images. To load an image successfully, make sure your link points directly to the image file rather than the web container.
-      </p>
+      <div className="space-y-4 mb-6">
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          You can paste either a direct image URL (right-clicked &rarr; Copy Image Address) OR a webpage URL that displays the image. We&apos;ll automatically find the main image on the page in most cases.
+        </p>
+        <div className="p-3.5 bg-primary/5 border border-primary/10 rounded-xl text-xs text-muted-foreground leading-relaxed flex items-start gap-2">
+          <Lightbulb className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+          <p>
+            <strong>Note:</strong> If pasting the webpage URL doesn&apos;t work (some sites block this), fall back to the Copy Image Address method below.
+          </p>
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Desktop instructions */}
