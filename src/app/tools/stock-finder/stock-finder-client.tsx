@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 import { ThemeToggle, Logo } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -43,6 +44,7 @@ export default function StockFinderClient() {
   
   // Dropdown states per image card
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
+  const [dropdownCoords, setDropdownCoords] = useState<{ x: number; y: number; width: number } | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   // Close dropdown on click outside
@@ -50,6 +52,7 @@ export default function StockFinderClient() {
     const handleOutsideClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setActiveDropdownId(null);
+        setDropdownCoords(null);
       }
     };
     document.addEventListener('mousedown', handleOutsideClick);
@@ -115,7 +118,11 @@ export default function StockFinderClient() {
   // Trigger Unsplash download API
   const handleUnsplashTrigger = async (downloadTriggerUrl: string) => {
     try {
-      await fetch(`/api/stock-download-trigger?url=${encodeURIComponent(downloadTriggerUrl)}`);
+      await fetch('/api/stock-download-trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ downloadLocation: downloadTriggerUrl }),
+      });
     } catch (err) {
       console.error('[Stock Finder] Unsplash download trigger failed:', err);
     }
@@ -126,23 +133,35 @@ export default function StockFinderClient() {
     const toastId = toast.loading('Initiating full resolution download...');
     
     if (item.provider === 'unsplash' && item.downloadTriggerUrl) {
-      await handleUnsplashTrigger(item.downloadTriggerUrl);
+      // Non-blocking trigger call
+      handleUnsplashTrigger(item.downloadTriggerUrl);
     }
 
     try {
-      // Trigger a direct browser file download by opening original full-resolution file in new tab
-      const link = document.createElement('a');
-      link.href = item.fullUrl;
-      link.target = '_blank';
-      link.download = `${item.provider}-${item.id}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Fetch full-resolution image as blob (direct from CDN, CORS-friendly)
+      const res = await fetch(item.fullUrl);
+      if (!res.ok) throw new Error('Download failed');
+      const blob = await res.blob();
+
+      // Build a sensible filename
+      const ext = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+      const safeName = item.photographer.name.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      const filename = `alatify-${item.provider}-${safeName}.${ext}`;
+
+      // Trigger download via blob URL
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
       
-      toast.success('Download link opened in a new tab!', { id: toastId });
+      toast.success('Download completed successfully!', { id: toastId });
     } catch (err) {
-      console.error('[Stock Finder] Download trigger failure:', err);
-      toast.error('Failed to start download.', { id: toastId });
+      console.error('[Stock Download] Failed:', err);
+      toast.error('Download failed. Try right-clicking the image or opening original link to save manually.', { id: toastId });
     }
   };
 
@@ -377,7 +396,22 @@ export default function StockFinderClient() {
                               <Button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setActiveDropdownId(isDropdownOpen ? null : item.id);
+                                  if (activeDropdownId === item.id) {
+                                    setActiveDropdownId(null);
+                                    setDropdownCoords(null);
+                                  } else {
+                                    const rect = e.currentTarget.getBoundingClientRect();
+                                    const dropdownHeight = 155;
+                                    const spaceBelow = window.innerHeight - rect.bottom;
+                                    const openUpward = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+                                    
+                                    setDropdownCoords({
+                                      x: rect.left + window.scrollX,
+                                      y: (openUpward ? rect.top - dropdownHeight - 6 : rect.bottom + 6) + window.scrollY,
+                                      width: rect.width,
+                                    });
+                                    setActiveDropdownId(item.id);
+                                  }
                                 }}
                                 size="sm"
                                 className="w-full text-[10px] font-extrabold py-2 px-2.5 bg-primary hover:bg-primary-hover text-primary-foreground shadow-md transition-all duration-150 gap-1.5 justify-between flex rounded-lg"
@@ -386,25 +420,48 @@ export default function StockFinderClient() {
                                 <ChevronDown className="w-3 h-3 shrink-0" />
                               </Button>
                               
-                              {isDropdownOpen && (
-                                <div 
-                                  ref={dropdownRef}
-                                  className="absolute bottom-full mb-1.5 left-0 right-0 z-30 bg-popover text-popover-foreground border border-border shadow-xl rounded-xl p-1 text-[10px] font-bold animate-fade-in flex flex-col gap-0.5"
-                                >
-                                  {toolsList.map((tool) => {
-                                    const ToolIcon = tool.icon;
-                                    return (
-                                      <button
-                                        key={tool.name}
-                                        onClick={() => handleRouteToTool(item, tool.path, tool.name)}
-                                        className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-150 text-left"
-                                      >
-                                        <ToolIcon className="w-3.5 h-3.5 shrink-0" />
-                                        {tool.name}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
+                              {/* Portal-based dropdown render */}
+                              {isDropdownOpen && dropdownCoords && createPortal(
+                                <>
+                                  <div 
+                                    className="fixed inset-0 z-[9998] bg-transparent cursor-default"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setActiveDropdownId(null);
+                                      setDropdownCoords(null);
+                                    }}
+                                  />
+                                  <div 
+                                    ref={dropdownRef}
+                                    style={{
+                                      position: 'absolute',
+                                      left: `${dropdownCoords.x}px`,
+                                      top: `${dropdownCoords.y}px`,
+                                      width: `${dropdownCoords.width}px`,
+                                    }}
+                                    className="z-[9999] bg-popover text-popover-foreground border border-border shadow-xl rounded-xl p-1 text-[10px] font-bold animate-fade-in flex flex-col gap-0.5"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    {toolsList.map((tool) => {
+                                      const ToolIcon = tool.icon;
+                                      return (
+                                        <button
+                                          key={tool.name}
+                                          onClick={() => {
+                                            handleRouteToTool(item, tool.path, tool.name);
+                                            setActiveDropdownId(null);
+                                            setDropdownCoords(null);
+                                          }}
+                                          className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-150 text-left"
+                                        >
+                                          <ToolIcon className="w-3.5 h-3.5 shrink-0" />
+                                          {tool.name}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </>,
+                                document.body
                               )}
                             </div>
 

@@ -12,6 +12,9 @@ export function usePendingImage(setActiveImage: (file: File) => void) {
     const pendingDataStr = sessionStorage.getItem('alatify-pending-image');
     if (!pendingDataStr) return;
 
+    // Remove immediately to prevent duplicate runs (e.g. in React StrictMode)
+    sessionStorage.removeItem('alatify-pending-image');
+
     let url = '';
     let downloadTriggerUrl = '';
     
@@ -24,10 +27,7 @@ export function usePendingImage(setActiveImage: (file: File) => void) {
       url = pendingDataStr;
     }
 
-    if (!url) {
-      sessionStorage.removeItem('alatify-pending-image');
-      return;
-    }
+    if (!url) return;
 
     const fetchPendingImage = async () => {
       setIsProcessing(true);
@@ -91,7 +91,6 @@ export function usePendingImage(setActiveImage: (file: File) => void) {
         console.error('[usePendingImage] Fetch error:', err);
       } finally {
         setIsProcessing(false);
-        sessionStorage.removeItem('alatify-pending-image');
       }
     };
 
