@@ -19,10 +19,12 @@ import {
 } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
+import { usePendingImage } from "@/hooks/use-pending-image";
 
 export default function ImageCompressorPage() {
   // Isolated Local States
   const [activeImage, setActiveImage] = useState<File | null>(null);
+  const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
 
   // Manage local active image Blob URL lifetime
@@ -219,7 +221,15 @@ export default function ImageCompressorPage() {
         </section>
 
         {/* Conditional Layout Rendering */}
-        {!activeImage ? (
+        {isProcessingPending ? (
+          <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
+            <div className="p-8 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-3 max-w-[250px] text-center animate-pulse">
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              <span className="text-xs font-bold text-foreground">Fetching stock photo...</span>
+              <span className="text-[10px] text-muted-foreground">Running securely via proxy</span>
+            </div>
+          </section>
+        ) : !activeImage ? (
           /* BEFORE UPLOAD: Centered centerpiece */
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
             <ImageSourceInput onImageReady={setActiveImage} className="w-full animate-fade-in" />

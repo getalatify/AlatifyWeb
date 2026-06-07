@@ -14,7 +14,8 @@ import {
   Maximize2, 
   RefreshCw, 
   Crop,
-  Shield
+  Shield,
+  Search
 } from "lucide-react";
 
 const pipelineTools = [
@@ -57,6 +58,14 @@ const pipelineTools = [
     statusColor: "bg-success/10 text-success border-success/20",
     icon: Crop,
     href: "/tools/cropper",
+  },
+  {
+    name: "Stock Image Finder",
+    description: "Search free stock photos from Unsplash, Pexels, and Pixabay — then edit them instantly, all in one place.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Search,
+    href: "/tools/stock-finder",
   },
   {
     name: "EXIF Privacy Cleaner",
