@@ -100,6 +100,21 @@ export default function BgRemoverClient() {
     });
   }, []);
 
+  // Fallback reload guard for cross-origin isolation (Mitigation A)
+  useEffect(() => {
+    if (typeof window !== "undefined" && !window.crossOriginIsolated) {
+      const hasReloaded = sessionStorage.getItem("isolated_reload");
+      if (!hasReloaded) {
+        sessionStorage.setItem("isolated_reload", "true");
+        window.location.reload();
+      } else {
+        console.warn("WASM multi-threading is unavailable: crossOriginIsolated headers are missing or unsupported.");
+      }
+    } else if (typeof window !== "undefined" && window.crossOriginIsolated) {
+      sessionStorage.removeItem("isolated_reload");
+    }
+  }, []);
+
   // Performance & Tier States
   const [modelType, setModelType] = useState<'isnet_fp16' | 'isnet_quint8' | 'isnet'>('isnet_fp16');
   const [wasAutoResized, setWasAutoResized] = useState<boolean>(false);

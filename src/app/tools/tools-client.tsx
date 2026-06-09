@@ -242,6 +242,18 @@ export default function ToolsHubPage() {
             );
 
             if (isAvailable && tool.href) {
+              const useAnchor = tool.href === "/tools/bg-remover";
+              if (useAnchor) {
+                return (
+                  <a 
+                    key={tool.name}
+                    href={tool.href}
+                    className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] block cursor-pointer"
+                  >
+                    {cardContent}
+                  </a>
+                );
+              }
               return (
                 <Link 
                   key={tool.name}
