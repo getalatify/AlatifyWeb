@@ -185,11 +185,7 @@ export default function StockFinderClient() {
       sessionStorage.setItem('alatify-pending-image', JSON.stringify(pendingData));
       
       toast.success(`Redirecting to ${toolName}...`, { id: toastId });
-      if (routePath === '/tools/bg-remover') {
-        window.location.href = routePath;
-      } else {
-        router.push(routePath);
-      }
+      router.push(routePath);
     } catch (err) {
       console.error('[Stock Finder] Auto route redirection error:', err);
       toast.error('Failed to redirect to tool.', { id: toastId });
