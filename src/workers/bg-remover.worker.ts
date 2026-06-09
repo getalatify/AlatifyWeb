@@ -145,7 +145,6 @@ ctx.onmessage = async (e: MessageEvent) => {
       const outputBlob = await removeBackground(processedImage as unknown as Blob, {
         model: selectedModel,
         device: device || "cpu",
-        publicPath: "/bg-remover-assets/",
         output: {
           format: "image/png",
           quality: 1,
