@@ -41,7 +41,7 @@ let abortController: AbortController | null = null;
 let heartbeatInterval: NodeJS.Timeout | null = null;
 
 ctx.onmessage = async (e: MessageEvent) => {
-  const { type, imageFile, selectedModel } = e.data;
+  const { type, imageFile, selectedModel, device } = e.data;
 
   if (type === "cancel") {
     if (abortController) {
@@ -55,6 +55,7 @@ ctx.onmessage = async (e: MessageEvent) => {
   if (type === "process") {
     cleanup();
     abortController = new AbortController();
+    let firstProcessingEvent = true;
 
     try {
       ctx.postMessage({ type: "status", stage: "initializing" });
@@ -84,10 +85,11 @@ ctx.onmessage = async (e: MessageEvent) => {
         });
       }
 
-      // Start heartbeat only during downloading/loading stage
+      // Start heartbeat. If GPU mode, keep it running throughout compilation & inference.
+      // If CPU, only run during model download (as WASM runtime blocks the thread).
       let isDownloading = true;
       heartbeatInterval = setInterval(() => {
-        if (isDownloading) {
+        if (device === "gpu" || isDownloading) {
           ctx.postMessage({ type: "heartbeat" });
         }
       }, 5000);
@@ -107,22 +109,42 @@ ctx.onmessage = async (e: MessageEvent) => {
             file: key.replace(/^(fetch|download):?/, "") || "neural weights",
           });
         } else {
-          // Pause heartbeat once processing stage begins
           isDownloading = false;
-          if (heartbeatInterval) {
+          // Clear heartbeat timer only for CPU mode (since WASM blocks the event loop anyway).
+          // Keep it running for GPU since it runs asynchronously.
+          if (device !== "gpu" && heartbeatInterval) {
             clearInterval(heartbeatInterval);
             heartbeatInterval = null;
           }
-          ctx.postMessage({
-            type: "progress",
-            stage: "processing",
-          });
+
+          if (device === "gpu" && firstProcessingEvent) {
+            firstProcessingEvent = false;
+            // Notify frontend about shader compilation
+            ctx.postMessage({
+              type: "progress",
+              stage: "compiling",
+            });
+            // Transition to processing after 1.8 seconds (visual breathing room for user)
+            setTimeout(() => {
+              if (!abortController?.signal.aborted) {
+                ctx.postMessage({
+                  type: "progress",
+                  stage: "processing",
+                });
+              }
+            }, 1800);
+          } else if (device !== "gpu") {
+            ctx.postMessage({
+              type: "progress",
+              stage: "processing",
+            });
+          }
         }
       };
 
       const outputBlob = await removeBackground(processedImage as unknown as Blob, {
         model: selectedModel,
-        device: "cpu",
+        device: device || "cpu",
         output: {
           format: "image/png",
           quality: 1,
