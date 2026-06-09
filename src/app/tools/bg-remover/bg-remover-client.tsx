@@ -79,6 +79,9 @@ export default function BgRemoverClient() {
   const heartbeatTimerRef = useRef<NodeJS.Timeout | null>(null);
   const gpuWatchdogRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
+  const cumulativeStartTimeRef = useRef<number>(0);
+  const hasAttemptedGpuRef = useRef<boolean>(false);
+  const activeDeviceRef = useRef<"gpu" | "cpu" | null>(null);
   const [elapsed, setElapsed] = useState<number>(0);
 
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
@@ -138,12 +141,12 @@ export default function BgRemoverClient() {
   useEffect(() => {
     if (!isProcessing) return;
 
-    startTimeRef.current = Date.now();
-    setElapsed(0);
+    const updateElapsed = () => {
+      setElapsed((Date.now() - cumulativeStartTimeRef.current) / 1000);
+    };
 
-    const interval = setInterval(() => {
-      setElapsed((Date.now() - startTimeRef.current) / 1000);
-    }, 1000); // 1 second interval as requested
+    updateElapsed();
+    const interval = setInterval(updateElapsed, 1000);
 
     return () => {
       clearInterval(interval);
@@ -188,6 +191,11 @@ export default function BgRemoverClient() {
   const runProcessWithDeviceRef = useRef<((imageFile: File | Blob, selectedModel: "isnet_fp16" | "isnet_quint8" | "isnet", targetDevice: "gpu" | "cpu") => void) | null>(null);
 
   const handleGpuFallback = useCallback(() => {
+    if (activeDeviceRef.current === "cpu") {
+      console.log("[BG Remover] Already running on CPU. Skipping redundant fallback.");
+      return;
+    }
+
     if (workerRef.current) {
       workerRef.current.terminate();
       workerRef.current = null;
@@ -206,6 +214,7 @@ export default function BgRemoverClient() {
     });
 
     setDeviceUsed("cpu");
+    activeDeviceRef.current = "cpu";
     setStage("initializing");
 
     if (activeImage && runProcessWithDeviceRef.current) {
@@ -222,7 +231,7 @@ export default function BgRemoverClient() {
     gpuWatchdogRef.current = setTimeout(() => {
       console.warn("GPU Watchdog timeout triggered. WebGPU initialization/inference hung. Swapping to CPU.");
       handleGpuFallback();
-    }, 25 * 1000); // 25 seconds
+    }, 12 * 1000); // 12 seconds
   }, [clearGpuWatchdog, handleGpuFallback]);
 
   const startWatchdogTimer = useCallback(() => {
@@ -319,7 +328,7 @@ export default function BgRemoverClient() {
 
       if (msg.type === "heartbeat") {
         resetHeartbeatTimer();
-        if (deviceUsed === "gpu") {
+        if (activeDeviceRef.current === "gpu") {
           startGpuWatchdog();
         }
         return;
@@ -343,7 +352,7 @@ export default function BgRemoverClient() {
 
       if (msg.type === "status") {
         setStage(msg.stage);
-        if (deviceUsed === "gpu") {
+        if (activeDeviceRef.current === "gpu") {
           startGpuWatchdog();
         }
         return;
@@ -351,7 +360,7 @@ export default function BgRemoverClient() {
 
       if (msg.type === "progress") {
         setStage(msg.stage);
-        if (deviceUsed === "gpu") {
+        if (activeDeviceRef.current === "gpu") {
           startGpuWatchdog();
         }
 
@@ -370,8 +379,9 @@ export default function BgRemoverClient() {
         clearHeartbeatTimer();
         clearGpuWatchdog();
 
-        const durationFloat = (Date.now() - startTimeRef.current) / 1000;
-        setElapsed(durationFloat);
+        const totalDurationFloat = (Date.now() - cumulativeStartTimeRef.current) / 1000;
+        const attemptDurationFloat = (Date.now() - startTimeRef.current) / 1000;
+        setElapsed(totalDurationFloat);
 
         const outputBlob = msg.blob;
         if (outputBlob) {
@@ -397,13 +407,14 @@ export default function BgRemoverClient() {
           };
           imgVerify.src = url;
 
-          const duration = durationFloat.toFixed(1);
+          const totalDuration = totalDurationFloat.toFixed(1);
+          const attemptDuration = attemptDurationFloat.toFixed(1);
           const modelName = modelType === 'isnet' ? 'Quality — ISNet Base' : modelType === 'isnet_fp16' ? 'Balanced — ISNet FP16' : 'Speed — ISNet Quant8';
           const originalFormat = activeImage ? getImageFormat(activeImage) : "";
           const imgDimensions = originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : "Unknown";
 
           console.log(
-            `[BG Remover] Completed in ${duration}s via ${deviceUsed === 'gpu' ? 'GPU' : 'CPU'}\n` +
+            `[BG Remover] Completed in ${totalDuration}s (attempt took ${attemptDuration}s) via ${activeDeviceRef.current === 'gpu' ? 'GPU' : 'CPU'}\n` +
             `Model: ${modelName}\n` +
             `Image: ${imgDimensions} ${originalFormat} (${formatBytes(activeImage?.size ?? 0)})\n` +
             `Output: ${formatBytes(outputBlob.size)}`
@@ -420,11 +431,12 @@ export default function BgRemoverClient() {
         clearHeartbeatTimer();
         clearGpuWatchdog();
 
-        const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
+        const totalDuration = ((Date.now() - cumulativeStartTimeRef.current) / 1000).toFixed(1);
+        const attemptDuration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
         const errorMessage = msg.error;
-        console.log(`[BG Remover] Failed at ${duration}s — Error: ${errorMessage}`);
+        console.log(`[BG Remover] Failed at ${totalDuration}s (attempt took ${attemptDuration}s) — Error: ${errorMessage}`);
 
-        if (deviceUsed === "gpu") {
+        if (activeDeviceRef.current === "gpu") {
           console.warn("[BG Remover] GPU processing error detected. Activating CPU fallback.");
           handleGpuFallbackRef.current?.();
         } else {
@@ -445,7 +457,7 @@ export default function BgRemoverClient() {
 
     workerRef.current = worker;
     return worker;
-  }, [activeImage, originalDimensions, modelType, deviceUsed, startGpuWatchdog, clearGpuWatchdog, resetHeartbeatTimer, clearHeartbeatTimer, clearWatchdogTimer]);
+  }, [activeImage, originalDimensions, modelType, startGpuWatchdog, clearGpuWatchdog, resetHeartbeatTimer, clearHeartbeatTimer, clearWatchdogTimer]);
 
   // Core background removal processing implementation with device selection
   const runProcessWithDevice = useCallback((imageFile: File | Blob, selectedModel: 'isnet_fp16' | 'isnet_quint8' | 'isnet', targetDevice: 'gpu' | 'cpu') => {
@@ -457,6 +469,10 @@ export default function BgRemoverClient() {
 
       setStage("initializing");
       setDeviceUsed(targetDevice);
+      activeDeviceRef.current = targetDevice;
+      if (targetDevice === "gpu") {
+        hasAttemptedGpuRef.current = true;
+      }
       startWatchdogTimer();
 
       if (targetDevice === "gpu") {
@@ -507,6 +523,9 @@ export default function BgRemoverClient() {
     setDownloadingFile("");
     setProcessedImage(null);
     setWasAutoResized(false);
+
+    cumulativeStartTimeRef.current = Date.now();
+    hasAttemptedGpuRef.current = false;
 
     const isGpuSupported = isWebGPUSupported === true;
     const isQuantized = selectedModel === "isnet_quint8";
