@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { 
   ArrowLeft, 
   ArrowDown,
+  ArrowRight,
   Sparkles, 
   Minimize2, 
   Scissors, 
@@ -59,14 +60,7 @@ const pipelineTools = [
     icon: Crop,
     href: "/tools/cropper",
   },
-  {
-    name: "Stock Image Finder",
-    description: "Search free stock photos from Unsplash, Pexels, and Pixabay — then edit them instantly, all in one place.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Search,
-    href: "/tools/stock-finder",
-  },
+
   {
     name: "EXIF Privacy Cleaner",
     description: "Remove location data, camera info, and metadata from your images to protect privacy before sharing.",
@@ -152,17 +146,58 @@ export default function ToolsHubPage() {
       {/* Pipeline Section ("What we're building") */}
       <section 
         id="pipeline-section" 
-        className="w-full max-w-6xl mx-auto px-4 py-24 z-10 flex flex-col items-center gap-12 scroll-mt-6"
+        className="w-full max-w-6xl mx-auto px-4 py-20 z-10 flex flex-col items-center gap-10 scroll-mt-6"
       >
-        {/* Section Header */}
-        <div className="text-center space-y-2">
-          <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-            What we&apos;re building
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-            Our pipeline of upcoming utilities designed to run 100% locally on your device.
-          </p>
+        {/* Stock Image Finder Standalone Highlight Banner */}
+        <div className="w-full max-w-5xl">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card/65 via-card/40 to-primary/5 backdrop-blur-sm border border-border/80 dark:border-primary/10 p-6 sm:p-7 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-primary/45 dark:hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group">
+            {/* Ambient inner glow */}
+            <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-primary/10 rounded-full blur-[60px] pointer-events-none -mr-20 -mt-20 transition-opacity duration-300 group-hover:bg-primary/15" />
+            
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 z-10 max-w-2xl text-left">
+              {/* Icon Container */}
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary transition-all duration-300 group-hover:scale-105 group-hover:bg-primary/15 shrink-0">
+                <Search className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+              </div>
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-primary/15 text-primary border border-primary/20 tracking-wider uppercase">
+                  No image to start with?
+                </div>
+                <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-foreground transition-colors group-hover:text-primary">
+                  Stock Image Finder
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium">
+                  Start from scratch — search free stock photos and edit them in one click.
+                </p>
+              </div>
+            </div>
+            
+            {/* CTA Button */}
+            <div className="w-full md:w-auto shrink-0 z-10">
+              <Link href="/tools/stock-finder" className="w-full md:w-auto block">
+                <Button className="w-full md:w-auto h-11 px-6 text-sm font-extrabold rounded-xl bg-gradient-to-r from-primary/95 to-primary hover:from-primary hover:to-primary-hover text-primary-foreground shadow-md shadow-primary/20 dark:shadow-primary/15 hover:shadow-lg hover:shadow-primary/35 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 gap-2 flex items-center justify-center group/btn">
+                  <span>Browse Stock Photos</span>
+                  <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
+
+        {/* Tight spacing wrapper for Divider and Main Grid */}
+        <div className="w-full max-w-5xl flex flex-col items-center gap-10 mt-2">
+          {/* Divider Line */}
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
+          
+          {/* Section Header */}
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+              What we&apos;re building
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+              Our pipeline of upcoming utilities designed to run 100% locally on your device.
+            </p>
+          </div>
 
         {/* 3+2 Centered Flex-wrapped Responsive Grid Layout */}
         <div className="flex flex-wrap justify-center gap-6 w-full max-w-5xl">
@@ -236,6 +271,7 @@ export default function ToolsHubPage() {
               Back to home
             </Button>
           </Link>
+        </div>
         </div>
       </section>
     </main>

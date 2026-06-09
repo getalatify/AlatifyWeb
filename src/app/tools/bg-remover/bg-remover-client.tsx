@@ -32,6 +32,15 @@ function formatElapsed(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
+async function verifyWebGPUSupport(): Promise<boolean> {
+  if (typeof navigator === 'undefined' || !('gpu' in navigator)) return false;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const adapter = await (navigator as any).gpu.requestAdapter();
+    return adapter !== null;
+  } catch { return false; }
+}
+
 export default function BgRemoverClient() {
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
@@ -59,18 +68,34 @@ export default function BgRemoverClient() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Feature Flag
+  const ENABLE_WEBGPU = true;
+
   // States
-  const [stage, setStage] = useState<'idle' | 'initializing' | 'downloading' | 'processing' | 'complete' | 'error'>('idle');
+  const [stage, setStage] = useState<'idle' | 'initializing' | 'downloading' | 'compiling' | 'processing' | 'complete' | 'error'>('idle');
   const isProcessing = stage !== 'idle' && stage !== 'complete' && stage !== 'error';
   const workerRef = useRef<Worker | null>(null);
   const watchdogTimerRef = useRef<NodeJS.Timeout | null>(null);
   const heartbeatTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const gpuWatchdogRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
   const [elapsed, setElapsed] = useState<number>(0);
 
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [downloadingFile, setDownloadingFile] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+
+  // WebGPU Acceleration States
+  const [isWebGPUSupported, setIsWebGPUSupported] = useState<boolean | null>(null);
+  const [deviceUsed, setDeviceUsed] = useState<"gpu" | "cpu" | null>(null);
+  const handleGpuFallbackRef = useRef<(() => void) | null>(null);
+
+  // Query WebGPU support on mount
+  useEffect(() => {
+    verifyWebGPUSupport().then((supported) => {
+      setIsWebGPUSupported(supported);
+    });
+  }, []);
 
   // Performance & Tier States
   const [modelType, setModelType] = useState<'isnet_fp16' | 'isnet_quint8' | 'isnet'>('isnet_fp16');
@@ -152,6 +177,54 @@ export default function BgRemoverClient() {
     }
   }, []);
 
+  const clearGpuWatchdog = useCallback(() => {
+    if (gpuWatchdogRef.current) {
+      clearTimeout(gpuWatchdogRef.current);
+      gpuWatchdogRef.current = null;
+    }
+  }, []);
+
+  // Forward declaration ref to break circular dependency
+  const runProcessWithDeviceRef = useRef<((imageFile: File | Blob, selectedModel: "isnet_fp16" | "isnet_quint8" | "isnet", targetDevice: "gpu" | "cpu") => void) | null>(null);
+
+  const handleGpuFallback = useCallback(() => {
+    if (workerRef.current) {
+      workerRef.current.terminate();
+      workerRef.current = null;
+    }
+    clearGpuWatchdog();
+    clearWatchdogTimer();
+    clearHeartbeatTimer();
+
+    console.warn("[BG Remover] GPU execution failed or hung. Gracefully falling back to CPU mode.");
+
+    import("sonner").then(({ toast }) => {
+      toast.info("GPU acceleration failed. Switched to CPU mode for reliability.", {
+        description: "The AI model is continuing to run locally on your CPU.",
+        duration: 6000,
+      });
+    });
+
+    setDeviceUsed("cpu");
+    setStage("initializing");
+
+    if (activeImage && runProcessWithDeviceRef.current) {
+      runProcessWithDeviceRef.current(activeImage, modelType, "cpu");
+    }
+  }, [activeImage, modelType, clearGpuWatchdog, clearWatchdogTimer, clearHeartbeatTimer]);
+
+  useEffect(() => {
+    handleGpuFallbackRef.current = handleGpuFallback;
+  }, [handleGpuFallback]);
+
+  const startGpuWatchdog = useCallback(() => {
+    clearGpuWatchdog();
+    gpuWatchdogRef.current = setTimeout(() => {
+      console.warn("GPU Watchdog timeout triggered. WebGPU initialization/inference hung. Swapping to CPU.");
+      handleGpuFallback();
+    }, 25 * 1000); // 25 seconds
+  }, [clearGpuWatchdog, handleGpuFallback]);
+
   const startWatchdogTimer = useCallback(() => {
     clearWatchdogTimer();
     watchdogTimerRef.current = setTimeout(() => {
@@ -161,12 +234,13 @@ export default function BgRemoverClient() {
         workerRef.current = null;
       }
       clearHeartbeatTimer();
+      clearGpuWatchdog();
       setError(
         "Processing took too long. This may happen on slower devices or with very large images. Try a smaller image or different model variant."
       );
       setStage("error");
     }, 5 * 60 * 1000); // 5 minutes
-  }, [clearWatchdogTimer, clearHeartbeatTimer]);
+  }, [clearWatchdogTimer, clearHeartbeatTimer, clearGpuWatchdog]);
 
   const resetHeartbeatTimer = useCallback(() => {
     clearHeartbeatTimer();
@@ -177,12 +251,13 @@ export default function BgRemoverClient() {
         workerRef.current = null;
       }
       clearWatchdogTimer();
+      clearGpuWatchdog();
       setError(
         "Model download stopped responding. Please check your network connection and try again."
       );
       setStage("error");
     }, 30 * 1000); // 30 seconds
-  }, [clearHeartbeatTimer, clearWatchdogTimer]);
+  }, [clearHeartbeatTimer, clearWatchdogTimer, clearGpuWatchdog]);
 
   // Terminate worker if model changes
   useEffect(() => {
@@ -192,7 +267,8 @@ export default function BgRemoverClient() {
     }
     clearWatchdogTimer();
     clearHeartbeatTimer();
-  }, [modelType, clearWatchdogTimer, clearHeartbeatTimer]);
+    clearGpuWatchdog();
+  }, [modelType, clearWatchdogTimer, clearHeartbeatTimer, clearGpuWatchdog]);
 
   // Clean up all timers and worker on component unmount
   useEffect(() => {
@@ -202,8 +278,9 @@ export default function BgRemoverClient() {
       }
       clearWatchdogTimer();
       clearHeartbeatTimer();
+      clearGpuWatchdog();
     };
-  }, [clearWatchdogTimer, clearHeartbeatTimer]);
+  }, [clearWatchdogTimer, clearHeartbeatTimer, clearGpuWatchdog]);
 
   const handleCancel = () => {
     if (workerRef.current) {
@@ -212,6 +289,7 @@ export default function BgRemoverClient() {
     }
     clearWatchdogTimer();
     clearHeartbeatTimer();
+    clearGpuWatchdog();
 
     const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
     const modelName = modelType === 'isnet_fp16' ? 'Quality' : modelType === 'isnet_quint8' ? 'Balanced' : 'Speed';
@@ -241,6 +319,9 @@ export default function BgRemoverClient() {
 
       if (msg.type === "heartbeat") {
         resetHeartbeatTimer();
+        if (deviceUsed === "gpu") {
+          startGpuWatchdog();
+        }
         return;
       }
 
@@ -262,16 +343,23 @@ export default function BgRemoverClient() {
 
       if (msg.type === "status") {
         setStage(msg.stage);
+        if (deviceUsed === "gpu") {
+          startGpuWatchdog();
+        }
         return;
       }
 
       if (msg.type === "progress") {
         setStage(msg.stage);
+        if (deviceUsed === "gpu") {
+          startGpuWatchdog();
+        }
+
         if (msg.stage === "downloading") {
           setDownloadProgress(msg.percent);
           setDownloadingFile(msg.file);
           resetHeartbeatTimer();
-        } else if (msg.stage === "processing") {
+        } else if (msg.stage === "processing" || msg.stage === "compiling") {
           clearHeartbeatTimer();
         }
         return;
@@ -280,6 +368,7 @@ export default function BgRemoverClient() {
       if (msg.type === "success") {
         clearWatchdogTimer();
         clearHeartbeatTimer();
+        clearGpuWatchdog();
 
         const durationFloat = (Date.now() - startTimeRef.current) / 1000;
         setElapsed(durationFloat);
@@ -314,7 +403,7 @@ export default function BgRemoverClient() {
           const imgDimensions = originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : "Unknown";
 
           console.log(
-            `[BG Remover] Completed in ${duration}s\n` +
+            `[BG Remover] Completed in ${duration}s via ${deviceUsed === 'gpu' ? 'GPU' : 'CPU'}\n` +
             `Model: ${modelName}\n` +
             `Image: ${imgDimensions} ${originalFormat} (${formatBytes(activeImage?.size ?? 0)})\n` +
             `Output: ${formatBytes(outputBlob.size)}`
@@ -329,19 +418,26 @@ export default function BgRemoverClient() {
       if (msg.type === "error") {
         clearWatchdogTimer();
         clearHeartbeatTimer();
+        clearGpuWatchdog();
 
         const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
         const errorMessage = msg.error;
         console.log(`[BG Remover] Failed at ${duration}s — Error: ${errorMessage}`);
 
-        setError(msg.error);
-        setStage("error");
+        if (deviceUsed === "gpu") {
+          console.warn("[BG Remover] GPU processing error detected. Activating CPU fallback.");
+          handleGpuFallbackRef.current?.();
+        } else {
+          setError(msg.error);
+          setStage("error");
+        }
         return;
       }
 
       if (msg.type === "cancelled") {
         clearWatchdogTimer();
         clearHeartbeatTimer();
+        clearGpuWatchdog();
         setStage("idle");
         return;
       }
@@ -349,7 +445,58 @@ export default function BgRemoverClient() {
 
     workerRef.current = worker;
     return worker;
-  }, [activeImage, originalDimensions, modelType, resetHeartbeatTimer, clearHeartbeatTimer, clearWatchdogTimer]);
+  }, [activeImage, originalDimensions, modelType, deviceUsed, startGpuWatchdog, clearGpuWatchdog, resetHeartbeatTimer, clearHeartbeatTimer, clearWatchdogTimer]);
+
+  // Core background removal processing implementation with device selection
+  const runProcessWithDevice = useCallback((imageFile: File | Blob, selectedModel: 'isnet_fp16' | 'isnet_quint8' | 'isnet', targetDevice: 'gpu' | 'cpu') => {
+    try {
+      const worker = getWorker();
+      if (!worker) {
+        throw new Error("Failed to initialize background worker.");
+      }
+
+      setStage("initializing");
+      setDeviceUsed(targetDevice);
+      startWatchdogTimer();
+
+      if (targetDevice === "gpu") {
+        startGpuWatchdog();
+      } else {
+        clearGpuWatchdog();
+      }
+
+      startTimeRef.current = Date.now();
+
+      worker.postMessage({
+        type: "process",
+        imageFile,
+        selectedModel,
+        device: targetDevice,
+      });
+
+    } catch (err: unknown) {
+      const errorObj = err as Error;
+      console.error("AI Background Remover initiation failed:", errorObj);
+
+      if (targetDevice === "gpu") {
+        console.warn("[BG Remover] Failed to initiate GPU process, running CPU fallback.");
+        handleGpuFallback();
+      } else {
+        const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
+        console.log(`[BG Remover] Failed at ${duration}s — Error: ${errorObj?.message || errorObj}`);
+
+        setError(errorObj?.message || "Failed to start background removal process.");
+        setStage("error");
+        clearWatchdogTimer();
+        clearHeartbeatTimer();
+      }
+    }
+  }, [getWorker, startWatchdogTimer, startGpuWatchdog, clearGpuWatchdog, handleGpuFallback, clearHeartbeatTimer, clearWatchdogTimer]);
+
+  // Register runProcessWithDevice ref to allow circular invocation from fallback
+  useEffect(() => {
+    runProcessWithDeviceRef.current = runProcessWithDevice;
+  }, [runProcessWithDevice]);
 
   // Core background removal processing function
   const processImage = useCallback(async (imageFile: File | Blob, selectedModel: 'isnet_fp16' | 'isnet_quint8' | 'isnet') => {
@@ -361,40 +508,13 @@ export default function BgRemoverClient() {
     setProcessedImage(null);
     setWasAutoResized(false);
 
-    // V2 Investigation Target:
-    // Since the Web Worker runs in a separate JavaScript context, the onnxruntime-web initWasm()
-    // single-call restriction may not apply. This means WebGPU could potentially be viable inside
-    // the worker. We should investigate this in V2. For now, we continue using CPU execution.
+    const isGpuSupported = isWebGPUSupported === true;
+    const isQuantized = selectedModel === "isnet_quint8";
+    const targetDevice = (ENABLE_WEBGPU && isGpuSupported && !isQuantized) ? "gpu" : "cpu";
 
-    try {
-      const worker = getWorker();
-      if (!worker) {
-        throw new Error("Failed to initialize background worker.");
-      }
+    runProcessWithDevice(imageFile, selectedModel, targetDevice);
+  }, [isProcessing, isWebGPUSupported, runProcessWithDevice, ENABLE_WEBGPU]);
 
-      setStage("initializing");
-      startWatchdogTimer();
-      startTimeRef.current = Date.now();
-
-      worker.postMessage({
-        type: "process",
-        imageFile,
-        selectedModel,
-      });
-
-    } catch (err: unknown) {
-      const errorObj = err as Error;
-      console.error("AI Background Remover initiation failed:", errorObj);
-
-      const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
-      console.log(`[BG Remover] Failed at ${duration}s — Error: ${errorObj?.message || errorObj}`);
-
-      setError(errorObj?.message || "Failed to start background removal process.");
-      setStage("error");
-      clearWatchdogTimer();
-      clearHeartbeatTimer();
-    }
-  }, [isProcessing, getWorker, startWatchdogTimer, clearWatchdogTimer, clearHeartbeatTimer]);
 
   // Reset processed image on active image change
   useEffect(() => {
@@ -601,9 +721,34 @@ export default function BgRemoverClient() {
                       </div>
                     )}
 
-                    {/* STATE B: processing neural model inference */}
+                    {/* STATE B1: compiling GPU shaders */}
+                    {stage === 'compiling' && (
+                      <div className="absolute inset-0 bg-background/85 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center animate-fade-in select-none">
+                        <div className="p-5 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-3.5 max-w-[220px]">
+                          <div className="relative">
+                            <div className="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+                            <Sparkles className="w-4 h-4 text-primary absolute inset-0 m-auto animate-pulse" />
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-xs font-extrabold text-foreground block">
+                              Compiling GPU shaders...
+                            </span>
+                            <span className="text-[10px] text-muted-foreground leading-normal block font-medium">
+                              Initializing WebGPU execution pipelines. This takes a brief moment on first run.
+                            </span>
+                            {elapsed > 0 && (
+                              <span className="text-[10.5px] font-bold text-primary block animate-pulse mt-1">
+                                Elapsed: {formatElapsed(elapsed)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* STATE B2: processing neural model inference */}
                     {stage === 'processing' && (
-                      <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+                      <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center animate-fade-in select-none">
                         <div className="p-5 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-3.5 max-w-[220px]">
                           <div className="relative">
                             <div className="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
@@ -614,7 +759,10 @@ export default function BgRemoverClient() {
                               Removing background...
                             </span>
                             <span className="text-[10px] text-muted-foreground leading-normal block font-medium">
-                              This typically takes 1-3 minutes depending on your device and image size. Larger images take longer.
+                              {deviceUsed === 'gpu' 
+                                ? "Running high-performance neural segmentation using WebGPU hardware acceleration."
+                                : "This typically takes 1-3 minutes depending on your device and image size. Larger images take longer."
+                              }
                             </span>
                             {elapsed > 0 && (
                               <span className="text-[10.5px] font-bold text-primary block animate-pulse mt-1">
@@ -633,7 +781,7 @@ export default function BgRemoverClient() {
 
                     {/* STATE D: error handling state */}
                     {stage === 'error' && (
-                      <div className="absolute inset-0 bg-background/95 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-4 text-center animate-fade-in">
+                      <div className="absolute inset-0 bg-background/95 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-4 text-center animate-fade-in select-none">
                         <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-2xl max-w-[250px] flex flex-col items-center gap-3.5 shadow-sm">
                           <AlertCircle className="w-8 h-8 text-destructive animate-bounce" />
                           <div className="space-y-1">
@@ -675,9 +823,18 @@ export default function BgRemoverClient() {
                           alt="Extracted transparent subject"
                           className="object-contain w-full h-full rounded-md max-h-[180px] sm:max-h-[260px] md:max-h-[350px] animate-fade-in drop-shadow-md"
                         />
-                        <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wide bg-background/90 border border-border text-foreground shadow-sm flex items-center gap-1 z-10 animate-fade-in">
-                          <Cpu className="w-3.5 h-3.5 text-muted-foreground" />
-                          <span>Processed on CPU</span>
+                        <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wide bg-background/90 border border-border text-foreground shadow-sm flex items-center gap-1 z-10 animate-fade-in select-none">
+                          {deviceUsed === 'gpu' ? (
+                            <>
+                              <Sparkles className="w-3.5 h-3.5 text-success animate-pulse" />
+                              <span className="text-success">GPU Accelerated</span>
+                            </>
+                          ) : (
+                            <>
+                              <Cpu className="w-3.5 h-3.5 text-muted-foreground" />
+                              <span>Processed on CPU</span>
+                            </>
+                          )}
                         </div>
                       </>
                     ) : (
@@ -699,7 +856,7 @@ export default function BgRemoverClient() {
                           <CheckCircle2 className="w-3.5 h-3.5 text-success fill-success/10" />
                           Complete · {formatElapsed(elapsed)}
                         </span>
-                      ) : stage === 'initializing' || stage === 'downloading' || stage === 'processing' ? (
+                      ) : stage === 'initializing' || stage === 'downloading' || stage === 'compiling' || stage === 'processing' ? (
                         "AI Extraction..."
                       ) : stage === 'error' ? (
                         "Error occurred"
@@ -786,21 +943,24 @@ export default function BgRemoverClient() {
                     </select>
                   </div>
 
-                  {/* Status Indicator Panel */}
-                  <div className="p-3 bg-secondary rounded-xl border border-border/60 space-y-2">
+                   {/* Status Indicator Panel */}
+                  <div className="p-3 bg-secondary rounded-xl border border-border/60 space-y-2 select-none">
                     <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
                       Execution State
                     </span>
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${
                         stage === 'complete' ? "bg-success" : 
-                        stage === 'initializing' || stage === 'downloading' || stage === 'processing' ? "bg-warning animate-pulse" :
+                        stage === 'initializing' || stage === 'downloading' || stage === 'compiling' || stage === 'processing' ? "bg-warning animate-pulse" :
                         stage === 'error' ? "bg-destructive" : "bg-muted"
                       }`} />
                       <span className="text-xs font-bold text-foreground">
                         {stage === 'idle' && "Awaiting input image"}
-                        {(stage === 'initializing' || stage === 'downloading' || stage === 'processing') && `Removing background... (${formatElapsed(elapsed)})`}
-                        {stage === 'complete' && `Subject extracted (CPU) · ${formatElapsed(elapsed)}`}
+                        {stage === 'initializing' && `Initializing environment... (${formatElapsed(elapsed)})`}
+                        {stage === 'downloading' && `Downloading neural assets... (${formatElapsed(elapsed)})`}
+                        {stage === 'compiling' && `Compiling GPU shaders... (${formatElapsed(elapsed)})`}
+                        {stage === 'processing' && `Extracting subject (${deviceUsed === 'gpu' ? 'GPU' : 'CPU'})... (${formatElapsed(elapsed)})`}
+                        {stage === 'complete' && `Subject extracted (${deviceUsed === 'gpu' ? 'GPU Accelerated' : 'CPU Mode'}) · ${formatElapsed(elapsed)}`}
                         {stage === 'error' && "Processing terminated"}
                       </span>
                     </div>
