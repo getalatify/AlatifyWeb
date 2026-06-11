@@ -24,6 +24,12 @@ import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { ProcessingOverlay } from "@/components/processing-overlay";
 import { usePendingImage } from "@/hooks/use-pending-image";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger
+} from "@/components/ui/select";
 
 function formatElapsed(seconds: number): string {
   if (seconds < 60) return `${Math.floor(seconds)}s`;
@@ -940,22 +946,77 @@ export default function BgRemoverClient() {
                     <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
                       AI Model Variant
                     </label>
-                    <select
+                    <Select
                       value={modelType}
-                      onChange={(e) => setModelType(e.target.value as "isnet_fp16" | "isnet_quint8" | "isnet")}
+                      onValueChange={(val) => setModelType(val as "isnet_fp16" | "isnet_quint8" | "isnet")}
                       disabled={isProcessing}
-                      className="w-full bg-secondary border border-border hover:border-primary/50 text-foreground text-xs rounded-xl p-2.5 outline-none transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <option value="isnet_quint8">
-                        Lite — ISNet Quant8 (CPU · ~10MB)
-                      </option>
-                      <option value="isnet_fp16">
-                        Balanced — ISNet FP16 (Recommended · {isWebGPUSupported === true ? "GPU" : "CPU"} · ~22MB)
-                      </option>
-                      <option value="isnet">
-                        Quality — ISNet Base ({isWebGPUSupported === true ? "GPU" : "CPU"} · ~40MB)
-                      </option>
-                    </select>
+                      <SelectTrigger className="w-full bg-secondary border border-border hover:border-primary/50 text-foreground text-xs rounded-xl h-10 px-3 outline-none transition-all duration-200 cursor-pointer focus:ring-1 focus:ring-primary/40 focus:outline-none flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold">
+                            {modelType === 'isnet' ? 'Quality' : modelType === 'isnet_fp16' ? 'Balanced' : 'Lite'}
+                          </span>
+                          {modelType === 'isnet_fp16' && (
+                            <span className="text-[9px] bg-primary/10 text-primary border border-primary/20 px-1 py-0.2 rounded-md font-extrabold uppercase select-none">
+                              Recommended
+                            </span>
+                          )}
+                          <span className={`text-[9px] border px-1 py-0.2 rounded-md font-extrabold uppercase select-none ${
+                            modelType === 'isnet_quint8' ? 'bg-secondary text-muted-foreground border-border' : (isWebGPUSupported === true ? 'bg-primary/10 text-primary border-primary/20' : 'bg-secondary text-muted-foreground border-border')
+                          }`}>
+                            {modelType === 'isnet_quint8' ? 'CPU' : (isWebGPUSupported === true ? 'GPU' : 'CPU')}
+                          </span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent className="bg-card/95 border border-border/80 rounded-xl shadow-xl backdrop-blur-md min-w-[240px] p-1">
+                        <SelectItem value="isnet_quint8" className="py-2.5 px-3 focus:bg-accent focus:text-accent-foreground cursor-pointer rounded-lg transition-colors">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                              <span>Lite</span>
+                              <span className="text-[9px] bg-secondary text-muted-foreground border border-border px-1 py-0.2 rounded-md font-extrabold uppercase select-none">
+                                CPU
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                              ISNet Quant8 · ~10MB
+                            </div>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="isnet_fp16" className="py-2.5 px-3 focus:bg-accent focus:text-accent-foreground cursor-pointer rounded-lg transition-colors">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                              <span>Balanced</span>
+                              <span className="text-[9px] bg-primary/10 text-primary border border-primary/20 px-1 py-0.2 rounded-md font-extrabold uppercase select-none">
+                                Recommended
+                              </span>
+                              <span className={`text-[9px] border px-1 py-0.2 rounded-md font-extrabold uppercase select-none ${
+                                isWebGPUSupported === true ? 'bg-primary/10 text-primary border-primary/20' : 'bg-secondary text-muted-foreground border-border'
+                              }`}>
+                                {isWebGPUSupported === true ? "GPU" : "CPU"}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                              ISNet FP16 · ~22MB
+                            </div>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="isnet" className="py-2.5 px-3 focus:bg-accent focus:text-accent-foreground cursor-pointer rounded-lg transition-colors">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                              <span>Quality</span>
+                              <span className={`text-[9px] border px-1 py-0.2 rounded-md font-extrabold uppercase select-none ${
+                                isWebGPUSupported === true ? 'bg-primary/10 text-primary border-primary/20' : 'bg-secondary text-muted-foreground border-border'
+                              }`}>
+                                {isWebGPUSupported === true ? "GPU" : "CPU"}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                              ISNet Base · ~40MB
+                            </div>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                     <p className="text-[10px] text-muted-foreground leading-normal mt-1">
                       GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration.
                     </p>
