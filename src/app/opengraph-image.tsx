@@ -13,7 +13,7 @@ export default async function Image() {
     (
       <div
         style={{
-          background: '#0B0F19',
+          background: '#0a0a0a',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -61,12 +61,12 @@ export default async function Image() {
           >
             <defs>
               <linearGradient id="logo-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#10b981" />
-                <stop offset="100%" stopColor="#047857" />
+                <stop offset="0%" stopColor="#f5f5f5" />
+                <stop offset="100%" stopColor="#a3a3a3" />
               </linearGradient>
               <linearGradient id="logo-grad-2" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#34d399" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#064e3b" stopOpacity="0.2" />
+                <stop offset="0%" stopColor="#d4d4d4" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#525252" stopOpacity="0.2" />
               </linearGradient>
             </defs>
             <path
@@ -111,7 +111,7 @@ export default async function Image() {
                 letterSpacing: '-0.03em',
               }}
             >
-              Privacy-First <span style={{ color: '#10b981' }}>Image Tools</span>
+              Privacy-First <span style={{ color: '#f5f5f5' }}>Image Tools</span>
             </h1>
             <p
               style={{
@@ -156,9 +156,9 @@ export default async function Image() {
         {/* Bottom Banner */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '32px' }}>
           <div style={{ display: 'flex', gap: '24px' }}>
-            <span style={{ color: '#10b981', fontSize: '14px', fontWeight: '700' }}>✓ 100% Client-Side</span>
-            <span style={{ color: '#10b981', fontSize: '14px', fontWeight: '700' }}>✓ No Server Uploads</span>
-            <span style={{ color: '#10b981', fontSize: '14px', fontWeight: '700' }}>✓ Free & Unlimited</span>
+            <span style={{ color: '#f5f5f5', fontSize: '14px', fontWeight: '700' }}>✓ 100% Client-Side</span>
+            <span style={{ color: '#f5f5f5', fontSize: '14px', fontWeight: '700' }}>✓ No Server Uploads</span>
+            <span style={{ color: '#f5f5f5', fontSize: '14px', fontWeight: '700' }}>✓ Free & Unlimited</span>
           </div>
           <span style={{ color: '#4b5563', fontSize: '14px', fontWeight: '500' }}>getalatify.com</span>
         </div>

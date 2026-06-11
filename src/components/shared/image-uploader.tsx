@@ -10,9 +10,17 @@ interface ImageUploaderProps {
   className?: string;
   onUploadComplete?: () => void;
   onUpload?: (file: File) => void;
+  multiple?: boolean;
+  onUploadMultiple?: (files: File[]) => void;
 }
 
-export function ImageUploader({ className, onUploadComplete, onUpload }: ImageUploaderProps) {
+export function ImageUploader({ 
+  className, 
+  onUploadComplete, 
+  onUpload,
+  multiple = false,
+  onUploadMultiple
+}: ImageUploaderProps) {
   const setActiveImage = useImageStore((state) => state.setActiveImage);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
@@ -34,11 +42,15 @@ export function ImageUploader({ className, onUploadComplete, onUpload }: ImageUp
       setErrorMessage(null);
 
       try {
-        const file = files[0];
-        if (onUpload) {
-          onUpload(file);
+        if (multiple && onUploadMultiple) {
+          onUploadMultiple(files);
         } else {
-          setActiveImage(file);
+          const file = files[0];
+          if (onUpload) {
+            onUpload(file);
+          } else {
+            setActiveImage(file);
+          }
         }
         if (onUploadComplete) {
           onUploadComplete();
@@ -49,7 +61,7 @@ export function ImageUploader({ className, onUploadComplete, onUpload }: ImageUp
         setIsReading(false);
       }
     },
-    [setActiveImage, onUpload, onUploadComplete]
+    [setActiveImage, onUpload, onUploadComplete, multiple, onUploadMultiple]
   );
 
   const onDropRejected = useCallback((rejections: FileRejection[]) => {
@@ -67,7 +79,7 @@ export function ImageUploader({ className, onUploadComplete, onUpload }: ImageUp
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDropAccepted,
     onDropRejected,
-    multiple: false,
+    multiple: multiple,
     maxSize: 50 * 1024 * 1024, // 50MB
     accept: {
       "image/png": [".png"],
@@ -126,13 +138,13 @@ export function ImageUploader({ className, onUploadComplete, onUpload }: ImageUp
             <div className="space-y-1">
               <p className="text-base font-bold text-foreground transition-colors duration-200">
                 {showAccept
-                  ? "Drop your image here"
+                  ? (multiple ? "Drop your images here" : "Drop your image here")
                   : showReject
                   ? "Unsupported file type"
-                  : "Drag and drop image here, or click to select"}
+                  : (multiple ? "Drag and drop images here, or click to select" : "Drag and drop image here, or click to select")}
               </p>
               <p className="text-xs transition-colors duration-200 text-muted-foreground">
-                {showReject ? "Please check file format or size" : "Up to 50MB · JPG, PNG, WebP, HEIC, TIFF, SVG"}
+                {showReject ? "Please check file format or size" : `Up to 50MB${multiple ? " per file" : ""} · JPG, PNG, WebP, HEIC, TIFF, SVG`}
               </p>
             </div>
           </div>

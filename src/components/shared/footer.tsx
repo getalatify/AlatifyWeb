@@ -6,7 +6,7 @@ import { Logo } from "./logo";
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-border/40 bg-card/30 backdrop-blur-sm transition-colors duration-300 py-12 px-6 mt-auto">
+    <footer className="w-full border-t border-border/40 bg-card transition-colors duration-300 py-12 px-6 mt-auto">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
         {/* Column 1 - Brand */}
         <div className="space-y-3.5">

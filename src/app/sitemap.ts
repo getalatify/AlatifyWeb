@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools/resizer',
     '/tools/converter',
     '/tools/cropper',
+    '/tools/exif-cleaner',
     '/privacy',
     '/terms',
     '/about',

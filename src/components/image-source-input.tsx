@@ -8,7 +8,9 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface ImageSourceInputProps {
-  onImageReady: (file: File) => void;
+  onImageReady?: (file: File) => void;
+  onImagesReady?: (files: File[]) => void;
+  multiple?: boolean;
   maxSizeMB?: number;
   className?: string;
 }
@@ -46,6 +48,8 @@ function extractFilename(urlStr: string, contentType: string): string {
 
 export function ImageSourceInput({ 
   onImageReady, 
+  onImagesReady,
+  multiple = false,
   maxSizeMB = 4,
   className
 }: ImageSourceInputProps) {
@@ -58,7 +62,23 @@ export function ImageSourceInput({
     if (file.type === 'image/gif') {
       toast.warning("Animated GIFs will be processed as a single frame.");
     }
-    onImageReady(file);
+    if (multiple && onImagesReady) {
+      onImagesReady([file]);
+    } else if (onImageReady) {
+      onImageReady(file);
+    }
+  };
+
+  const handleImagesReady = (files: File[]) => {
+    const hasGif = files.some(f => f.type === 'image/gif');
+    if (hasGif) {
+      toast.warning("Animated GIFs will be processed as a single frame.");
+    }
+    if (multiple && onImagesReady) {
+      onImagesReady(files);
+    } else if (onImageReady && files.length > 0) {
+      onImageReady(files[0]);
+    }
   };
   
   const handleUrlFetch = async () => {
@@ -133,7 +153,12 @@ export function ImageSourceInput({
       <div className="relative w-full">
         {/* Upload Tab */}
         <div className={cn(activeTab === 'upload' ? "block animate-fade-in" : "hidden")}>
-          <ImageUploader onUpload={handleImageReady} className="w-full" />
+          <ImageUploader 
+            onUpload={handleImageReady} 
+            onUploadMultiple={handleImagesReady}
+            multiple={multiple}
+            className="w-full" 
+          />
         </div>
 
         {/* URL Tab */}

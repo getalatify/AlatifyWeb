@@ -21,37 +21,78 @@ import {
   Sliders,
   AlertCircle,
   FileText,
-  AlertTriangle
+  AlertTriangle,
+  ArrowUp,
+  ArrowDown,
+  X,
+  Plus
 } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
+import { toast } from "sonner";
 
 export default function FormatConverterPage() {
-  const [activeImage, setActiveImage] = useState<File | null>(null);
-  const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
-  const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
+  interface ImageItem {
+    id: string;
+    file: File;
+    previewUrl: string;
+    sourcePreviewUrl: string | null;
+    width: number;
+    height: number;
+    hasTransparency: boolean;
+    status: 'pending' | 'processing' | 'ready' | 'error';
+    error?: string;
+    warning?: string;
+  }
 
-  // Manage local active image Blob URL lifetime
-  useEffect(() => {
-    if (!activeImage) {
-      setActiveImageUrl(null);
-      return;
-    }
-    const url = URL.createObjectURL(activeImage);
-    setActiveImageUrl(url);
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [activeImage]);
+  const [imagesList, setImagesList] = useState<ImageItem[]>([]);
+  const [conversionProgress, setConversionProgress] = useState<{
+    total: number;
+    current: number;
+    filename: string;
+    stage: 'idle' | 'converting' | 'pdf' | 'zip' | 'done';
+  }>({
+    total: 0,
+    current: 0,
+    filename: "",
+    stage: "idle"
+  });
+
+  const activeImage = imagesList.length === 1 ? imagesList[0].file : null;
+  const activeImageUrl = imagesList.length === 1 ? imagesList[0].previewUrl : null;
+  const sourcePreviewUrl = imagesList.length === 1 ? imagesList[0].sourcePreviewUrl : null;
+  const originalDimensions = imagesList.length === 1 ? { width: imagesList[0].width, height: imagesList[0].height } : null;
+  const hasTransparency = imagesList.length === 1 ? imagesList[0].hasTransparency : false;
+
+  // Warnings / Notices
+  const heicError = imagesList.length === 1 && imagesList[0].status === 'error' ? imagesList[0].error || null : null;
+  const svgWarning = imagesList.length === 1 ? imagesList[0].warning || null : null;
+  const tiffNotice = imagesList.length === 1 ? imagesList[0].warning || null : null;
+
+  const handlePendingImageReady = (file: File) => {
+    handleImagesAdded([file]);
+  };
+  const { isProcessing: isProcessingPending } = usePendingImage(handlePendingImageReady);
 
   const clearActiveImage = () => {
-    setActiveImage(null);
-    setConvertedImage(null);
-    setError(null);
-    cleanUpSourceUrl();
-    setSourcePreviewUrl(null);
+    clearImagesList();
+  };
+
+  const setActiveImage = (file: File) => {
+    handleImagesAdded([file]);
+  };
+
+  const handleAddMoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleImagesAdded(Array.from(e.target.files));
+    }
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const addMoreFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAddMoreClick = () => {
+    addMoreFileInputRef.current?.click();
+  };
 
   // Parameter States
   const [targetFormat, setTargetFormat] = useState<string>("image/webp");
@@ -61,7 +102,6 @@ export default function FormatConverterPage() {
   const [svgPreset, setSvgPreset] = useState<"detailed" | "posterized2">("detailed");
 
   // Status & Logic States
-  const [hasTransparency, setHasTransparency] = useState<boolean>(false);
   const [isConverting, setIsConverting] = useState<boolean>(false);
   const [showSlowMessage, setShowSlowMessage] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,18 +125,9 @@ export default function FormatConverterPage() {
   const [isHardBlocked, setIsHardBlocked] = useState<boolean>(false);
   const [wasSvgDownscaled, setWasSvgDownscaled] = useState<boolean>(false);
 
-  // Warnings / Notices
-  const [svgWarning, setSvgWarning] = useState<string | null>(null);
-  const [tiffNotice, setTiffNotice] = useState<string | null>(null);
-  const [heicError, setHeicError] = useState<string | null>(null);
-
-  // Source override (for HEIC / TIFF which browsers can't render natively)
-  const [sourcePreviewUrl, setSourcePreviewUrl] = useState<string | null>(null);
-
   // Output States
   const [convertedImage, setConvertedImage] = useState<Blob | File | null>(null);
   const [convertedImageUrl, setConvertedImageUrl] = useState<string | null>(null);
-  const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
 
   // 1. Programmatic transparent pixel checker
   const checkImageTransparency = (imageUrl: string): Promise<boolean> => {
@@ -296,168 +327,294 @@ export default function FormatConverterPage() {
     return new Blob([icoBytes], { type: "image/x-icon" });
   };
 
-  // Clean up source overrides URLs
-  const cleanUpSourceUrl = () => {
-    if (sourcePreviewUrl && sourcePreviewUrl.startsWith("blob:")) {
-      URL.revokeObjectURL(sourcePreviewUrl);
+  // Process individual image file metadata and transcode if HEIC/TIFF
+  const processImageFile = React.useCallback(async (file: File): Promise<{
+    width: number;
+    height: number;
+    hasTransparency: boolean;
+    sourcePreviewUrl: string | null;
+    error: string | null;
+    warning: string | null;
+  }> => {
+    const formatStr = getImageFormat(file).toLowerCase();
+    const fileUrl = URL.createObjectURL(file);
+
+    try {
+      // CASE A: HEIC / HEIF
+      if (formatStr === "heic" || formatStr === "heif" || file.type === "image/heic" || file.type === "image/heif") {
+        const heic2any = (await import("heic2any")).default;
+        const converted = await heic2any({
+          blob: file,
+          toType: "image/png"
+        });
+        const resolvedBlob = Array.isArray(converted) ? converted[0] : converted;
+        const sourceUrl = URL.createObjectURL(resolvedBlob);
+
+        const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const tempImg = new Image();
+          tempImg.onload = () => resolve(tempImg);
+          tempImg.onerror = () => reject(new Error("HEIC transcoded image failed to load."));
+          tempImg.src = sourceUrl;
+        });
+
+        return {
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          hasTransparency: true,
+          sourcePreviewUrl: sourceUrl,
+          error: null,
+          warning: null
+        };
+      } 
+      // CASE B: TIFF / TIF
+      else if (formatStr === "tiff" || formatStr === "tif" || file.type.includes("tiff")) {
+        const UTIF = await import("utif");
+        const buffer = await file.arrayBuffer();
+        const ifds = UTIF.decode(buffer);
+        let warning = null;
+        if (ifds.length > 1) {
+          warning = "Multi-page TIFF detected — converting first page only";
+        }
+        
+        UTIF.decodeImage(buffer, ifds[0]);
+        const rgba = UTIF.toRGBA8(ifds[0]);
+        const width = ifds[0].width;
+        const height = ifds[0].height;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Failed to initialize TIFF offscreen decoder.");
+        
+        const imgData = new ImageData(new Uint8ClampedArray(rgba.buffer as ArrayBuffer), width, height);
+        ctx.putImageData(imgData, 0, 0);
+
+        const dataUrl = canvas.toDataURL("image/png");
+        return {
+          width,
+          height,
+          hasTransparency: true,
+          sourcePreviewUrl: dataUrl,
+          error: null,
+          warning
+        };
+      }
+      // CASE C: SVG
+      else if (formatStr === "svg" || file.type === "image/svg+xml") {
+        const dimensions = await parseSvgDimensions(file);
+        const hasRefs = await checkSvgExternalReferences(file);
+        let warning = null;
+        if (hasRefs) {
+          warning = "SVG contains external references that may not render correctly";
+        }
+        return {
+          width: dimensions.width,
+          height: dimensions.height,
+          hasTransparency: true,
+          sourcePreviewUrl: fileUrl,
+          error: null,
+          warning
+        };
+      }
+      // CASE D: Standard images
+      else {
+        const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const tempImg = new Image();
+          tempImg.onload = () => resolve(tempImg);
+          tempImg.onerror = () => reject(new Error("Image source failed to load."));
+          tempImg.src = fileUrl;
+        });
+
+        let hasTrans = false;
+        const supportsAlpha = formatStr === "png" || formatStr === "webp" || formatStr === "gif";
+        if (supportsAlpha) {
+          hasTrans = await checkImageTransparency(fileUrl);
+        }
+
+        return {
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          hasTransparency: hasTrans,
+          sourcePreviewUrl: fileUrl,
+          error: null,
+          warning: null
+        };
+      }
+    } catch (err: unknown) {
+      const errorObj = err as Error;
+      return {
+        width: 0,
+        height: 0,
+        hasTransparency: false,
+        sourcePreviewUrl: null,
+        error: errorObj.message || "Failed to parse incoming file format.",
+        warning: null
+      };
     }
+  }, []);
+
+  // Background processing of pending files.
+  // Each pending image is loaded/decoded in its OWN independent promise so that
+  // one image's load can never cancel or discard another's. A ref-backed Set
+  // dedupes items that are already being processed, which keeps this effect from
+  // re-starting (or, worse, abandoning) in-flight work when `imagesList` changes
+  // as each item flips to 'processing' / 'ready'.
+  const processingIdsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    const pendingItems = imagesList.filter(
+      item => item.status === 'pending' && !processingIdsRef.current.has(item.id)
+    );
+    if (pendingItems.length === 0) return;
+
+    pendingItems.forEach((pendingItem) => {
+      processingIdsRef.current.add(pendingItem.id);
+
+      // Mark this specific item as processing (does not affect the others).
+      setImagesList(prev =>
+        prev.map(item =>
+          item.id === pendingItem.id ? { ...item, status: 'processing' } : item
+        )
+      );
+
+      // Load + decode this image independently, in its own promise.
+      (async () => {
+        let result: Awaited<ReturnType<typeof processImageFile>>;
+        try {
+          // processImageFile wires up onload AND onerror, so a failed/stalled
+          // load rejects and is caught here instead of hanging the spinner.
+          result = await processImageFile(pendingItem.file);
+        } catch (err) {
+          result = {
+            width: 0,
+            height: 0,
+            hasTransparency: false,
+            sourcePreviewUrl: null,
+            error: (err as Error)?.message || 'Failed to process image.',
+            warning: null,
+          };
+        }
+
+        setImagesList(prev => {
+          // If the item was removed while it was loading, drop the result and
+          // free the object URL we just created (no premature revocation: this
+          // only runs AFTER the load has fully completed).
+          if (!prev.some(item => item.id === pendingItem.id)) {
+            if (result.sourcePreviewUrl && result.sourcePreviewUrl.startsWith('blob:')) {
+              URL.revokeObjectURL(result.sourcePreviewUrl);
+            }
+            return prev;
+          }
+          return prev.map(item => {
+            if (item.id !== pendingItem.id) return item;
+            return {
+              ...item,
+              status: result.error ? 'error' : 'ready',
+              width: result.width,
+              height: result.height,
+              hasTransparency: result.hasTransparency,
+              sourcePreviewUrl: result.sourcePreviewUrl || item.previewUrl,
+              error: result.error || undefined,
+              warning: result.warning || undefined,
+            };
+          });
+        });
+
+        processingIdsRef.current.delete(pendingItem.id);
+      })();
+    });
+  }, [imagesList, processImageFile]);
+
+  // Clean up all object URLs when component unmounts
+  const imagesListRef = useRef(imagesList);
+  useEffect(() => {
+    imagesListRef.current = imagesList;
+  }, [imagesList]);
+
+  useEffect(() => {
+    return () => {
+      imagesListRef.current.forEach(item => {
+        if (item.previewUrl && item.previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
+        if (item.sourcePreviewUrl && item.sourcePreviewUrl !== item.previewUrl && item.sourcePreviewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(item.sourcePreviewUrl);
+        }
+      });
+    };
+  }, []);
+
+  const handleImagesAdded = (files: File[]) => {
+    if (imagesList.length + files.length > 30) {
+      toast.warning("Maximum of 30 images allowed per batch. Some files were skipped.");
+    }
+    
+    const limit = 30 - imagesList.length;
+    const filesToAdd = files.slice(0, limit);
+
+    const newItems: ImageItem[] = filesToAdd.map(file => {
+      const id = Math.random().toString(36).substring(2, 9);
+      const previewUrl = URL.createObjectURL(file);
+      return {
+        id,
+        file,
+        previewUrl,
+        sourcePreviewUrl: null,
+        width: 0,
+        height: 0,
+        hasTransparency: false,
+        status: 'pending'
+      };
+    });
+
+    setImagesList(prev => [...prev, ...newItems]);
+    setConvertedImage(null);
   };
 
-  // 6. Loader parser for incoming formats (HEIC, TIFF, SVG, Standard)
-  useEffect(() => {
-    if (!activeImage || !activeImageUrl) {
-      setOriginalDimensions(null);
-      setHasTransparency(false);
-      setSvgWarning(null);
-      setTiffNotice(null);
-      setHeicError(null);
-      cleanUpSourceUrl();
-      setSourcePreviewUrl(null);
-      return;
+  const removeImageItem = (id: string) => {
+    const item = imagesList.find(i => i.id === id);
+    if (item) {
+      if (item.previewUrl && item.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+      if (item.sourcePreviewUrl && item.sourcePreviewUrl !== item.previewUrl && item.sourcePreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(item.sourcePreviewUrl);
+      }
     }
+    setImagesList(prev => prev.filter(i => i.id !== id));
+    setConvertedImage(null);
+  };
 
-    const formatStr = getImageFormat(activeImage).toLowerCase();
-    const isProFormat = 
-      formatStr === "heic" || 
-      formatStr === "heif" || 
-      formatStr === "tiff" || 
-      formatStr === "tif" || 
-      activeImage.type === "image/heic" || 
-      activeImage.type === "image/heif" || 
-      activeImage.type.includes("tiff");
+  const moveImageItem = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === imagesList.length - 1) return;
 
-    const loadAndInspect = async () => {
-      // Only set loading/transcoding state for heavy pro formats
-      if (isProFormat) {
-        setIsConverting(true);
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    const newList = [...imagesList];
+    const temp = newList[index];
+    newList[index] = newList[newIndex];
+    newList[newIndex] = temp;
+    
+    setImagesList(newList);
+    setConvertedImage(null);
+  };
+
+  const clearImagesList = () => {
+    imagesList.forEach(item => {
+      if (item.previewUrl && item.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(item.previewUrl);
       }
-      setSvgWarning(null);
-      setTiffNotice(null);
-      setHeicError(null);
-      cleanUpSourceUrl();
-      setSvgAcceptedWarning(false);
-      setIsHardBlocked(false);
-      setWasSvgDownscaled(false);
-
-      try {
-        // CASE A: HEIC / HEIF
-        if (formatStr === "heic" || formatStr === "heif" || activeImage.type === "image/heic" || activeImage.type === "image/heif") {
-          try {
-            const heic2any = (await import("heic2any")).default;
-            const converted = await heic2any({
-              blob: activeImage,
-              toType: "image/png"
-            });
-            const resolvedBlob = Array.isArray(converted) ? converted[0] : converted;
-            const url = URL.createObjectURL(resolvedBlob);
-            setSourcePreviewUrl(url);
-
-            const img = new Image();
-            img.onload = () => {
-              setOriginalDimensions({ width: img.naturalWidth, height: img.naturalHeight });
-              setHasTransparency(true); // default true for transcoded PNGs
-              setIsConverting(false);
-            };
-            img.onerror = () => {
-              setError("HEIC transcoded image failed to load into browser viewport.");
-              setIsConverting(false);
-            };
-            img.src = url;
-          } catch (e: unknown) {
-            console.error("HEIC parsing failed", e);
-            setHeicError("HEIC format not supported in your browser. Try a different file or update your browser.");
-            setError("HEIC format not supported in your browser. Try a different file or update your browser.");
-            setSourcePreviewUrl(null);
-            setIsConverting(false);
-          }
-        } 
-        // CASE B: TIFF / TIF
-        else if (formatStr === "tiff" || formatStr === "tif" || activeImage.type.includes("tiff")) {
-          try {
-            const UTIF = await import("utif");
-            const buffer = await activeImage.arrayBuffer();
-            const ifds = UTIF.decode(buffer);
-            
-            if (ifds.length > 1) {
-              setTiffNotice("Multi-page TIFF detected — converting first page only");
-            }
-            
-            UTIF.decodeImage(buffer, ifds[0]);
-            const rgba = UTIF.toRGBA8(ifds[0]);
-            const width = ifds[0].width;
-            const height = ifds[0].height;
-
-            const canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-            if (!ctx) throw new Error("Failed to initialize TIFF offscreen decoder.");
-            
-            const imgData = new ImageData(new Uint8ClampedArray(rgba.buffer as ArrayBuffer), width, height);
-            ctx.putImageData(imgData, 0, 0);
-
-            const dataUrl = canvas.toDataURL("image/png");
-            setSourcePreviewUrl(dataUrl);
-            setOriginalDimensions({ width, height });
-            setHasTransparency(true);
-            setIsConverting(false);
-          } catch (e: unknown) {
-            console.error("TIFF parsing failed", e);
-            setError("TIFF format decoding failed. Please verify if file is valid.");
-            setIsConverting(false);
-          }
-        }
-        // CASE C: SVG
-        else if (formatStr === "svg" || activeImage.type === "image/svg+xml") {
-          try {
-            const dimensions = await parseSvgDimensions(activeImage);
-            const hasRefs = await checkSvgExternalReferences(activeImage);
-            
-            if (hasRefs) {
-              setSvgWarning("SVG contains external references that may not render correctly");
-            }
-
-            setOriginalDimensions(dimensions);
-            setHasTransparency(true);
-            setSourcePreviewUrl(activeImageUrl);
-            setIsConverting(false);
-          } catch (e: unknown) {
-            console.error("SVG parsing failed", e);
-            setError("Failed to parse SVG vector boundaries.");
-            setIsConverting(false);
-          }
-        }
-        // CASE D: Standard images (Default JPG, PNG, WebP, GIF, BMP, AVIF)
-        else {
-          setSourcePreviewUrl(activeImageUrl);
-          const img = new Image();
-          img.onload = async () => {
-            setOriginalDimensions({ width: img.naturalWidth, height: img.naturalHeight });
-            
-            const supportsAlpha = formatStr === "png" || formatStr === "webp" || formatStr === "gif";
-            if (supportsAlpha) {
-              const isTransparent = await checkImageTransparency(activeImageUrl);
-              setHasTransparency(isTransparent);
-            } else {
-              setHasTransparency(false);
-            }
-          };
-          img.onerror = () => {
-            setError("Image source failed to load. The file might be corrupted.");
-          };
-          img.src = activeImageUrl;
-        }
-      } catch (err: unknown) {
-        console.error("Uploader parsing error", err);
-        const errorObj = err as Error;
-        setError(errorObj.message || "Failed to parse incoming file format.");
-        setIsConverting(false);
+      if (item.sourcePreviewUrl && item.sourcePreviewUrl !== item.previewUrl && item.sourcePreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(item.sourcePreviewUrl);
       }
-    };
-
-    loadAndInspect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeImageUrl, activeImage]);
+    });
+    setImagesList([]);
+    setConvertedImage(null);
+    setConvertedImageUrl(null);
+    setConversionProgress({ total: 0, current: 0, filename: "", stage: "idle" });
+    setError(null);
+  };
 
   // Manage converted URL lifecycles
   useEffect(() => {
@@ -472,7 +629,215 @@ export default function FormatConverterPage() {
     };
   }, [convertedImage]);
 
-  // 7. Core canvas conversion resolver
+  // 7. Reusable convert single image to Blob function
+  const convertImageToBlob = async (
+    file: File,
+    sourceUrl: string,
+    width: number,
+    height: number,
+    hasTransparency: boolean,
+    targetF: string,
+    targetQ: number,
+    targetFill: 'white' | 'custom',
+    targetColor: string
+  ): Promise<Blob> => {
+    // 1. Load image onto offscreen cache
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const tempImg = new Image();
+      tempImg.onload = () => resolve(tempImg);
+      tempImg.onerror = () => reject(new Error("Failed to load source graphics layer."));
+      tempImg.src = sourceUrl;
+    });
+
+    // ICO
+    if (targetF === "image/x-icon") {
+      return await generateIcoBlob(img);
+    }
+
+    // BMP
+    if (targetF === "image/bmp") {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Failed to initialize BMP offscreen canvas.");
+      
+      if (hasTransparency) {
+        ctx.fillStyle = targetFill === "white" ? "#ffffff" : targetColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      return generateBmpBlob(canvas);
+    }
+
+    // GIF (Single Frame)
+    if (targetF === "image/gif") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const GIFClass = (await import("gif.js")).default as any;
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      const tempCtx = tempCanvas.getContext("2d");
+      if (!tempCtx) throw new Error("Failed to initialize GIF offscreen context.");
+
+      tempCtx.drawImage(img, 0, 0);
+
+      const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+      const data = imgData.data;
+      let hasTransparentPixel = false;
+
+      const transR = 255;
+      const transG = 0;
+      const transB = 255;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const a = data[i+3];
+        if (a === 0) {
+          data[i] = transR;
+          data[i+1] = transG;
+          data[i+2] = transB;
+          data[i+3] = 255;
+          hasTransparentPixel = true;
+        } else if (a > 0 && a < 255) {
+          data[i] = 255;
+          data[i+1] = 255;
+          data[i+2] = 255;
+          data[i+3] = 255;
+        }
+      }
+
+      tempCtx.putImageData(imgData, 0, 0);
+
+      return await new Promise<Blob>((resolvePromise, rejectPromise) => {
+        try {
+          const gif = new GIFClass({
+            workers: 2,
+            quality: 10,
+            transparent: hasTransparentPixel ? 0xff00ff : null,
+            workerScript: "/gif.worker.js",
+            width: tempCanvas.width,
+            height: tempCanvas.height,
+          });
+
+          gif.on("finished", (blob: Blob) => {
+            resolvePromise(blob);
+          });
+
+          gif.on("error", (err: unknown) => {
+            rejectPromise(err);
+          });
+
+          gif.addFrame(tempCtx, { delay: 0, copy: true });
+          gif.render();
+        } catch (err) {
+          rejectPromise(err);
+        }
+      });
+    }
+
+    // TIFF
+    if (targetF === "image/tiff") {
+      const UTIF = await import("utif");
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Failed to initialize TIFF offscreen canvas.");
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const tiffBuffer = UTIF.encodeImage(new Uint8Array(imageData.data.buffer as ArrayBuffer), canvas.width, canvas.height);
+      return new Blob([tiffBuffer], { type: "image/tiff" });
+    }
+
+    // SVG
+    if (targetF === "image/svg+xml") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ImageTracer = (await import("imagetracerjs")).default as any;
+      const canvas = document.createElement("canvas");
+      
+      let targetWidth = width;
+      let targetHeight = height;
+      const maxDimension = 1000;
+
+      if (targetWidth > maxDimension || targetHeight > maxDimension) {
+        if (targetWidth > targetHeight) {
+           targetHeight = Math.round((targetHeight * maxDimension) / targetWidth);
+           targetWidth = maxDimension;
+        } else {
+           targetWidth = Math.round((targetWidth * maxDimension) / targetHeight);
+           targetHeight = maxDimension;
+        }
+      }
+
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Failed to initialize SVG offscreen canvas.");
+      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      
+      const logoIconOptions = {
+        numberofcolors: 8,
+        pathomit: 8,
+        colorquantcycles: 3,
+        ltres: 1,
+        qtres: 1,
+        blurradius: 0,
+        strokewidth: 1,
+      };
+
+      const photoArtisticOptions = {
+        numberofcolors: 16,
+        pathomit: 4,
+        colorquantcycles: 3,
+        ltres: 1.5,
+        qtres: 1.5,
+        blurradius: 2,
+        strokewidth: 0,
+      };
+
+      const options = svgPreset === "detailed" ? logoIconOptions : photoArtisticOptions;
+      const svgString = ImageTracer.imagedataToSVG(imageData, options);
+      
+      if (!svgString) throw new Error("Vectorization resulted in an empty output.");
+      return new Blob([svgString], { type: "image/svg+xml" });
+    }
+
+    // STANDARD JPG/PNG/WEBP
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Failed to initialize offscreen canvas context.");
+    
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
+    if (targetF === "image/jpeg") {
+      ctx.fillStyle = targetFill === "white" ? "#ffffff" : targetColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    return await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error("Graphics encoder failed to write pixels."));
+          }
+        },
+        targetF,
+        targetF === "image/png" ? undefined : targetQ / 100
+      );
+    });
+  };
+
+  // Core single image conversion resolver
   const performConversion = async (
     targetF?: string,
     targetQ?: number,
@@ -508,31 +873,25 @@ export default function FormatConverterPage() {
     setIsConverting(true);
     setError(null);
     
-    // We load image from sourcePreviewUrl (overridden PNG for HEIC/TIFF) or activeImageUrl
     const sourceUrl = sourcePreviewUrl || activeImageUrl;
 
     try {
-      // 1. Load image onto offscreen cache
-      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const tempImg = new Image();
-        tempImg.onload = () => resolve(tempImg);
-        tempImg.onerror = () => reject(new Error("Failed to load source graphics layer."));
-        tempImg.src = sourceUrl!;
-      });
-
-      // 2. Custom Output Exporters
-      
-      // EXPORTER 1: PDF DOCUMENT
+      // PDF Exporter
       if (activeFormat === "application/pdf") {
         const { jsPDF } = await import("jspdf");
-        
+        const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const tempImg = new Image();
+          tempImg.onload = () => resolve(tempImg);
+          tempImg.onerror = () => reject(new Error("Failed to load source graphics layer."));
+          tempImg.src = sourceUrl!;
+        });
+
         const canvas = document.createElement("canvas");
         canvas.width = originalDimensions.width;
         canvas.height = originalDimensions.height;
         const ctx = canvas.getContext("2d");
         if (!ctx) throw new Error("Failed to initialize PDF renderer.");
         
-        // PDF embeds JPEG, so flatten transparency with white or custom
         ctx.fillStyle = activeFill === "white" ? "#ffffff" : activeColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -557,274 +916,37 @@ export default function FormatConverterPage() {
         return;
       }
 
-      // EXPORTER 2: WEB FAVICON ICO
-      if (activeFormat === "image/x-icon") {
-        const icoBlob = await generateIcoBlob(img);
-        const baseName = (activeImage as File).name.replace(/\.[^/.]+$/, "");
-        const fileObj = new File([icoBlob], `${baseName}.ico`, {
-          type: "image/x-icon"
-        });
-        
-        setConvertedImage(fileObj);
-        setIsConverting(false);
-        return;
-      }
-
-      // EXPORTER 3: LEGACY BMP
-      if (activeFormat === "image/bmp") {
-        const canvas = document.createElement("canvas");
-        canvas.width = originalDimensions.width;
-        canvas.height = originalDimensions.height;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) throw new Error("Failed to initialize BMP offscreen canvas.");
-        
-        // BMP pixel flatten backdrop for JPEGs is optional, but uncompressed stores alpha.
-        // We flat it if selected or preserve transparent pixels
-        if (hasTransparency) {
-          ctx.fillStyle = activeFill === "white" ? "#ffffff" : activeColor;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
-        const bmpBlob = generateBmpBlob(canvas);
-        const baseName = (activeImage as File).name.replace(/\.[^/.]+$/, "");
-        const fileObj = new File([bmpBlob], `${baseName}.bmp`, {
-          type: "image/bmp"
-        });
-        
-        setConvertedImage(fileObj);
-        setIsConverting(false);
-        return;
-      }
-
-      // EXPORTER 4: GIF (Single Frame)
-      if (activeFormat === "image/gif") {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const GIFClass = (await import("gif.js")).default as any;
-          const tempCanvas = document.createElement("canvas");
-          tempCanvas.width = originalDimensions.width;
-          tempCanvas.height = originalDimensions.height;
-          const tempCtx = tempCanvas.getContext("2d");
-          if (!tempCtx) throw new Error("Failed to initialize GIF offscreen context.");
-
-          tempCtx.drawImage(img, 0, 0);
-
-          const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-          const data = imgData.data;
-          let hasTransparentPixel = false;
-
-          // We will use magenta as transparent color: r=255, g=0, b=255
-          const transR = 255;
-          const transG = 0;
-          const transB = 255;
-
-          for (let i = 0; i < data.length; i += 4) {
-            const a = data[i+3];
-            if (a === 0) {
-              data[i] = transR;
-              data[i+1] = transG;
-              data[i+2] = transB;
-              data[i+3] = 255;
-              hasTransparentPixel = true;
-            } else if (a > 0 && a < 255) {
-              // Fallback to white for semi-transparent pixels
-              data[i] = 255;
-              data[i+1] = 255;
-              data[i+2] = 255;
-              data[i+3] = 255;
-            }
-          }
-
-          tempCtx.putImageData(imgData, 0, 0);
-
-          const gifBlob = await new Promise<Blob>((resolvePromise, rejectPromise) => {
-            try {
-              const gif = new GIFClass({
-                workers: 2,
-                quality: 10,
-                workerScript: "/gif.worker.js",
-                width: tempCanvas.width,
-                height: tempCanvas.height,
-                transparent: hasTransparentPixel ? 0xff00ff : null,
-              });
-
-              gif.on("finished", (blob: Blob) => {
-                resolvePromise(blob);
-              });
-
-              gif.on("error", (err: unknown) => {
-                rejectPromise(err);
-              });
-
-              gif.addFrame(tempCtx, { delay: 0, copy: true });
-              gif.render();
-            } catch (err) {
-              rejectPromise(err);
-            }
-          });
-
-          const baseName = (activeImage as File).name.replace(/\.[^/.]+$/, "");
-          const fileObj = new File([gifBlob], `${baseName}.gif`, {
-            type: "image/gif"
-          });
-
-          setConvertedImage(fileObj);
-          setIsConverting(false);
-          return;
-        } catch (err: unknown) {
-          console.error("GIF encoding failed", err);
-          setError("GIF encoding failed. Try a smaller image or different format.");
-          setConvertedImage(null);
-          setIsConverting(false);
-          return;
-        }
-      }
-
-      // EXPORTER 5: TIFF
-      if (activeFormat === "image/tiff") {
-        try {
-          const UTIF = await import("utif");
-          const canvas = document.createElement("canvas");
-          canvas.width = originalDimensions.width;
-          canvas.height = originalDimensions.height;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) throw new Error("Failed to initialize TIFF offscreen canvas.");
-          ctx.drawImage(img, 0, 0);
-
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const tiffBuffer = UTIF.encodeImage(new Uint8Array(imageData.data.buffer as ArrayBuffer), canvas.width, canvas.height);
-          const tiffBlob = new Blob([tiffBuffer], { type: "image/tiff" });
-          
-          const baseName = (activeImage as File).name.replace(/\.[^/.]+$/, "");
-          const fileObj = new File([tiffBlob], `${baseName}.tiff`, {
-            type: "image/tiff"
-          });
-
-          setConvertedImage(fileObj);
-          setIsConverting(false);
-          return;
-        } catch (err: unknown) {
-          console.error("TIFF encoding failed", err);
-          setError("TIFF encoding failed. Image may be too large or complex.");
-          setConvertedImage(null);
-          setIsConverting(false);
-          return;
-        }
-      }
-
-      // EXPORTER 6: SVG (Vector Tracing)
-      if (activeFormat === "image/svg+xml") {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const ImageTracer = (await import("imagetracerjs")).default as any;
-          const canvas = document.createElement("canvas");
-          
-          let targetWidth = originalDimensions.width;
-          let targetHeight = originalDimensions.height;
-          const maxDimension = 1000;
-          let wasDownscaled = false;
-
-          if (targetWidth > maxDimension || targetHeight > maxDimension) {
-            wasDownscaled = true;
-            if (targetWidth > targetHeight) {
-               targetHeight = Math.round((targetHeight * maxDimension) / targetWidth);
-               targetWidth = maxDimension;
-            } else {
-               targetWidth = Math.round((targetWidth * maxDimension) / targetHeight);
-               targetHeight = maxDimension;
-            }
-          }
-
-          canvas.width = targetWidth;
-          canvas.height = targetHeight;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) throw new Error("Failed to initialize SVG offscreen canvas.");
-          ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          
-          const logoIconOptions = {
-            numberofcolors: 8,
-            pathomit: 8,
-            colorquantcycles: 3,
-            ltres: 1,
-            qtres: 1,
-            blurradius: 0,
-            strokewidth: 1,
-          };
-
-          const photoArtisticOptions = {
-            numberofcolors: 16,
-            pathomit: 4,
-            colorquantcycles: 3,
-            ltres: 1.5,
-            qtres: 1.5,
-            blurradius: 2,
-            strokewidth: 0,
-          };
-
-          const options = svgPreset === "detailed" ? logoIconOptions : photoArtisticOptions;
-          const svgString = ImageTracer.imagedataToSVG(imageData, options);
-          
-          if (!svgString) throw new Error("Vectorization resulted in an empty output.");
-          
-          const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
-          const baseName = (activeImage as File).name.replace(/\.[^/.]+$/, "");
-          const fileObj = new File([svgBlob], `${baseName}.svg`, {
-            type: "image/svg+xml"
-          });
-          
-          setConvertedImage(fileObj);
-          setWasSvgDownscaled(wasDownscaled);
-          setIsConverting(false);
-          return;
-        } catch (err: unknown) {
-          console.error("SVG tracing failed", err);
-          setError("Vectorization failed. Try a simpler image or different output format.");
-          setConvertedImage(null);
-          setIsConverting(false);
-          return;
-        }
-      }
-
-      // EXPORTER 7: STANDARD JPEG, PNG, WEBP
-      const canvas = document.createElement("canvas");
-      canvas.width = originalDimensions.width;
-      canvas.height = originalDimensions.height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("Failed to initialize offscreen canvas context.");
-      
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-
-      if (activeFormat === "image/jpeg") {
-        ctx.fillStyle = activeFill === "white" ? "#ffffff" : activeColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            const ext = activeFormat === "image/jpeg" ? "jpg" : activeFormat === "image/png" ? "png" : "webp";
-            const baseName = (activeImage as File).name.replace(/\.[^/.]+$/, "");
-            const newFilename = `${baseName}.${ext}`;
-
-            const fileObj = new File([blob], newFilename, {
-              type: activeFormat
-            });
-
-            setConvertedImage(fileObj);
-            setIsConverting(false);
-          } else {
-            throw new Error("Graphics encoder failed to write pixels to standard format.");
-          }
-        },
+      // Other formats
+      const blob = await convertImageToBlob(
+        activeImage,
+        sourceUrl!,
+        originalDimensions.width,
+        originalDimensions.height,
+        hasTransparency,
         activeFormat,
-        activeFormat === "image/png" ? undefined : activeQuality / 100
+        activeQuality,
+        activeFill,
+        activeColor
       );
+
+      const ext = activeFormat === "image/jpeg" ? "jpg" : 
+                  activeFormat === "image/png" ? "png" : 
+                  activeFormat === "image/webp" ? "webp" : 
+                  activeFormat === "image/x-icon" ? "ico" : 
+                  activeFormat === "image/bmp" ? "bmp" : 
+                  activeFormat === "image/gif" ? "gif" : 
+                  activeFormat === "image/tiff" ? "tiff" : 
+                  activeFormat === "image/svg+xml" ? "svg" : "bin";
+
+      const baseName = (activeImage as File).name.replace(/\.[^/.]+$/, "");
+      const newFilename = `${baseName}.${ext}`;
+
+      const fileObj = new File([blob], newFilename, {
+        type: activeFormat
+      });
+
+      setConvertedImage(fileObj);
+      setIsConverting(false);
 
     } catch (err: unknown) {
       console.error("Conversion error", err);
@@ -832,6 +954,168 @@ export default function FormatConverterPage() {
       setError(errorObj.message || "Canvas transcoding operation failed.");
       setConvertedImage(null);
       setIsConverting(false);
+    }
+  };
+
+  // Core multi-image batch conversion resolver
+  const performBatchConversion = async () => {
+    const readyItems = imagesList.filter(item => item.status === 'ready');
+    if (readyItems.length === 0) return;
+
+    setIsConverting(true);
+    setError(null);
+    setConvertedImage(null);
+
+    setConversionProgress({
+      total: readyItems.length,
+      current: 0,
+      filename: readyItems[0].file.name,
+      stage: 'converting'
+    });
+
+    try {
+      if (targetFormat === "application/pdf") {
+        // PDF compilation
+        const { jsPDF } = await import("jspdf");
+        let doc: InstanceType<typeof jsPDF> | null = null;
+        
+        for (let i = 0; i < readyItems.length; i++) {
+          const item = readyItems[i];
+          setConversionProgress(prev => ({
+            ...prev,
+            current: i,
+            filename: item.file.name,
+            stage: 'converting'
+          }));
+
+          const sourceUrl = item.sourcePreviewUrl || item.previewUrl;
+          const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+            const tempImg = new Image();
+            tempImg.onload = () => resolve(tempImg);
+            tempImg.onerror = () => reject(new Error(`Failed to load ${item.file.name}`));
+            tempImg.src = sourceUrl;
+          });
+
+          const canvas = document.createElement("canvas");
+          canvas.width = item.width;
+          canvas.height = item.height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) throw new Error("Failed to initialize PDF renderer.");
+          
+          ctx.fillStyle = transparencyFill === "white" ? "#ffffff" : customFillColor;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          
+          const jpegUrl = canvas.toDataURL("image/jpeg", quality / 100);
+          const orientation = item.width > item.height ? "landscape" : "portrait";
+          
+          if (i === 0) {
+            doc = new jsPDF({
+              orientation,
+              unit: "px",
+              format: [item.width, item.height]
+            });
+          } else if (doc) {
+            doc.addPage([item.width, item.height], orientation);
+          }
+          
+          if (doc) {
+            doc.addImage(jpegUrl, "JPEG", 0, 0, item.width, item.height, undefined, "FAST");
+          }
+        }
+
+        if (!doc) {
+          throw new Error("PDF document was not initialized.");
+        }
+
+        setConversionProgress(prev => ({
+          ...prev,
+          current: readyItems.length,
+          stage: 'pdf'
+        }));
+
+        const pdfBlob = doc.output("blob");
+        const fileObj = new File([pdfBlob], "converted.pdf", {
+          type: "application/pdf"
+        });
+
+        setConvertedImage(fileObj);
+      } else {
+        // ZIP bundling
+        const JSZip = (await import("jszip")).default;
+        const zip = new JSZip();
+        const usedFilenames = new Set<string>();
+
+        for (let i = 0; i < readyItems.length; i++) {
+          const item = readyItems[i];
+          setConversionProgress(prev => ({
+            ...prev,
+            current: i,
+            filename: item.file.name,
+            stage: 'converting'
+          }));
+
+          const sourceUrl = item.sourcePreviewUrl || item.previewUrl;
+          const blob = await convertImageToBlob(
+            item.file,
+            sourceUrl,
+            item.width,
+            item.height,
+            item.hasTransparency,
+            targetFormat,
+            quality,
+            transparencyFill,
+            customFillColor
+          );
+
+          const ext = targetFormat === "image/jpeg" ? "jpg" : 
+                      targetFormat === "image/png" ? "png" : 
+                      targetFormat === "image/webp" ? "webp" : 
+                      targetFormat === "image/x-icon" ? "ico" : 
+                      targetFormat === "image/bmp" ? "bmp" : 
+                      targetFormat === "image/gif" ? "gif" : 
+                      targetFormat === "image/tiff" ? "tiff" : 
+                      targetFormat === "image/svg+xml" ? "svg" : "bin";
+
+          const baseName = item.file.name.replace(/\.[^/.]+$/, "");
+          let newFilename = `${baseName}.${ext}`;
+          
+          let counter = 1;
+          while (usedFilenames.has(newFilename)) {
+            newFilename = `${baseName}_${counter}.${ext}`;
+            counter++;
+          }
+          usedFilenames.add(newFilename);
+
+          zip.file(newFilename, blob);
+        }
+
+        setConversionProgress(prev => ({
+          ...prev,
+          current: readyItems.length,
+          stage: 'zip'
+        }));
+
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const fileObj = new File([zipBlob], "converted-images.zip", {
+          type: "application/zip"
+        });
+
+        setConvertedImage(fileObj);
+      }
+
+      setConversionProgress(prev => ({
+        ...prev,
+        stage: 'done'
+      }));
+      setIsConverting(false);
+
+    } catch (err: unknown) {
+      console.error("Batch conversion error", err);
+      const errorObj = err as Error;
+      setError(errorObj.message || "Batch conversion failed.");
+      setIsConverting(false);
+      setConversionProgress(prev => ({ ...prev, stage: 'idle' }));
     }
   };
 
@@ -881,7 +1165,6 @@ export default function FormatConverterPage() {
 
   const convertedFormatStr = convertedImage ? getFormatDisplay(convertedImage.type) : "";
 
-  // Conditional display elements
   const isLossyFormat = targetFormat === "image/jpeg" || targetFormat === "image/webp" || targetFormat === "application/pdf";
   const showTransparencyPanel = hasTransparency && (
     targetFormat === "image/jpeg" || 
@@ -890,6 +1173,28 @@ export default function FormatConverterPage() {
     targetFormat === "application/pdf"
   );
 
+  const getProgressPercentage = () => {
+    if (conversionProgress.stage === 'idle') return 0;
+    if (conversionProgress.stage === 'pdf' || conversionProgress.stage === 'zip' || conversionProgress.stage === 'done') return 100;
+    if (conversionProgress.total === 0) return 0;
+    return Math.round((conversionProgress.current / conversionProgress.total) * 100);
+  };
+
+  const getProgressStatusText = () => {
+    switch (conversionProgress.stage) {
+      case 'converting':
+        return `Converting image ${conversionProgress.current + 1} of ${conversionProgress.total}: ${conversionProgress.filename}`;
+      case 'pdf':
+        return "Generating PDF...";
+      case 'zip':
+        return "Bundling ZIP...";
+      case 'done':
+        return "Done!";
+      default:
+        return "";
+    }
+  };
+
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip">
       {/* Background Glows for Premium Vibe */}
@@ -897,7 +1202,7 @@ export default function FormatConverterPage() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
+      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
         <div className="flex flex-col gap-1 items-start">
           <div className="flex items-center gap-2">
             <Logo className="w-8 h-8" />
@@ -965,6 +1270,7 @@ export default function FormatConverterPage() {
         )}
 
         {/* Conditional Layout */}
+        {/* Conditional Layout */}
         {isProcessingPending ? (
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
             <div className="p-8 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-3 max-w-[250px] text-center animate-pulse">
@@ -973,13 +1279,18 @@ export default function FormatConverterPage() {
               <span className="text-[10px] text-muted-foreground">Running securely via proxy</span>
             </div>
           </section>
-        ) : !activeImage ? (
+        ) : imagesList.length === 0 ? (
           /* BEFORE UPLOAD centerpiece empty state */
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
-            <ImageSourceInput onImageReady={setActiveImage} className="w-full animate-fade-in" />
+            <ImageSourceInput 
+              multiple={true}
+              onImagesReady={handleImagesAdded}
+              onImageReady={setActiveImage} 
+              className="w-full animate-fade-in" 
+            />
           </section>
-        ) : (
-          /* WORKSPACE ACTIVE */
+        ) : imagesList.length === 1 ? (
+          /* SINGLE IMAGE WORKSPACE ACTIVE */
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full animate-fade-in">
             
             {/* Previews Area (Stacks vertically on mobile, side-by-side on desktop) */}
@@ -1441,8 +1752,421 @@ export default function FormatConverterPage() {
             </div>
 
           </section>
+        ) : (
+          /* BATCH WORKSPACE ACTIVE */
+          <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full animate-fade-in">
+            
+            {/* Batch List Area (Left Column) */}
+            <div className="lg:col-span-2 flex flex-col gap-4 sm:gap-6 w-full">
+              <div className="bg-card border border-border/60 rounded-2xl p-4 sm:p-6 shadow-md space-y-5">
+                <div className="flex items-center justify-between border-b border-border/40 pb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-primary" />
+                    Batch Images Queue
+                  </span>
+                  <span className="text-xs font-semibold text-foreground px-2 py-0.5 rounded-full bg-secondary border border-border">
+                    {imagesList.length} / 30 Images
+                  </span>
+                </div>
+
+                {/* Queue list container */}
+                <div className="max-h-[420px] overflow-y-auto custom-scrollbar space-y-3 pr-1">
+                  {imagesList.map((item, index) => (
+                    <div 
+                      key={item.id}
+                      className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/50 hover:bg-secondary/40 transition-colors duration-150 gap-3"
+                    >
+                      {/* Thumbnail */}
+                      <div className="w-12 h-12 rounded-lg bg-canvas border border-border/50 overflow-hidden shrink-0 flex items-center justify-center relative">
+                        {item.status === 'processing' || item.status === 'pending' ? (
+                          <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                        ) : (
+                          <img 
+                            src={item.sourcePreviewUrl || item.previewUrl} 
+                            alt={item.file.name} 
+                            className="object-contain w-full h-full"
+                          />
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-foreground truncate" title={item.file.name}>
+                          {item.file.name}
+                        </p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] text-muted-foreground font-semibold">
+                            {formatBytes(item.file.size)}
+                          </span>
+                          {item.width > 0 && item.height > 0 && (
+                            <span className="text-[10px] text-muted-foreground/85 font-medium">
+                              · {item.width} × {item.height}
+                            </span>
+                          )}
+                          {item.status === 'ready' && (
+                            <span className="text-[10px] text-success font-bold flex items-center gap-0.5">
+                              · Ready
+                            </span>
+                          )}
+                          {item.status === 'error' && (
+                            <span className="text-[10px] text-destructive font-bold flex items-center gap-0.5" title={item.error}>
+                              · Error
+                            </span>
+                          )}
+                        </div>
+                        {item.warning && (
+                          <p className="text-[9px] text-warning font-semibold truncate mt-0.5">
+                            ⚠️ {item.warning}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Controls */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => moveImageItem(index, 'up')}
+                          disabled={index === 0 || isConverting}
+                          className="w-8 h-8 rounded-lg hover:bg-secondary border border-transparent disabled:opacity-40"
+                          title="Move up"
+                        >
+                          <ArrowUp className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => moveImageItem(index, 'down')}
+                          disabled={index === imagesList.length - 1 || isConverting}
+                          className="w-8 h-8 rounded-lg hover:bg-secondary border border-transparent disabled:opacity-40"
+                          title="Move down"
+                        >
+                          <ArrowDown className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeImageItem(item.id)}
+                          disabled={isConverting}
+                          className="w-8 h-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          title="Remove image"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Progress bar container (shows when converting) */}
+                {isConverting && (
+                  <div className="p-4 bg-secondary/20 border border-border/50 rounded-xl space-y-2.5 animate-fade-in">
+                    <div className="flex justify-between items-center text-xs font-bold text-foreground">
+                      <span>Progress</span>
+                      <span className="text-primary font-extrabold">{getProgressPercentage()}%</span>
+                    </div>
+                    <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden border border-border/25 shadow-inner">
+                      <div 
+                        className="bg-primary h-full rounded-full transition-all duration-300 ease-out" 
+                        style={{ width: `${getProgressPercentage()}%` }}
+                      />
+                    </div>
+                    <p className="text-[11px] text-muted-foreground font-semibold leading-relaxed animate-pulse">
+                      {getProgressStatusText()}
+                    </p>
+                  </div>
+                )}
+
+                {/* Actions Footer */}
+                <div className="flex flex-col sm:flex-row gap-3 items-center justify-between pt-4 border-t border-border/40">
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddMoreClick}
+                      disabled={isConverting || imagesList.length >= 30}
+                      className="gap-1.5 text-xs font-bold border-border hover:bg-muted text-foreground flex-1 sm:flex-none"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Add Images
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearImagesList}
+                      disabled={isConverting}
+                      className="gap-1.5 text-xs font-bold text-destructive hover:text-destructive hover:bg-destructive/10 flex-1 sm:flex-none"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Clear Queue
+                    </Button>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-semibold">
+                    PDF combines into single file · Others batch into ZIP
+                  </span>
+                </div>
+              </div>
+
+              {/* Hidden file input for adding more */}
+              <input
+                type="file"
+                ref={addMoreFileInputRef}
+                onChange={handleAddMoreChange}
+                multiple
+                accept="image/png, image/jpeg, image/jpg, image/webp, image/gif, image/avif, image/bmp, image/heic, image/heif, image/tiff, image/tif, image/svg+xml"
+                className="hidden"
+              />
+            </div>
+
+            {/* CONTROLS PANEL (RIGHT SIDEBAR) */}
+            <div className="lg:col-span-1 p-4 sm:p-6 rounded-2xl bg-card border border-border/60 shadow-md space-y-5 sm:space-y-8 w-full flex flex-col justify-between">
+              
+              <div className="space-y-5 sm:space-y-6">
+                <div className="flex items-center gap-2 border-b border-border/40 pb-2.5 sm:pb-3">
+                  <Settings className="w-4 h-4 text-primary" />
+                  <h2 className="font-extrabold text-sm uppercase tracking-wider text-muted-foreground">
+                    Conversion Settings
+                  </h2>
+                </div>
+
+                {/* Selection Dropdown with optgroups */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground block">
+                    Target Format
+                  </label>
+                  <select
+                    value={targetFormat}
+                    onChange={(e) => {
+                      setTargetFormat(e.target.value);
+                      setSvgAcceptedWarning(false);
+                      setIsHardBlocked(false);
+                      setWasSvgDownscaled(false);
+                    }}
+                    disabled={isConverting}
+                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50"
+                  >
+                    <optgroup label="Standard">
+                      <option value="image/webp">Convert to WebP (Optimized)</option>
+                      <option value="image/png">Convert to PNG (Lossless)</option>
+                      <option value="image/jpeg">Convert to JPEG (JPG)</option>
+                    </optgroup>
+                    <optgroup label="Vector">
+                      <option value="image/svg+xml">Convert to SVG (Tracing)</option>
+                    </optgroup>
+                    <optgroup label="Document">
+                      <option value="application/pdf">Convert to PDF (High Resolution)</option>
+                    </optgroup>
+                    <optgroup label="Legacy">
+                      <option value="image/bmp">Convert to BMP (32-bit Alpha)</option>
+                      <option value="image/tiff">Convert to TIFF (Uncompressed)</option>
+                      <option value="image/gif">Convert to GIF (Single Frame)</option>
+                    </optgroup>
+                    <optgroup label="Web">
+                      <option value="image/x-icon">Convert to Favicon (ICO Multi-size)</option>
+                    </optgroup>
+                  </select>
+
+                  {/* SVG Permanent Tracing Warning Banner */}
+                  {targetFormat === "image/svg+xml" && (
+                    <div className="p-3 bg-primary/10 border border-primary/20 text-primary rounded-xl text-[10px] font-semibold leading-relaxed animate-fade-in flex gap-2">
+                      <Sparkles className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>
+                        SVG tracing best for logos, icons, and simple graphics up to 500 × 500 pixels. Larger or complex images produce stylized results. For pixel-perfect photo conversion, use PNG or WebP instead.
+                      </span>
+                    </div>
+                  )}
+
+                  {/* TIFF Uncompressed Warning Banner */}
+                  {targetFormat === "image/tiff" && (
+                    <div className="p-3 bg-warning/10 border border-warning/20 text-warning rounded-xl text-[10px] font-bold leading-relaxed animate-fade-in flex gap-2">
+                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>TIFF uncompressed format. File size will be larger than JPG/WebP.</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* CONDITIONAL CONTROL 1: QUALITY SLIDER */}
+                {isLossyFormat && (
+                  <div className="space-y-3 pt-2 border-t border-border/40 animate-fade-in">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-foreground flex items-center gap-1.5">
+                        <Sliders className="w-3.5 h-3.5 text-primary" />
+                        Target Quality
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 font-extrabold">
+                        {quality}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="50"
+                      max="100"
+                      value={quality}
+                      onChange={(e) => setQuality(Number(e.target.value))}
+                      disabled={isConverting}
+                      className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary disabled:opacity-50"
+                    />
+                    <div className="flex justify-between text-[10px] text-muted-foreground font-semibold">
+                      <span>50 (Aggressive Size)</span>
+                      <span>100 (Maximum Quality)</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* HIDE NOTICE FOR LOSSLESS & TRACING FORMATS */}
+                {(targetFormat === "image/png" || targetFormat === "image/bmp" || targetFormat === "image/x-icon" || targetFormat === "image/gif") && (
+                  <div className="p-3 bg-secondary/50 border border-border/40 rounded-xl text-[10px] text-muted-foreground font-medium leading-relaxed animate-fade-in">
+                    {targetFormat === "image/png" && "PNG is a lossless format, quality sliders are hidden. Edges will be preserved at maximum visual accuracy."}
+                    {targetFormat === "image/bmp" && "BMP uncompressed output maintains mathematical color data. Transparency channel is preserved."}
+                    {targetFormat === "image/x-icon" && "ICO icon packages three standard layers (16x16, 32x32, 48x48) utilizing high-fidelity PNG containers."}
+                    {targetFormat === "image/gif" && "GIF encodes a single static frame limited to 256 colors. 1-bit transparency is supported."}
+                  </div>
+                )}
+
+                {/* CONDITIONAL CONTROL: SVG TRACING PRESET SELECTOR */}
+                {targetFormat === "image/svg+xml" && (
+                  <div className="space-y-3 pt-3 border-t border-border/40 animate-fade-in">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-foreground flex items-center gap-1.5">
+                        <Palette className="w-3.5 h-3.5 text-primary" />
+                        Tracing Style Preset
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-xl border border-border/60 text-xs font-bold">
+                      <button
+                        onClick={() => setSvgPreset("detailed")}
+                        disabled={isConverting}
+                        className={`py-2 rounded-lg transition-all duration-150 ${svgPreset === "detailed" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        Logo/Icon
+                      </button>
+                      <button
+                        onClick={() => setSvgPreset("posterized2")}
+                        disabled={isConverting}
+                        className={`py-2 rounded-lg transition-all duration-150 ${svgPreset === "posterized2" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        Photo/Artistic
+                      </button>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground leading-relaxed pl-1">
+                      {svgPreset === "detailed" 
+                        ? "Logo/Icon: Traces fine contours with high color counts. Perfect for logos and graphics." 
+                        : "Photo/Artistic: Posterizes image with smooth, stylized layers. Ideal for photography."}
+                    </div>
+                  </div>
+                )}
+
+                {/* CONDITIONAL CONTROL 2: TRANSPARENCY HANDLING (flatten backdrops) */}
+                {showTransparencyPanel && (
+                  <div className="space-y-4 pt-3 border-t border-border/40 animate-fade-in">
+                    <div className="space-y-1.5">
+                      <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <Palette className="w-3.5 h-3.5 text-primary" />
+                        Transparency Backdrop
+                      </span>
+                      <p className="text-[10px] text-muted-foreground leading-relaxed">
+                        Selected target format does not fully guarantee native alpha channel rendering. Fill transparent pixels:
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-xl border border-border/60 text-xs font-bold">
+                      <button
+                        onClick={() => setTransparencyFill("white")}
+                        className={`py-2 rounded-lg transition-all duration-150 ${transparencyFill === "white" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        White Solid
+                      </button>
+                      <button
+                        onClick={() => setTransparencyFill("custom")}
+                        className={`py-2 rounded-lg transition-all duration-150 ${transparencyFill === "custom" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        Custom Color
+                      </button>
+                    </div>
+
+                    {/* Custom Hex Color Picker Palette */}
+                    {transparencyFill === "custom" && (
+                      <div className="flex items-center gap-3 pl-1 pt-1 animate-fade-in">
+                        <input
+                          type="color"
+                          value={customFillColor}
+                          onChange={(e) => setCustomFillColor(e.target.value)}
+                          disabled={isConverting}
+                          className="w-9 h-9 p-0 rounded-lg border border-border cursor-pointer bg-transparent shadow-sm shrink-0"
+                        />
+                        <div className="space-y-1 w-full">
+                          <input
+                            type="text"
+                            value={customFillColor}
+                            onChange={(e) => {
+                              if (e.target.value.startsWith("#") && e.target.value.length <= 7) {
+                                setCustomFillColor(e.target.value);
+                              }
+                            }}
+                            disabled={isConverting}
+                            placeholder="#ffffff"
+                            className="w-full p-2 bg-secondary border border-border rounded-xl text-xs font-extrabold uppercase focus:outline-none focus:border-primary disabled:opacity-50"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Download banner trigger */}
+              <div className="pt-4 sm:pt-6 border-t border-border/40 space-y-3 sm:space-y-4">
+                {convertedImage && !isConverting && !error && (
+                  <div className="p-3 sm:p-4 rounded-xl bg-success/5 border border-success/15 text-[10px] text-muted-foreground leading-relaxed animate-fade-in flex gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-success shrink-0 mt-0.5" />
+                    <span>
+                      {targetFormat === "application/pdf" 
+                        ? "Successfully compiled all images into a single multi-page PDF."
+                        : `Successfully converted all images and bundled into a ZIP archive.`}
+                    </span>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl text-[10px] font-semibold flex gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {/* Manual Convert Button */}
+                <Button
+                  onClick={() => performBatchConversion()}
+                  disabled={isConverting || imagesList.filter(item => item.status === 'ready').length === 0}
+                  className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center"
+                >
+                  {isConverting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin animate-fade-in" />
+                      Converting Batch...
+                    </>
+                  ) : convertedImage ? (
+                    "Re-convert Batch"
+                  ) : (
+                    "Convert Batch"
+                  )}
+                </Button>
+
+                <DownloadButton
+                  file={convertedImage}
+                  originalFilename={targetFormat === "application/pdf" ? "converted.pdf" : "converted-images.zip"}
+                  disabled={isConverting || !convertedImage}
+                  className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+                >
+                  {targetFormat === "application/pdf" ? "Download Combined PDF" : "Download ZIP Archive"}
+                </DownloadButton>
+              </div>
+
+            </div>
+
+          </section>
         )}
-        {!activeImage && <UrlInputHelp />}
+        {imagesList.length === 0 && <UrlInputHelp />}
       </div>
     </main>
   );

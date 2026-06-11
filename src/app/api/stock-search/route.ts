@@ -16,6 +16,12 @@ export interface StockImage {
   sourceUrl: string;
   downloadTriggerUrl?: string;
   altText: string;
+  // Content type of this result. Photos come from any provider; illustrations
+  // and vectors are Pixabay-only.
+  contentType: 'photo' | 'illustration' | 'vector';
+  // True vector/SVG source URL, if the Pixabay account has full API access.
+  // Omitted for standard accounts (only raster previews are returned then).
+  vectorSourceUrl?: string;
 }
 
 interface UnsplashPhoto {
@@ -61,6 +67,7 @@ interface PexelsPhoto {
 
 interface PixabayHit {
   id: number;
+  type?: string;
   previewURL: string;
   webformatURL: string;
   largeImageURL: string;
@@ -70,29 +77,32 @@ interface PixabayHit {
   user_id: number;
   pageURL: string;
   tags?: string;
+  // Only present when the account has full API access approval. For vectors,
+  // this is the true SVG resource; otherwise omitted.
+  vectorURL?: string;
 }
 
 // In-Memory Cache for Pixabay (24 hours TTL)
-// FUTURE UPGRADE PATH: If traffic grows, replace this in-memory map with an Upstash Redis store 
-// to survive serverless cold starts and ensure persistent cross-instance caching.
 const pixabayCache = new Map<string, { timestamp: number; data: StockImage[] }>();
 const PIXABAY_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
-// Helper to clean query strings for caching keying
-function getPixabayCacheKey(query: string, page: number, orientation: string): string {
-  return `${query.toLowerCase().trim()}_p${page}_o${orientation}`;
+// Helper to clean query strings for caching keying.
+// IMPORTANT: the key includes imageType so "cat" photos, illustrations, and
+// vectors are cached separately and never collide.
+function getPixabayCacheKey(query: string, page: number, orientation: string, imageType: string): string {
+  return `${query.toLowerCase().trim()}_p${page}_o${orientation}_t${imageType}`;
 }
 
 export async function GET(req: NextRequest) {
   // 1. IP Rate Limiting
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() 
-        || req.headers.get('x-real-ip') 
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim()
+        || req.headers.get('x-real-ip')
         || 'unknown';
 
   const { allowed } = checkRateLimit(ip);
   if (!allowed) {
-    return NextResponse.json({ 
-      error: 'Too many requests. Please wait a few minutes and try again.' 
+    return NextResponse.json({
+      error: 'Too many requests. Please wait a few minutes and try again.'
     }, { status: 429 });
   }
 
@@ -102,6 +112,14 @@ export async function GET(req: NextRequest) {
   const provider = (searchParams.get('provider') || 'all') as 'unsplash' | 'pexels' | 'pixabay' | 'all';
   const page = parseInt(searchParams.get('page') || '1', 10);
   const orientation = (searchParams.get('orientation') || 'all') as 'all' | 'landscape' | 'portrait' | 'square';
+
+  // Content type determines which providers are queried and the Pixabay
+  // image_type. Photos = all providers; illustrations/vectors = Pixabay only.
+  const rawContentType = searchParams.get('contentType') || 'photo';
+  const contentType = (['photo', 'illustration', 'vector'].includes(rawContentType)
+    ? rawContentType
+    : 'photo') as 'photo' | 'illustration' | 'vector';
+  const pixabayImageType = contentType;
 
   if (!query.trim()) {
     return NextResponse.json({ results: [], page, hasMore: false });
@@ -114,15 +132,14 @@ export async function GET(req: NextRequest) {
   // 3. Helper Fetch Functions per Provider
   const fetchUnsplash = async (limit: number): Promise<StockImage[]> => {
     if (!unsplashKey) return [];
-    
-    // Map orientation
+
     let orientationParam = '';
     if (orientation === 'landscape') orientationParam = '&orientation=landscape';
     else if (orientation === 'portrait') orientationParam = '&orientation=portrait';
     else if (orientation === 'square') orientationParam = '&orientation=squarish';
 
     const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${limit}${orientationParam}`;
-    
+
     const response = await fetch(url, {
       headers: {
         Authorization: `Client-ID ${unsplashKey}`,
@@ -141,8 +158,7 @@ export async function GET(req: NextRequest) {
       id: `unsplash_${item.id}`,
       provider: 'unsplash',
       thumbnailUrl: item.urls.small || item.urls.thumb,
-      // previewUrl is used for auto-routing. Max 2048px regular size is ideal
-      previewUrl: item.urls.regular, 
+      previewUrl: item.urls.regular,
       fullUrl: item.urls.full || item.urls.raw,
       width: item.width,
       height: item.height,
@@ -153,6 +169,7 @@ export async function GET(req: NextRequest) {
       sourceUrl: item.links.html,
       downloadTriggerUrl: item.links.download_location,
       altText: item.alt_description || item.description || 'Stock photo from Unsplash',
+      contentType: 'photo',
     }));
   };
 
@@ -161,11 +178,11 @@ export async function GET(req: NextRequest) {
 
     let orientationParam = '';
     if (orientation !== 'all') {
-      orientationParam = `&orientation=${orientation}`; // landscape, portrait, square
+      orientationParam = `&orientation=${orientation}`;
     }
 
     const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&page=${page}&per_page=${limit}${orientationParam}`;
-    
+
     const response = await fetch(url, {
       headers: {
         Authorization: pexelsKey,
@@ -184,7 +201,6 @@ export async function GET(req: NextRequest) {
       id: `pexels_${item.id}`,
       provider: 'pexels',
       thumbnailUrl: item.src.medium,
-      // previewUrl: Use large2x or large (suitable resolution under 4MB)
       previewUrl: item.src.large2x || item.src.large,
       fullUrl: item.src.original,
       width: item.width,
@@ -195,30 +211,30 @@ export async function GET(req: NextRequest) {
       },
       sourceUrl: item.url,
       altText: item.alt || 'Stock photo from Pexels',
+      contentType: 'photo',
     }));
   };
 
   const fetchPixabay = async (limit: number): Promise<StockImage[]> => {
     if (!pixabayKey) return [];
 
-    // Check cache first
-    const cacheKey = getPixabayCacheKey(query, page, orientation);
+    // Check cache first. Key includes imageType so photo/illustration/vector
+    // results for the same query are cached separately (no collision).
+    const cacheKey = getPixabayCacheKey(query, page, orientation, pixabayImageType);
     const cached = pixabayCache.get(cacheKey);
     const now = Date.now();
 
     if (cached && (now - cached.timestamp < PIXABAY_CACHE_TTL)) {
-      console.log(`[Pixabay Cache Hit] Serving query: ${query} (page: ${page})`);
+      console.log(`[Pixabay Cache Hit] Serving query: ${query} (page: ${page}, type: ${pixabayImageType})`);
       return cached.data;
     }
 
-    // Map orientation
     let orientationParam = '';
     if (orientation === 'landscape') orientationParam = '&orientation=horizontal';
     else if (orientation === 'portrait') orientationParam = '&orientation=vertical';
-    // Square is skipped natively by Pixabay. We query all orientations to prevent blank list
 
-    const url = `https://pixabay.com/api/?key=${pixabayKey}&q=${encodeURIComponent(query)}&page=${page}&per_page=${limit}&image_type=photo${orientationParam}`;
-    
+    const url = `https://pixabay.com/api/?key=${pixabayKey}&q=${encodeURIComponent(query)}&page=${page}&per_page=${limit}&image_type=${pixabayImageType}${orientationParam}`;
+
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -233,7 +249,6 @@ export async function GET(req: NextRequest) {
       id: `pixabay_${item.id}`,
       provider: 'pixabay',
       thumbnailUrl: item.previewURL || item.webformatURL,
-      // webformatURL is typically 640px wide preview, largeImageURL is up to 1280px or 1920px (under 4MB)
       previewUrl: item.largeImageURL || item.webformatURL,
       fullUrl: item.largeImageURL,
       width: item.imageWidth,
@@ -243,16 +258,29 @@ export async function GET(req: NextRequest) {
         profileUrl: `https://pixabay.com/users/${item.user}-${item.user_id}/`,
       },
       sourceUrl: item.pageURL,
-      altText: item.tags || 'Stock photo from Pixabay',
+      altText: item.tags || `Stock ${contentType} from Pixabay`,
+      contentType,
+      // Present only with full API access; lets us surface an SVG download later.
+      vectorSourceUrl: item.vectorURL || undefined,
     }));
 
-    // Cache the successful result
     pixabayCache.set(cacheKey, { timestamp: now, data: normalized });
     return normalized;
   };
 
   // 4. Fetch and Interleave
   try {
+    // Illustrations & vectors are Pixabay-only (Unsplash/Pexels are photo-only).
+    // Force a Pixabay-only search regardless of the selected provider.
+    if (contentType !== 'photo') {
+      const results = await fetchPixabay(30);
+      return NextResponse.json({
+        results,
+        page,
+        hasMore: results.length === 30,
+      });
+    }
+
     if (provider === 'unsplash') {
       const results = await fetchUnsplash(30);
       return NextResponse.json({
@@ -281,7 +309,6 @@ export async function GET(req: NextRequest) {
     }
 
     // Default: 'all' provider
-    // Fetch 10 results from each provider concurrently
     const [unsplashRes, pexelsRes, pixabayRes] = await Promise.allSettled([
       fetchUnsplash(10),
       fetchPexels(10),
@@ -292,7 +319,6 @@ export async function GET(req: NextRequest) {
     const pexelsList = pexelsRes.status === 'fulfilled' ? pexelsRes.value : [];
     const pixabayList = pixabayRes.status === 'fulfilled' ? pixabayRes.value : [];
 
-    // Interleave results
     const combined: StockImage[] = [];
     const maxLength = Math.max(unsplashList.length, pexelsList.length, pixabayList.length);
 
@@ -302,7 +328,6 @@ export async function GET(req: NextRequest) {
       if (i < pixabayList.length) combined.push(pixabayList[i]);
     }
 
-    // hasMore is true if any provider returned a full list of 10 items
     const hasMore = unsplashList.length === 10 || pexelsList.length === 10 || pixabayList.length === 10;
 
     return NextResponse.json({
