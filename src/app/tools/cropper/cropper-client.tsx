@@ -462,11 +462,11 @@ export default function CropperClient() {
           contain: layout style paint;
         }
         .ReactCrop__crop-selection {
-          border: 1.5px dashed #10b981 !important;
+          border: 1.5px dashed hsl(var(--foreground)) !important;
           box-shadow: 0 0 0 99999px rgba(15, 15, 17, 0.75) !important;
         }
         .ReactCrop__drag-handle {
-          background-color: #10b981 !important;
+          background-color: hsl(var(--foreground)) !important;
           border: 1.5px solid #ffffff !important;
           width: 10px !important;
           height: 10px !important;
@@ -484,7 +484,7 @@ export default function CropperClient() {
           }
         }
         .ReactCrop__drag-handle:hover {
-          background-color: #34d399 !important;
+          background-color: hsl(var(--muted-foreground)) !important;
           transform: scale(1.2);
         }
       `}} />
@@ -494,7 +494,7 @@ export default function CropperClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
+      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
         <div className="flex flex-col gap-1 items-start">
           <div className="flex items-center gap-2">
             <Logo className="w-8 h-8" />

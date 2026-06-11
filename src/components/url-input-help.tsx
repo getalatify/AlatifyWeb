@@ -68,10 +68,10 @@ export function UrlInputHelp() {
           What a direct image URL looks like
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 bg-emerald-500/5 border border-emerald-500/15 rounded-xl space-y-2.5 shadow-sm">
+          <div className="p-4 bg-secondary/40 border border-border rounded-xl space-y-2.5 shadow-sm">
             <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span className="font-bold text-xs text-emerald-600 dark:text-emerald-400">
+              <Check className="w-4 h-4 text-foreground shrink-0" />
+              <span className="font-bold text-xs text-foreground">
                 Correct — Direct Image URLs
               </span>
             </div>

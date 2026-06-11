@@ -1,5 +1,40 @@
 import { removeBackground } from "@imgly/background-removal";
 
+// Intercept fetch requests in the Web Worker to cache AI models in Cache Storage
+const originalFetch = self.fetch;
+self.fetch = async function (input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const url = typeof input === "string" ? input : (input instanceof URL ? input.href : input.url);
+
+  // We want to cache the model files (.onnx) and execution files (.wasm, .mjs)
+  // These are heavy assets fetched from staticimgly.com / @imgly/background-removal-data
+  const isCacheableAsset = 
+    url.includes("staticimgly.com") || 
+    url.includes("background-removal-data") || 
+    url.includes("onnxruntime-web");
+
+  // Skip caching the JSON resources map to avoid metadata stale caching
+  if (isCacheableAsset && !url.includes("resources.json")) {
+    try {
+      const cache = await caches.open("alatify-model-cache");
+      const cachedResponse = await cache.match(url);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      const response = await originalFetch(input, init);
+      if (response.ok) {
+        await cache.put(url, response.clone());
+      }
+      return response;
+    } catch (err) {
+      console.warn("[Worker Cache] Cache Storage failed, falling back to network fetch:", err);
+      return originalFetch(input, init);
+    }
+  }
+
+  return originalFetch(input, init);
+};
+
 // Helper to resize image using OffscreenCanvas in the worker thread
 async function resizeImageWithOffscreenCanvas(imageFile: Blob | File): Promise<Blob | File> {
   const maxDimension = 2048;

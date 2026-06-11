@@ -16,7 +16,7 @@ export default function DevComponentsPage() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
+      <header className="glass-header rounded-2xl flex items-center justify-between p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black text-lg shadow-md shadow-primary/20">
             A

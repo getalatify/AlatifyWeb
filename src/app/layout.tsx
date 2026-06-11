@@ -1,23 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { cn } from "@/lib/utils";
 import { ThemeProvider, Footer } from "@/components/shared";
+import { AppBackground } from "@/components/shared/app-background";
 import { Toaster } from "sonner";
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -87,26 +75,26 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
-// FUTURE REFACTOR NOTE: The 11 page files contain identical <main> wrapper Tailwind classes:
-// "relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip"
-// This is a DRY violation. Future refactoring should move this <main> wrapper styling to a shared
-// component (e.g., a PageContainer) or directly here in RootLayout, so future pages do not duplicate these classes.
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn("font-sans", inter.variable)}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn("font-sans", GeistSans.variable, GeistMono.variable)}
+    >
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
+          {/* Single site-wide animated background layer (fixed, z-index -1) */}
+          <AppBackground />
           <div className="flex flex-col min-h-screen">
             <div className="flex-1">
               {children}

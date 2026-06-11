@@ -58,6 +58,10 @@ const config: Config = {
         canvas: "hsl(var(--canvas))",
         "primary-hover": "hsl(var(--primary-hover))",
       },
+      fontFamily: {
+        sans: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

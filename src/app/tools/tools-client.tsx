@@ -64,10 +64,10 @@ const pipelineTools = [
   {
     name: "EXIF Privacy Cleaner",
     description: "Remove location data, camera info, and metadata from your images to protect privacy before sharing.",
-    status: "Coming Soon",
-    statusColor: "bg-warning/10 text-warning border-warning/20",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
     icon: Shield,
-    href: null,
+    href: "/tools/exif-cleaner",
   },
   {
     name: "AI Upscaler",
@@ -92,28 +92,30 @@ export default function ToolsHubPage() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="flex items-center justify-between p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to home
-          </Link>
+      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0">
+        <div className="flex items-center gap-3 pl-2">
+          <Logo className="w-10 h-10" />
+          <span className="font-extrabold text-2xl tracking-tight text-foreground">
+            Alatify
+          </span>
         </div>
         <ThemeToggle />
       </header>
 
-      {/* Hero Section - Takes Full Screen Height minus Header */}
-      <section className="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-center text-center px-4 min-h-[calc(100vh-120px)] z-10">
-        <div className="space-y-6 flex flex-col items-center py-12">
+      {/* Back to home — placed BELOW the header box, aligned with the logo */}
+      <div className="max-w-7xl mx-auto w-full px-6 mt-3 z-10 shrink-0">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 pl-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+          Back to home
+        </Link>
+      </div>
+
+      {/* Hero Section - Shipped UP and sized dynamically so scroll cue is visible above fold */}
+      <section className="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-start text-center px-4 min-h-[calc(100svh-130px)] pt-6 sm:pt-10 md:pt-14 z-10">
+        <div className="space-y-6 flex flex-col items-center py-6 sm:py-8">
           {/* Top Announcement Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
             <Sparkles className="w-3.5 h-3.5" />
@@ -134,7 +136,7 @@ export default function ToolsHubPage() {
         {/* Floating Scroll Indicator */}
         <div 
           onClick={handleScrollToPipeline}
-          className="absolute bottom-4 flex flex-col items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity animate-fade-in group"
+          className="absolute bottom-16 flex flex-col items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity animate-fade-in group"
         >
           <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest transition-colors group-hover:text-primary">
             Scroll to see what&apos;s coming
@@ -150,7 +152,7 @@ export default function ToolsHubPage() {
       >
         {/* Stock Image Finder Standalone Highlight Banner */}
         <div className="w-full max-w-5xl">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card/65 via-card/40 to-primary/5 backdrop-blur-sm border border-border/80 dark:border-primary/10 p-6 sm:p-7 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-primary/45 dark:hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group">
+          <div className="relative overflow-hidden rounded-2xl bg-card border border-border/80 dark:border-primary/10 shadow-md p-6 sm:p-7 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-primary/45 dark:hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group">
             {/* Ambient inner glow */}
             <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-primary/10 rounded-full blur-[60px] pointer-events-none -mr-20 -mt-20 transition-opacity duration-300 group-hover:bg-primary/15" />
             
@@ -207,7 +209,7 @@ export default function ToolsHubPage() {
             
             const cardContent = (
               <div className={cn(
-                "w-full h-full p-6 rounded-2xl bg-card/40 backdrop-blur-sm border shadow-sm flex flex-col justify-between gap-4 transition-all duration-350 group",
+                "w-full h-full p-6 rounded-2xl bg-card border border-border shadow-md flex flex-col justify-between gap-4 transition-all duration-350 group",
                 isAvailable 
                   ? "border-border/60 hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
                   : "border-border/30 opacity-70 cursor-not-allowed select-none"
@@ -277,3 +279,4 @@ export default function ToolsHubPage() {
     </main>
   );
 }
+

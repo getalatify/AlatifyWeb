@@ -24,6 +24,12 @@ import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { ProcessingOverlay } from "@/components/processing-overlay";
 import { usePendingImage } from "@/hooks/use-pending-image";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger
+} from "@/components/ui/select";
 
 function formatElapsed(seconds: number): string {
   if (seconds < 60) return `${Math.floor(seconds)}s`;
@@ -80,6 +86,7 @@ export default function BgRemoverClient() {
   const gpuWatchdogRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
   const cumulativeStartTimeRef = useRef<number>(0);
+  const inferenceStartTimeRef = useRef<number>(0);
   const hasAttemptedGpuRef = useRef<boolean>(false);
   const activeDeviceRef = useRef<"gpu" | "cpu" | null>(null);
   const [elapsed, setElapsed] = useState<number>(0);
@@ -99,6 +106,56 @@ export default function BgRemoverClient() {
       setIsWebGPUSupported(supported);
     });
   }, []);
+
+  // Model Cache Storage States
+  const [cacheSize, setCacheSize] = useState<number | null>(null);
+
+  const updateCacheSize = useCallback(async () => {
+    if (typeof window === "undefined" || !("caches" in window)) return;
+    try {
+      const cache = await window.caches.open("alatify-model-cache");
+      const keys = await cache.keys();
+      let totalSize = 0;
+      for (const key of keys) {
+        const response = await cache.match(key);
+        if (response) {
+          const contentLength = response.headers.get("content-length");
+          if (contentLength) {
+            totalSize += parseInt(contentLength);
+          } else {
+            try {
+              const blob = await response.clone().blob();
+              totalSize += blob.size;
+            } catch {}
+          }
+        }
+      }
+      setCacheSize(totalSize);
+    } catch (e) {
+      console.error("Failed to estimate cache size:", e);
+      setCacheSize(0);
+    }
+  }, []);
+
+  const handleClearCache = useCallback(async () => {
+    if (typeof window === "undefined" || !("caches" in window)) return;
+    try {
+      await window.caches.delete("alatify-model-cache");
+      setCacheSize(0);
+      import("sonner").then(({ toast }) => {
+        toast.success("AI model cache cleared successfully.", {
+          description: "All downloaded model assets have been deleted from your device.",
+        });
+      });
+    } catch (e) {
+      console.error("Failed to clear cache:", e);
+    }
+  }, []);
+
+  // Update cache size on mount
+  useEffect(() => {
+    updateCacheSize();
+  }, [updateCacheSize]);
 
 
   // Performance & Tier States
@@ -140,19 +197,23 @@ export default function BgRemoverClient() {
 
   // Timer for displaying elapsed processing time using Date.now() diff
   useEffect(() => {
-    if (!isProcessing) return;
+    if (stage !== 'processing') return;
 
     const updateElapsed = () => {
-      setElapsed((Date.now() - cumulativeStartTimeRef.current) / 1000);
+      if (inferenceStartTimeRef.current > 0) {
+        setElapsed((Date.now() - inferenceStartTimeRef.current) / 1000);
+      } else {
+        setElapsed(0);
+      }
     };
 
     updateElapsed();
-    const interval = setInterval(updateElapsed, 1000);
+    const interval = setInterval(updateElapsed, 100);
 
     return () => {
       clearInterval(interval);
     };
-  }, [isProcessing]);
+  }, [stage]);
 
   // Prevent navigation/tab closure while processing
   useEffect(() => {
@@ -302,7 +363,7 @@ export default function BgRemoverClient() {
     clearGpuWatchdog();
 
     const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
-    const modelName = modelType === 'isnet_fp16' ? 'Quality' : modelType === 'isnet_quint8' ? 'Balanced' : 'Speed';
+    const modelName = modelType === 'isnet' ? 'Quality' : modelType === 'isnet_fp16' ? 'Balanced' : 'Lite';
     console.log(`[BG Remover] Cancelled at ${duration}s (${modelName} model)`);
 
     setStage("idle");
@@ -353,6 +414,9 @@ export default function BgRemoverClient() {
 
       if (msg.type === "status") {
         setStage(msg.stage);
+        if (msg.stage === "processing" && inferenceStartTimeRef.current === 0) {
+          inferenceStartTimeRef.current = Date.now();
+        }
         if (activeDeviceRef.current === "gpu") {
           startGpuWatchdog();
         }
@@ -361,6 +425,9 @@ export default function BgRemoverClient() {
 
       if (msg.type === "progress") {
         setStage(msg.stage);
+        if (msg.stage === "processing" && inferenceStartTimeRef.current === 0) {
+          inferenceStartTimeRef.current = Date.now();
+        }
         if (activeDeviceRef.current === "gpu") {
           startGpuWatchdog();
         }
@@ -382,7 +449,10 @@ export default function BgRemoverClient() {
 
         const totalDurationFloat = (Date.now() - cumulativeStartTimeRef.current) / 1000;
         const attemptDurationFloat = (Date.now() - startTimeRef.current) / 1000;
-        setElapsed(totalDurationFloat);
+        const finalInferenceElapsed = inferenceStartTimeRef.current > 0
+          ? (Date.now() - inferenceStartTimeRef.current) / 1000
+          : 0;
+        setElapsed(finalInferenceElapsed);
 
         const outputBlob = msg.blob;
         if (outputBlob) {
@@ -410,7 +480,7 @@ export default function BgRemoverClient() {
 
           const totalDuration = totalDurationFloat.toFixed(1);
           const attemptDuration = attemptDurationFloat.toFixed(1);
-          const modelName = modelType === 'isnet' ? 'Quality — ISNet Base' : modelType === 'isnet_fp16' ? 'Balanced — ISNet FP16' : 'Speed — ISNet Quant8';
+          const modelName = modelType === 'isnet' ? 'Quality — ISNet Base' : modelType === 'isnet_fp16' ? 'Balanced — ISNet FP16' : 'Lite — ISNet Quant8';
           const originalFormat = activeImage ? getImageFormat(activeImage) : "";
           const imgDimensions = originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : "Unknown";
 
@@ -423,6 +493,7 @@ export default function BgRemoverClient() {
 
           setProcessedImage(fileObj);
           setStage("complete");
+          updateCacheSize();
         }
         return;
       }
@@ -441,8 +512,13 @@ export default function BgRemoverClient() {
           console.warn("[BG Remover] GPU processing error detected. Activating CPU fallback.");
           handleGpuFallbackRef.current?.();
         } else {
+          const finalInferenceElapsed = inferenceStartTimeRef.current > 0
+            ? (Date.now() - inferenceStartTimeRef.current) / 1000
+            : 0;
+          setElapsed(finalInferenceElapsed);
           setError(msg.error);
           setStage("error");
+          updateCacheSize();
         }
         return;
       }
@@ -458,7 +534,7 @@ export default function BgRemoverClient() {
 
     workerRef.current = worker;
     return worker;
-  }, [activeImage, originalDimensions, modelType, startGpuWatchdog, clearGpuWatchdog, resetHeartbeatTimer, clearHeartbeatTimer, clearWatchdogTimer]);
+  }, [activeImage, originalDimensions, modelType, startGpuWatchdog, clearGpuWatchdog, resetHeartbeatTimer, clearHeartbeatTimer, clearWatchdogTimer, updateCacheSize]);
 
   // Core background removal processing implementation with device selection
   const runProcessWithDevice = useCallback((imageFile: File | Blob, selectedModel: 'isnet_fp16' | 'isnet_quint8' | 'isnet', targetDevice: 'gpu' | 'cpu') => {
@@ -483,6 +559,7 @@ export default function BgRemoverClient() {
       }
 
       startTimeRef.current = Date.now();
+      inferenceStartTimeRef.current = 0;
 
       worker.postMessage({
         type: "process",
@@ -526,6 +603,8 @@ export default function BgRemoverClient() {
     setWasAutoResized(false);
 
     cumulativeStartTimeRef.current = Date.now();
+    inferenceStartTimeRef.current = 0;
+    setElapsed(0);
     hasAttemptedGpuRef.current = false;
 
     const isGpuSupported = isWebGPUSupported === true;
@@ -571,7 +650,7 @@ export default function BgRemoverClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
+      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
         <div className="flex flex-col gap-1 items-start">
           <div className="flex items-center gap-2">
             <Logo className="w-8 h-8" />
@@ -707,95 +786,11 @@ export default function BgRemoverClient() {
                       backgroundRepeat: "repeat",
                     }}
                   >
-                                     {/* STATE A: downloading first-time engine */}
-                    {stage === 'downloading' && (
-                      <div className="absolute inset-0 bg-background/95 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
-                        <div className="p-5 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-4 max-w-[240px]">
-                          <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                          <div className="space-y-1">
-                            <span className="text-xs font-extrabold text-foreground block">
-                              Setting up AI engine for the first time (one-time setup)...
-                            </span>
-                            <span className="text-[10px] text-muted-foreground leading-normal block">
-                              Downloading neural weights. Setup loads standard network model assets.
-                            </span>
-                          </div>
-
-                          {/* Progress bar container */}
-                          <div className="w-full space-y-1">
-                            <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden border border-border/60">
-                              <div 
-                                className="bg-primary h-full rounded-full transition-all duration-300 shadow-sm"
-                                style={{ width: `${downloadProgress}%` }}
-                              />
-                            </div>
-                            <div className="flex justify-between items-center text-[9px] text-muted-foreground font-semibold">
-                              <span className="truncate max-w-[120px]">{downloadingFile || "Downloading..."}</span>
-                              <span>{downloadProgress}%</span>
-                            </div>
-                          </div>
-                          <span className="text-[9px] text-muted-foreground italic font-medium">
-                            First-time setup may take a minute.
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* STATE B1: compiling GPU shaders */}
-                    {stage === 'compiling' && (
-                      <div className="absolute inset-0 bg-background/85 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center animate-fade-in select-none">
-                        <div className="p-5 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-3.5 max-w-[220px]">
-                          <div className="relative">
-                            <div className="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-                            <Sparkles className="w-4 h-4 text-primary absolute inset-0 m-auto animate-pulse" />
-                          </div>
-                          <div className="space-y-1">
-                            <span className="text-xs font-extrabold text-foreground block">
-                              Compiling GPU shaders...
-                            </span>
-                            <span className="text-[10px] text-muted-foreground leading-normal block font-medium">
-                              Initializing WebGPU execution pipelines. This takes a brief moment on first run.
-                            </span>
-                            {elapsed > 0 && (
-                              <span className="text-[10.5px] font-bold text-primary block animate-pulse mt-1">
-                                Elapsed: {formatElapsed(elapsed)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* STATE B2: processing neural model inference */}
-                    {stage === 'processing' && (
-                      <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center animate-fade-in select-none">
-                        <div className="p-5 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-3.5 max-w-[220px]">
-                          <div className="relative">
-                            <div className="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-                            <Scissors className="w-4 h-4 text-primary absolute inset-0 m-auto animate-pulse" />
-                          </div>
-                          <div className="space-y-1">
-                            <span className="text-xs font-extrabold text-foreground block">
-                              Removing background...
-                            </span>
-                            <span className="text-[10px] text-muted-foreground leading-normal block font-medium">
-                              {deviceUsed === 'gpu' 
-                                ? "Running high-performance neural segmentation using WebGPU hardware acceleration."
-                                : "This typically takes 1-3 minutes depending on your device and image size. Larger images take longer."
-                              }
-                            </span>
-                            {elapsed > 0 && (
-                              <span className="text-[10.5px] font-bold text-primary block animate-pulse mt-1">
-                                Elapsed: {formatElapsed(elapsed)}
-                              </span>
-                            )}
-                            {elapsed > 5 && (
-                              <span className="text-[9px] text-muted-foreground leading-normal block font-medium animate-pulse mt-1.5">
-                                Still processing... Large images or slower CPUs can take a moment to compute.
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                    {/* Calm neutral placeholder during processing */}
+                    {isProcessing && (
+                      <div className="text-xs text-muted-foreground/60 flex flex-col items-center gap-1.5 select-none animate-pulse">
+                        <Scissors className="w-8 h-8 opacity-25 text-muted-foreground" />
+                        <span>Processing in progress...</span>
                       </div>
                     )}
 
@@ -951,16 +946,104 @@ export default function BgRemoverClient() {
                     <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
                       AI Model Variant
                     </label>
-                    <select
+                    <Select
                       value={modelType}
-                      onChange={(e) => setModelType(e.target.value as "isnet_fp16" | "isnet_quint8" | "isnet")}
+                      onValueChange={(val) => setModelType(val as "isnet_fp16" | "isnet_quint8" | "isnet")}
                       disabled={isProcessing}
-                      className="w-full bg-secondary border border-border hover:border-primary/50 text-foreground text-xs rounded-xl p-2.5 outline-none transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <option value="isnet_quint8">Speed — ISNet Quant8 (Fastest, ~10MB)</option>
-                      <option value="isnet_fp16">Balanced — ISNet FP16 (Recommended, ~22MB)</option>
-                      <option value="isnet">Quality — ISNet Base (Highest accuracy, ~40MB)</option>
-                    </select>
+                      <SelectTrigger className="w-full bg-secondary border border-border hover:border-primary/50 text-foreground text-xs rounded-xl h-10 px-3 outline-none transition-all duration-200 cursor-pointer focus:ring-1 focus:ring-primary/40 focus:outline-none flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold">
+                            {modelType === 'isnet' ? 'Quality' : modelType === 'isnet_fp16' ? 'Balanced' : 'Lite'}
+                          </span>
+                          {modelType === 'isnet_fp16' && (
+                            <span className="text-[9px] bg-primary/10 text-primary border border-primary/20 px-1 py-0.2 rounded-md font-extrabold uppercase select-none">
+                              Recommended
+                            </span>
+                          )}
+                          <span className={`text-[9px] border px-1 py-0.2 rounded-md font-extrabold uppercase select-none ${
+                            modelType === 'isnet_quint8' ? 'bg-secondary text-muted-foreground border-border' : (isWebGPUSupported === true ? 'bg-primary/10 text-primary border-primary/20' : 'bg-secondary text-muted-foreground border-border')
+                          }`}>
+                            {modelType === 'isnet_quint8' ? 'CPU' : (isWebGPUSupported === true ? 'GPU' : 'CPU')}
+                          </span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent className="bg-card/95 border border-border/80 rounded-xl shadow-xl backdrop-blur-md min-w-[240px] p-1">
+                        <SelectItem value="isnet_quint8" className="py-2.5 px-3 focus:bg-accent focus:text-accent-foreground cursor-pointer rounded-lg transition-colors">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                              <span>Lite</span>
+                              <span className="text-[9px] bg-secondary text-muted-foreground border border-border px-1 py-0.2 rounded-md font-extrabold uppercase select-none">
+                                CPU
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                              ISNet Quant8 · ~10MB
+                            </div>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="isnet_fp16" className="py-2.5 px-3 focus:bg-accent focus:text-accent-foreground cursor-pointer rounded-lg transition-colors">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                              <span>Balanced</span>
+                              <span className="text-[9px] bg-primary/10 text-primary border border-primary/20 px-1 py-0.2 rounded-md font-extrabold uppercase select-none">
+                                Recommended
+                              </span>
+                              <span className={`text-[9px] border px-1 py-0.2 rounded-md font-extrabold uppercase select-none ${
+                                isWebGPUSupported === true ? 'bg-primary/10 text-primary border-primary/20' : 'bg-secondary text-muted-foreground border-border'
+                              }`}>
+                                {isWebGPUSupported === true ? "GPU" : "CPU"}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                              ISNet FP16 · ~22MB
+                            </div>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="isnet" className="py-2.5 px-3 focus:bg-accent focus:text-accent-foreground cursor-pointer rounded-lg transition-colors">
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                              <span>Quality</span>
+                              <span className={`text-[9px] border px-1 py-0.2 rounded-md font-extrabold uppercase select-none ${
+                                isWebGPUSupported === true ? 'bg-primary/10 text-primary border-primary/20' : 'bg-secondary text-muted-foreground border-border'
+                              }`}>
+                                {isWebGPUSupported === true ? "GPU" : "CPU"}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                              ISNet Base · ~40MB
+                            </div>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[10px] text-muted-foreground leading-normal mt-1">
+                      GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration.
+                    </p>
+                  </div>
+
+                  {/* Cache Management Section */}
+                  <div className="p-3 bg-secondary rounded-xl border border-border/60 space-y-2 select-none">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                        Offline Storage
+                      </span>
+                      {cacheSize !== null && cacheSize > 0 && (
+                        <button
+                          onClick={handleClearCache}
+                          disabled={isProcessing}
+                          className="text-[9px] font-bold text-destructive hover:underline disabled:opacity-50 disabled:no-underline"
+                        >
+                          Clear cache
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                      <span>Saved locally:</span>
+                      <span className="font-semibold text-foreground">
+                        {cacheSize === null ? "Calculating..." : formatBytes(cacheSize)}
+                      </span>
+                    </div>
                   </div>
 
                    {/* Status Indicator Panel */}
@@ -976,10 +1059,7 @@ export default function BgRemoverClient() {
                       }`} />
                       <span className="text-xs font-bold text-foreground">
                         {stage === 'idle' && "Awaiting input image"}
-                        {stage === 'initializing' && `Initializing environment... (${formatElapsed(elapsed)})`}
-                        {stage === 'downloading' && `Downloading neural assets... (${formatElapsed(elapsed)})`}
-                        {stage === 'compiling' && `Compiling GPU shaders... (${formatElapsed(elapsed)})`}
-                        {stage === 'processing' && `Extracting subject (${deviceUsed === 'gpu' ? 'GPU' : 'CPU'})... (${formatElapsed(elapsed)})`}
+                        {isProcessing && "Processing..."}
                         {stage === 'complete' && `Subject extracted (${deviceUsed === 'gpu' ? 'GPU Accelerated' : 'CPU Mode'}) · ${formatElapsed(elapsed)}`}
                         {stage === 'error' && "Processing terminated"}
                       </span>
@@ -1023,10 +1103,7 @@ export default function BgRemoverClient() {
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isProcessing ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin animate-fade-in" />
-                      {stage === 'downloading' ? "Downloading Model..." : "Extracting Subject..."}
-                    </>
+                    "Processing..."
                   ) : stage === 'complete' ? (
                     "Re-process with Different Model"
                   ) : (
@@ -1061,6 +1138,10 @@ export default function BgRemoverClient() {
         canCancel={true}
         onCancel={handleCancel}
         elapsed={elapsed}
+        stage={stage}
+        downloadProgress={downloadProgress}
+        downloadingFile={downloadingFile}
+        modelType={modelType}
       />
     </main>
   );
