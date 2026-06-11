@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools/converter',
     '/tools/cropper',
     '/tools/exif-cleaner',
+    '/tools/blur',
     '/privacy',
     '/terms',
     '/about',

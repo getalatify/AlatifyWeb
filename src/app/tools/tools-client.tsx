@@ -16,7 +16,8 @@ import {
   RefreshCw, 
   Crop,
   Shield,
-  Search
+  Search,
+  EyeOff
 } from "lucide-react";
 
 const pipelineTools = [
@@ -68,6 +69,14 @@ const pipelineTools = [
     statusColor: "bg-success/10 text-success border-success/20",
     icon: Shield,
     href: "/tools/exif-cleaner",
+  },
+  {
+    name: "Blur & Redact",
+    description: "Obscure faces, license plates, and sensitive details in your images entirely in the browser using boxes or brush strokes.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: EyeOff,
+    href: "/tools/blur",
   },
   {
     name: "AI Upscaler",
