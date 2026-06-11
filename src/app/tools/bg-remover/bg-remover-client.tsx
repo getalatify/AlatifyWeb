@@ -80,6 +80,7 @@ export default function BgRemoverClient() {
   const gpuWatchdogRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
   const cumulativeStartTimeRef = useRef<number>(0);
+  const inferenceStartTimeRef = useRef<number>(0);
   const hasAttemptedGpuRef = useRef<boolean>(false);
   const activeDeviceRef = useRef<"gpu" | "cpu" | null>(null);
   const [elapsed, setElapsed] = useState<number>(0);
@@ -99,6 +100,56 @@ export default function BgRemoverClient() {
       setIsWebGPUSupported(supported);
     });
   }, []);
+
+  // Model Cache Storage States
+  const [cacheSize, setCacheSize] = useState<number | null>(null);
+
+  const updateCacheSize = useCallback(async () => {
+    if (typeof window === "undefined" || !("caches" in window)) return;
+    try {
+      const cache = await window.caches.open("alatify-model-cache");
+      const keys = await cache.keys();
+      let totalSize = 0;
+      for (const key of keys) {
+        const response = await cache.match(key);
+        if (response) {
+          const contentLength = response.headers.get("content-length");
+          if (contentLength) {
+            totalSize += parseInt(contentLength);
+          } else {
+            try {
+              const blob = await response.clone().blob();
+              totalSize += blob.size;
+            } catch {}
+          }
+        }
+      }
+      setCacheSize(totalSize);
+    } catch (e) {
+      console.error("Failed to estimate cache size:", e);
+      setCacheSize(0);
+    }
+  }, []);
+
+  const handleClearCache = useCallback(async () => {
+    if (typeof window === "undefined" || !("caches" in window)) return;
+    try {
+      await window.caches.delete("alatify-model-cache");
+      setCacheSize(0);
+      import("sonner").then(({ toast }) => {
+        toast.success("AI model cache cleared successfully.", {
+          description: "All downloaded model assets have been deleted from your device.",
+        });
+      });
+    } catch (e) {
+      console.error("Failed to clear cache:", e);
+    }
+  }, []);
+
+  // Update cache size on mount
+  useEffect(() => {
+    updateCacheSize();
+  }, [updateCacheSize]);
 
 
   // Performance & Tier States
@@ -140,19 +191,23 @@ export default function BgRemoverClient() {
 
   // Timer for displaying elapsed processing time using Date.now() diff
   useEffect(() => {
-    if (!isProcessing) return;
+    if (stage !== 'processing') return;
 
     const updateElapsed = () => {
-      setElapsed((Date.now() - cumulativeStartTimeRef.current) / 1000);
+      if (inferenceStartTimeRef.current > 0) {
+        setElapsed((Date.now() - inferenceStartTimeRef.current) / 1000);
+      } else {
+        setElapsed(0);
+      }
     };
 
     updateElapsed();
-    const interval = setInterval(updateElapsed, 1000);
+    const interval = setInterval(updateElapsed, 100);
 
     return () => {
       clearInterval(interval);
     };
-  }, [isProcessing]);
+  }, [stage]);
 
   // Prevent navigation/tab closure while processing
   useEffect(() => {
@@ -302,7 +357,7 @@ export default function BgRemoverClient() {
     clearGpuWatchdog();
 
     const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
-    const modelName = modelType === 'isnet_fp16' ? 'Quality' : modelType === 'isnet_quint8' ? 'Balanced' : 'Speed';
+    const modelName = modelType === 'isnet' ? 'Quality' : modelType === 'isnet_fp16' ? 'Balanced' : 'Lite';
     console.log(`[BG Remover] Cancelled at ${duration}s (${modelName} model)`);
 
     setStage("idle");
@@ -353,6 +408,9 @@ export default function BgRemoverClient() {
 
       if (msg.type === "status") {
         setStage(msg.stage);
+        if (msg.stage === "processing" && inferenceStartTimeRef.current === 0) {
+          inferenceStartTimeRef.current = Date.now();
+        }
         if (activeDeviceRef.current === "gpu") {
           startGpuWatchdog();
         }
@@ -361,6 +419,9 @@ export default function BgRemoverClient() {
 
       if (msg.type === "progress") {
         setStage(msg.stage);
+        if (msg.stage === "processing" && inferenceStartTimeRef.current === 0) {
+          inferenceStartTimeRef.current = Date.now();
+        }
         if (activeDeviceRef.current === "gpu") {
           startGpuWatchdog();
         }
@@ -382,7 +443,10 @@ export default function BgRemoverClient() {
 
         const totalDurationFloat = (Date.now() - cumulativeStartTimeRef.current) / 1000;
         const attemptDurationFloat = (Date.now() - startTimeRef.current) / 1000;
-        setElapsed(totalDurationFloat);
+        const finalInferenceElapsed = inferenceStartTimeRef.current > 0
+          ? (Date.now() - inferenceStartTimeRef.current) / 1000
+          : 0;
+        setElapsed(finalInferenceElapsed);
 
         const outputBlob = msg.blob;
         if (outputBlob) {
@@ -410,7 +474,7 @@ export default function BgRemoverClient() {
 
           const totalDuration = totalDurationFloat.toFixed(1);
           const attemptDuration = attemptDurationFloat.toFixed(1);
-          const modelName = modelType === 'isnet' ? 'Quality — ISNet Base' : modelType === 'isnet_fp16' ? 'Balanced — ISNet FP16' : 'Speed — ISNet Quant8';
+          const modelName = modelType === 'isnet' ? 'Quality — ISNet Base' : modelType === 'isnet_fp16' ? 'Balanced — ISNet FP16' : 'Lite — ISNet Quant8';
           const originalFormat = activeImage ? getImageFormat(activeImage) : "";
           const imgDimensions = originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : "Unknown";
 
@@ -423,6 +487,7 @@ export default function BgRemoverClient() {
 
           setProcessedImage(fileObj);
           setStage("complete");
+          updateCacheSize();
         }
         return;
       }
@@ -441,8 +506,13 @@ export default function BgRemoverClient() {
           console.warn("[BG Remover] GPU processing error detected. Activating CPU fallback.");
           handleGpuFallbackRef.current?.();
         } else {
+          const finalInferenceElapsed = inferenceStartTimeRef.current > 0
+            ? (Date.now() - inferenceStartTimeRef.current) / 1000
+            : 0;
+          setElapsed(finalInferenceElapsed);
           setError(msg.error);
           setStage("error");
+          updateCacheSize();
         }
         return;
       }
@@ -458,7 +528,7 @@ export default function BgRemoverClient() {
 
     workerRef.current = worker;
     return worker;
-  }, [activeImage, originalDimensions, modelType, startGpuWatchdog, clearGpuWatchdog, resetHeartbeatTimer, clearHeartbeatTimer, clearWatchdogTimer]);
+  }, [activeImage, originalDimensions, modelType, startGpuWatchdog, clearGpuWatchdog, resetHeartbeatTimer, clearHeartbeatTimer, clearWatchdogTimer, updateCacheSize]);
 
   // Core background removal processing implementation with device selection
   const runProcessWithDevice = useCallback((imageFile: File | Blob, selectedModel: 'isnet_fp16' | 'isnet_quint8' | 'isnet', targetDevice: 'gpu' | 'cpu') => {
@@ -483,6 +553,7 @@ export default function BgRemoverClient() {
       }
 
       startTimeRef.current = Date.now();
+      inferenceStartTimeRef.current = 0;
 
       worker.postMessage({
         type: "process",
@@ -526,6 +597,8 @@ export default function BgRemoverClient() {
     setWasAutoResized(false);
 
     cumulativeStartTimeRef.current = Date.now();
+    inferenceStartTimeRef.current = 0;
+    setElapsed(0);
     hasAttemptedGpuRef.current = false;
 
     const isGpuSupported = isWebGPUSupported === true;
@@ -873,10 +946,43 @@ export default function BgRemoverClient() {
                       disabled={isProcessing}
                       className="w-full bg-secondary border border-border hover:border-primary/50 text-foreground text-xs rounded-xl p-2.5 outline-none transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <option value="isnet_quint8">Speed — ISNet Quant8 (Fastest, ~10MB)</option>
-                      <option value="isnet_fp16">Balanced — ISNet FP16 (Recommended, ~22MB)</option>
-                      <option value="isnet">Quality — ISNet Base (Highest accuracy, ~40MB)</option>
+                      <option value="isnet_quint8">
+                        Lite — ISNet Quant8 (CPU · ~10MB)
+                      </option>
+                      <option value="isnet_fp16">
+                        Balanced — ISNet FP16 (Recommended · {isWebGPUSupported === true ? "GPU" : "CPU"} · ~22MB)
+                      </option>
+                      <option value="isnet">
+                        Quality — ISNet Base ({isWebGPUSupported === true ? "GPU" : "CPU"} · ~40MB)
+                      </option>
                     </select>
+                    <p className="text-[10px] text-muted-foreground leading-normal mt-1">
+                      GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration.
+                    </p>
+                  </div>
+
+                  {/* Cache Management Section */}
+                  <div className="p-3 bg-secondary rounded-xl border border-border/60 space-y-2 select-none">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                        Offline Storage
+                      </span>
+                      {cacheSize !== null && cacheSize > 0 && (
+                        <button
+                          onClick={handleClearCache}
+                          disabled={isProcessing}
+                          className="text-[9px] font-bold text-destructive hover:underline disabled:opacity-50 disabled:no-underline"
+                        >
+                          Clear cache
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                      <span>Saved locally:</span>
+                      <span className="font-semibold text-foreground">
+                        {cacheSize === null ? "Calculating..." : formatBytes(cacheSize)}
+                      </span>
+                    </div>
                   </div>
 
                    {/* Status Indicator Panel */}

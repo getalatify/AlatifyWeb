@@ -125,7 +125,7 @@ export function ProcessingOverlay({
           </div>
         )}
 
-        {elapsed !== undefined && stage !== "downloading" && (
+        {elapsed !== undefined && stage === "processing" && (
           <span className="text-xs text-muted-foreground/80 mt-0.5 font-mono">
             Elapsed: {formatElapsed(elapsed)}
           </span>
