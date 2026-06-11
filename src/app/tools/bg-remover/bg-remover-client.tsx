@@ -707,95 +707,11 @@ export default function BgRemoverClient() {
                       backgroundRepeat: "repeat",
                     }}
                   >
-                                     {/* STATE A: downloading first-time engine */}
-                    {stage === 'downloading' && (
-                      <div className="absolute inset-0 bg-background/95 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
-                        <div className="p-5 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-4 max-w-[240px]">
-                          <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                          <div className="space-y-1">
-                            <span className="text-xs font-extrabold text-foreground block">
-                              Setting up AI engine for the first time (one-time setup)...
-                            </span>
-                            <span className="text-[10px] text-muted-foreground leading-normal block">
-                              Downloading neural weights. Setup loads standard network model assets.
-                            </span>
-                          </div>
-
-                          {/* Progress bar container */}
-                          <div className="w-full space-y-1">
-                            <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden border border-border/60">
-                              <div 
-                                className="bg-primary h-full rounded-full transition-all duration-300 shadow-sm"
-                                style={{ width: `${downloadProgress}%` }}
-                              />
-                            </div>
-                            <div className="flex justify-between items-center text-[9px] text-muted-foreground font-semibold">
-                              <span className="truncate max-w-[120px]">{downloadingFile || "Downloading..."}</span>
-                              <span>{downloadProgress}%</span>
-                            </div>
-                          </div>
-                          <span className="text-[9px] text-muted-foreground italic font-medium">
-                            First-time setup may take a minute.
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* STATE B1: compiling GPU shaders */}
-                    {stage === 'compiling' && (
-                      <div className="absolute inset-0 bg-background/85 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center animate-fade-in select-none">
-                        <div className="p-5 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-3.5 max-w-[220px]">
-                          <div className="relative">
-                            <div className="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-                            <Sparkles className="w-4 h-4 text-primary absolute inset-0 m-auto animate-pulse" />
-                          </div>
-                          <div className="space-y-1">
-                            <span className="text-xs font-extrabold text-foreground block">
-                              Compiling GPU shaders...
-                            </span>
-                            <span className="text-[10px] text-muted-foreground leading-normal block font-medium">
-                              Initializing WebGPU execution pipelines. This takes a brief moment on first run.
-                            </span>
-                            {elapsed > 0 && (
-                              <span className="text-[10.5px] font-bold text-primary block animate-pulse mt-1">
-                                Elapsed: {formatElapsed(elapsed)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* STATE B2: processing neural model inference */}
-                    {stage === 'processing' && (
-                      <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center p-6 text-center animate-fade-in select-none">
-                        <div className="p-5 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-3.5 max-w-[220px]">
-                          <div className="relative">
-                            <div className="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-                            <Scissors className="w-4 h-4 text-primary absolute inset-0 m-auto animate-pulse" />
-                          </div>
-                          <div className="space-y-1">
-                            <span className="text-xs font-extrabold text-foreground block">
-                              Removing background...
-                            </span>
-                            <span className="text-[10px] text-muted-foreground leading-normal block font-medium">
-                              {deviceUsed === 'gpu' 
-                                ? "Running high-performance neural segmentation using WebGPU hardware acceleration."
-                                : "This typically takes 1-3 minutes depending on your device and image size. Larger images take longer."
-                              }
-                            </span>
-                            {elapsed > 0 && (
-                              <span className="text-[10.5px] font-bold text-primary block animate-pulse mt-1">
-                                Elapsed: {formatElapsed(elapsed)}
-                              </span>
-                            )}
-                            {elapsed > 5 && (
-                              <span className="text-[9px] text-muted-foreground leading-normal block font-medium animate-pulse mt-1.5">
-                                Still processing... Large images or slower CPUs can take a moment to compute.
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                    {/* Calm neutral placeholder during processing */}
+                    {isProcessing && (
+                      <div className="text-xs text-muted-foreground/60 flex flex-col items-center gap-1.5 select-none animate-pulse">
+                        <Scissors className="w-8 h-8 opacity-25 text-muted-foreground" />
+                        <span>Processing in progress...</span>
                       </div>
                     )}
 
@@ -976,10 +892,7 @@ export default function BgRemoverClient() {
                       }`} />
                       <span className="text-xs font-bold text-foreground">
                         {stage === 'idle' && "Awaiting input image"}
-                        {stage === 'initializing' && `Initializing environment... (${formatElapsed(elapsed)})`}
-                        {stage === 'downloading' && `Downloading neural assets... (${formatElapsed(elapsed)})`}
-                        {stage === 'compiling' && `Compiling GPU shaders... (${formatElapsed(elapsed)})`}
-                        {stage === 'processing' && `Extracting subject (${deviceUsed === 'gpu' ? 'GPU' : 'CPU'})... (${formatElapsed(elapsed)})`}
+                        {isProcessing && "Processing..."}
                         {stage === 'complete' && `Subject extracted (${deviceUsed === 'gpu' ? 'GPU Accelerated' : 'CPU Mode'}) · ${formatElapsed(elapsed)}`}
                         {stage === 'error' && "Processing terminated"}
                       </span>
@@ -1023,10 +936,7 @@ export default function BgRemoverClient() {
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isProcessing ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin animate-fade-in" />
-                      {stage === 'downloading' ? "Downloading Model..." : "Extracting Subject..."}
-                    </>
+                    "Processing..."
                   ) : stage === 'complete' ? (
                     "Re-process with Different Model"
                   ) : (
@@ -1061,6 +971,10 @@ export default function BgRemoverClient() {
         canCancel={true}
         onCancel={handleCancel}
         elapsed={elapsed}
+        stage={stage}
+        downloadProgress={downloadProgress}
+        downloadingFile={downloadingFile}
+        modelType={modelType}
       />
     </main>
   );
