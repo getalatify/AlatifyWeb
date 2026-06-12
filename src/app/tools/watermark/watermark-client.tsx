@@ -54,7 +54,11 @@ interface WatermarkSettings {
   // placement settings
   placement: 'grid' | 'free' | 'tiled';
   gridPosition: 'top-left' | 'top-center' | 'top-right' | 'center-left' | 'center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
-  rotation: number;
+  rotationByMode: {
+    grid: number;
+    free: number;
+    tiled: number;
+  };
   marginPercent: number;
   tileSpacingPercent: number;
   positionX: number;   // 0–100, % of image WIDTH — horizontal position of watermark CENTER, default 50
@@ -80,7 +84,11 @@ const defaultSettings: WatermarkSettings = {
   logoOpacity: 70,
   placement: 'grid',
   gridPosition: 'bottom-right',
-  rotation: 0,
+  rotationByMode: {
+    grid: 0,
+    free: 0,
+    tiled: -45
+  },
   marginPercent: 4,
   tileSpacingPercent: 10,
   positionX: 50,
@@ -89,13 +97,25 @@ const defaultSettings: WatermarkSettings = {
   quality: 92
 };
 
-export default function WatermarkClient() {
+interface WatermarkClientProps {
+  geistSansFamily: string;
+  geistMonoFamily: string;
+}
+
+export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: WatermarkClientProps) {
   const [imagesList, setImagesList] = useState<ImageItem[]>([]);
-  const [settings, setSettings] = useState<WatermarkSettings>(defaultSettings);
+  const [settings, setSettings] = useState<WatermarkSettings>(() => ({
+    ...defaultSettings,
+    fontFamily: `${geistSansFamily}, system-ui, sans-serif`
+  }));
   
   // Logo States
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoBitmap, setLogoBitmap] = useState<ImageBitmap | null>(null);
+  const logoBitmapRef = useRef<ImageBitmap | null>(null);
+  const logoUrlRef = useRef<string | null>(null);
+  const [freePositionInitialized, setFreePositionInitialized] = useState(false);
   
   // Processing States
   const [isProcessing, setIsProcessing] = useState(false);
@@ -114,7 +134,6 @@ export default function WatermarkClient() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const logoInputRef = useRef<HTMLInputElement | null>(null);
   const addMoreFileInputRef = useRef<HTMLInputElement | null>(null);
-  const logoImageRef = useRef<HTMLImageElement | null>(null);
   const imageCacheRef = useRef<Record<string, HTMLImageElement>>({});
   const requestRef = useRef<number | null>(null);
 
@@ -130,7 +149,7 @@ export default function WatermarkClient() {
 
     const fontPx = (settings.sizePercent / 100) * canvas.width;
     const logoW = (settings.logoSizePercent / 100) * canvas.width;
-    const logoH = logoImageRef.current ? (logoW * (logoImageRef.current.naturalHeight / logoImageRef.current.naturalWidth)) : 0;
+    const logoH = logoBitmap ? (logoW * (logoBitmap.height / logoBitmap.width)) : 0;
 
     let watermarkW = 0;
     let watermarkH = 0;
@@ -144,14 +163,15 @@ export default function WatermarkClient() {
       watermarkW = ctx.measureText(settings.text).width;
       watermarkH = fontPx;
       ctx.restore();
-    } else if (settings.mode === 'logo' && logoImageRef.current) {
+    } else if (settings.mode === 'logo' && logoBitmap) {
       watermarkW = logoW;
       watermarkH = logoH;
     }
 
     const dx = canvasX - cx;
     const dy = canvasY - cy;
-    const rad = (-settings.rotation * Math.PI) / 180;
+    const currentRotation = settings.rotationByMode[settings.placement];
+    const rad = (-currentRotation * Math.PI) / 180;
     const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
     const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
 
@@ -160,7 +180,7 @@ export default function WatermarkClient() {
     const halfH = watermarkH / 2 + pad;
 
     return Math.abs(localX) <= halfW && Math.abs(localY) <= halfH;
-  }, [settings]);
+  }, [settings, logoBitmap]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (settings.placement !== 'free') return;
@@ -259,14 +279,14 @@ export default function WatermarkClient() {
     canvasW: number,
     canvasH: number,
     activeSettings: WatermarkSettings,
-    logoImg: HTMLImageElement | null
+    logoBmp: ImageBitmap | null
   ) => {
     ctx.save();
     
     // Compute sizes relative to canvas width (correctness constraint)
     const fontPx = (activeSettings.sizePercent / 100) * canvasW;
     const logoW = (activeSettings.logoSizePercent / 100) * canvasW;
-    const logoH = logoImg ? (logoW * (logoImg.naturalHeight / logoImg.naturalWidth)) : 0;
+    const logoH = logoBmp ? (logoW * (logoBmp.height / logoBmp.width)) : 0;
     const marginPx = (activeSettings.marginPercent / 100) * canvasW;
 
     let watermarkW = 0;
@@ -274,9 +294,10 @@ export default function WatermarkClient() {
 
     if (activeSettings.mode === 'text') {
       ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
+      console.log("Canvas initial font assignment:", ctx.font);
       watermarkW = ctx.measureText(activeSettings.text).width;
       watermarkH = fontPx;
-    } else if (activeSettings.mode === 'logo' && logoImg) {
+    } else if (activeSettings.mode === 'logo' && logoBmp) {
       watermarkW = logoW;
       watermarkH = logoH;
     }
@@ -327,12 +348,14 @@ export default function WatermarkClient() {
 
       ctx.save();
       ctx.translate(cx, cy);
-      ctx.rotate((activeSettings.rotation * Math.PI) / 180);
+      const currentRotation = activeSettings.rotationByMode[activeSettings.placement];
+      ctx.rotate((currentRotation * Math.PI) / 180);
 
       if (activeSettings.mode === 'text') {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
+        console.log("Canvas grid mode font assignment:", ctx.font);
         ctx.globalAlpha = activeSettings.opacity / 100;
 
         if (activeSettings.shadowEnabled) {
@@ -350,9 +373,9 @@ export default function WatermarkClient() {
 
         ctx.fillStyle = activeSettings.color;
         ctx.fillText(activeSettings.text, 0, 0);
-      } else if (activeSettings.mode === 'logo' && logoImg) {
+      } else if (activeSettings.mode === 'logo' && logoBmp) {
         ctx.globalAlpha = activeSettings.logoOpacity / 100;
-        ctx.drawImage(logoImg, -logoW / 2, -logoH / 2, logoW, logoH);
+        ctx.drawImage(logoBmp, -logoW / 2, -logoH / 2, logoW, logoH);
       }
       ctx.restore();
     } else if (activeSettings.placement === 'free') {
@@ -361,12 +384,14 @@ export default function WatermarkClient() {
 
       ctx.save();
       ctx.translate(cx, cy);
-      ctx.rotate((activeSettings.rotation * Math.PI) / 180);
+      const currentRotation = activeSettings.rotationByMode[activeSettings.placement];
+      ctx.rotate((currentRotation * Math.PI) / 180);
 
       if (activeSettings.mode === 'text') {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
+        console.log("Canvas free mode font assignment:", ctx.font);
         ctx.globalAlpha = activeSettings.opacity / 100;
 
         if (activeSettings.shadowEnabled) {
@@ -384,16 +409,17 @@ export default function WatermarkClient() {
 
         ctx.fillStyle = activeSettings.color;
         ctx.fillText(activeSettings.text, 0, 0);
-      } else if (activeSettings.mode === 'logo' && logoImg) {
+      } else if (activeSettings.mode === 'logo' && logoBmp) {
         ctx.globalAlpha = activeSettings.logoOpacity / 100;
-        ctx.drawImage(logoImg, -logoW / 2, -logoH / 2, logoW, logoH);
+        ctx.drawImage(logoBmp, -logoW / 2, -logoH / 2, logoW, logoH);
       }
       ctx.restore();
     } else {
       // Tiled Placement
       ctx.save();
       ctx.translate(canvasW / 2, canvasH / 2);
-      ctx.rotate((activeSettings.rotation * Math.PI) / 180);
+      const currentRotation = activeSettings.rotationByMode[activeSettings.placement];
+      ctx.rotate((currentRotation * Math.PI) / 180);
 
       const spacing = (activeSettings.tileSpacingPercent / 100) * canvasW;
       const stepX = watermarkW + spacing;
@@ -414,6 +440,7 @@ export default function WatermarkClient() {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
+            console.log("Canvas tiled mode font assignment:", ctx.font);
             ctx.globalAlpha = activeSettings.opacity / 100;
 
             if (activeSettings.shadowEnabled) {
@@ -431,9 +458,9 @@ export default function WatermarkClient() {
 
             ctx.fillStyle = activeSettings.color;
             ctx.fillText(activeSettings.text, 0, 0);
-          } else if (activeSettings.mode === 'logo' && logoImg) {
+          } else if (activeSettings.mode === 'logo' && logoBmp) {
             ctx.globalAlpha = activeSettings.logoOpacity / 100;
-            ctx.drawImage(logoImg, -logoW / 2, -logoH / 2, logoW, logoH);
+            ctx.drawImage(logoBmp, -logoW / 2, -logoH / 2, logoW, logoH);
           }
           ctx.restore();
         }
@@ -445,7 +472,7 @@ export default function WatermarkClient() {
   }, []);
 
   // Main draw preview trigger
-  const drawPreview = useCallback(() => {
+  const drawPreview = useCallback(async () => {
     const canvas = canvasRef.current;
     if (!canvas || imagesList.length === 0) return;
     const firstItem = imagesList[0];
@@ -474,10 +501,22 @@ export default function WatermarkClient() {
       canvas.height = h;
     }
 
+    // Ensure the font is loaded before rendering
+    if (settings.mode === 'text') {
+      const fontPx = (settings.sizePercent / 100) * w;
+      const familyString = settings.fontFamily;
+      const fontWeight = settings.fontWeight;
+      try {
+        await document.fonts.load(`${fontWeight} ${fontPx}px ${familyString}`);
+      } catch (e) {
+        console.error("Font loading error in preview:", e);
+      }
+    }
+
     ctx.clearRect(0, 0, w, h);
     ctx.drawImage(img, 0, 0, w, h);
 
-    renderWatermark(ctx, w, h, settings, logoImageRef.current);
+    renderWatermark(ctx, w, h, settings, logoBitmap);
 
     // Draw selection overlay outline on the preview canvas only (not on exported image)
     if (settings.placement === 'free') {
@@ -487,7 +526,7 @@ export default function WatermarkClient() {
       
       const fontPx = (settings.sizePercent / 100) * w;
       const logoW = (settings.logoSizePercent / 100) * w;
-      const logoH = logoImageRef.current ? (logoW * (logoImageRef.current.naturalHeight / logoImageRef.current.naturalWidth)) : 0;
+      const logoH = logoBitmap ? (logoW * (logoBitmap.height / logoBitmap.width)) : 0;
       
       let watermarkW = 0;
       let watermarkH = 0;
@@ -496,13 +535,14 @@ export default function WatermarkClient() {
         ctx.font = `${settings.fontWeight} ${fontPx}px ${settings.fontFamily}`;
         watermarkW = ctx.measureText(settings.text).width;
         watermarkH = fontPx;
-      } else if (settings.mode === 'logo' && logoImageRef.current) {
+      } else if (settings.mode === 'logo' && logoBitmap) {
         watermarkW = logoW;
         watermarkH = logoH;
       }
 
       ctx.translate(cx, cy);
-      ctx.rotate((settings.rotation * Math.PI) / 180);
+      const currentRotation = settings.rotationByMode[settings.placement];
+      ctx.rotate((currentRotation * Math.PI) / 180);
 
       // Dash selection rect
       ctx.strokeStyle = "rgba(0, 150, 255, 0.8)";
@@ -513,7 +553,7 @@ export default function WatermarkClient() {
       ctx.strokeRect(-watermarkW / 2 - pad, -watermarkH / 2 - pad, watermarkW + pad * 2, watermarkH + pad * 2);
       ctx.restore();
     }
-  }, [imagesList, settings, renderWatermark]);
+  }, [imagesList, settings, renderWatermark, logoBitmap]);
 
   // RequestAnimationFrame throttler for drag smoothness
   const triggerPreviewUpdate = useCallback(() => {
@@ -587,7 +627,23 @@ export default function WatermarkClient() {
     });
   }, [imagesList]);
 
-  // Clean up cache and object urls on unmount
+  // Trigger redraw once document fonts are fully loaded/ready
+  useEffect(() => {
+    document.fonts.ready.then(() => {
+      triggerPreviewUpdate();
+    });
+  }, [triggerPreviewUpdate]);
+
+  // Keep logo references in sync for unmount cleanup
+  useEffect(() => {
+    logoBitmapRef.current = logoBitmap;
+  }, [logoBitmap]);
+
+  useEffect(() => {
+    logoUrlRef.current = logoUrl;
+  }, [logoUrl]);
+
+  // Clean up cache, bitmaps and object urls on unmount
   useEffect(() => {
     return () => {
       if (requestRef.current !== null) {
@@ -598,42 +654,82 @@ export default function WatermarkClient() {
         img.onerror = null;
       });
       imageCacheRef.current = {};
+
+      if (logoBitmapRef.current) {
+        logoBitmapRef.current.close();
+      }
+      if (logoUrlRef.current) {
+        URL.revokeObjectURL(logoUrlRef.current);
+      }
     };
   }, []);
 
-  // Manage logo loading lifecycles
-  useEffect(() => {
-    if (!logoFile) {
-      setLogoUrl(null);
-      logoImageRef.current = null;
-      triggerPreviewUpdate();
-      return;
-    }
-
-    if (logoFile.type !== "image/png") {
+  // Decode and resize logo on upload time
+  const handleLogoUpload = async (file: File) => {
+    if (file.type !== "image/png") {
       toast.error("Logo must be a transparent PNG file");
-      setLogoFile(null);
       return;
     }
 
-    const url = URL.createObjectURL(logoFile);
-    setLogoUrl(url);
+    try {
+      let bmp = await createImageBitmap(file);
+      const maxDim = 2048;
+      if (bmp.width > maxDim || bmp.height > maxDim) {
+        let w = bmp.width;
+        let h = bmp.height;
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
 
-    const img = new Image();
-    img.onload = () => {
-      logoImageRef.current = img;
+        const offscreen = document.createElement("canvas");
+        offscreen.width = w;
+        offscreen.height = h;
+        const octx = offscreen.getContext("2d");
+        if (octx) {
+          octx.drawImage(bmp, 0, 0, w, h);
+          const newBmp = await createImageBitmap(offscreen);
+          bmp.close();
+          bmp = newBmp;
+        }
+      }
+
+      // Clean up previous logo bitmap and object url
+      if (logoBitmap) {
+        logoBitmap.close();
+      }
+      if (logoUrl) {
+        URL.revokeObjectURL(logoUrl);
+      }
+
+      const url = URL.createObjectURL(file);
+      setLogoUrl(url);
+      setLogoBitmap(bmp);
+      logoBitmapRef.current = bmp;
+      setLogoFile(file);
+      
       triggerPreviewUpdate();
-    };
-    img.onerror = () => {
-      toast.error("Failed to decode uploaded logo");
-      setLogoFile(null);
-    };
-    img.src = url;
+    } catch {
+      toast.error("Couldn't read that logo — try a transparent PNG image.");
+    }
+  };
 
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [logoFile, triggerPreviewUpdate]);
+  const handleRemoveLogo = () => {
+    if (logoBitmap) {
+      logoBitmap.close();
+    }
+    if (logoUrl) {
+      URL.revokeObjectURL(logoUrl);
+    }
+    setLogoBitmap(null);
+    logoBitmapRef.current = null;
+    setLogoUrl(null);
+    setLogoFile(null);
+    triggerPreviewUpdate();
+  };
 
   // Add more images to queue
   const handleImagesAdded = (files: File[]) => {
@@ -717,8 +813,20 @@ export default function WatermarkClient() {
       // Draw full-res content
       ctx.drawImage(img, 0, 0);
 
+      // Ensure the font is loaded before rendering
+      if (settings.mode === 'text') {
+        const fontPx = (settings.sizePercent / 100) * canvas.width;
+        const familyString = settings.fontFamily;
+        const fontWeight = settings.fontWeight;
+        try {
+          await document.fonts.load(`${fontWeight} ${fontPx}px ${familyString}`);
+        } catch (e) {
+          console.error("Font loading error in single export:", e);
+        }
+      }
+
       // Overlay watermark in original coordinates
-      renderWatermark(ctx, canvas.width, canvas.height, settings, logoImageRef.current);
+      renderWatermark(ctx, canvas.width, canvas.height, settings, logoBitmap);
 
       const format = settings.outputFormat === "original" ? item.file.type : settings.outputFormat;
       const qualityVal = settings.quality / 100;
@@ -793,7 +901,20 @@ export default function WatermarkClient() {
         if (!ctx) throw new Error("Could not initialize canvas context");
 
         ctx.drawImage(img, 0, 0);
-        renderWatermark(ctx, canvas.width, canvas.height, settings, logoImageRef.current);
+
+        // Ensure the font is loaded before rendering
+        if (settings.mode === 'text') {
+          const fontPx = (settings.sizePercent / 100) * canvas.width;
+          const familyString = settings.fontFamily;
+          const fontWeight = settings.fontWeight;
+          try {
+            await document.fonts.load(`${fontWeight} ${fontPx}px ${familyString}`);
+          } catch (e) {
+            console.error("Font loading error in batch export:", e);
+          }
+        }
+
+        renderWatermark(ctx, canvas.width, canvas.height, settings, logoBitmap);
 
         const format = settings.outputFormat === "original" ? item.file.type : settings.outputFormat;
         const qualityVal = settings.quality / 100;
@@ -856,6 +977,15 @@ export default function WatermarkClient() {
   // Adjust defaults on placement toggles to feel intuitive
   const handlePlacementChange = (placement: 'grid' | 'free' | 'tiled') => {
     if (placement === 'free') {
+      if (freePositionInitialized) {
+        setSettings(prev => ({
+          ...prev,
+          placement
+        }));
+        return;
+      }
+
+      setFreePositionInitialized(true);
       const firstItem = imagesList[0];
       const img = firstItem ? imageCacheRef.current[firstItem.id] : null;
       
@@ -863,7 +993,7 @@ export default function WatermarkClient() {
       let py = 50;
       
       if (img) {
-        const logoImg = logoImageRef.current;
+        const logoBmp = logoBitmap;
         const aspect = img.naturalHeight / img.naturalWidth;
         
         let watermarkWPercent = 0;
@@ -889,7 +1019,7 @@ export default function WatermarkClient() {
             : settings.logoSizePercent;
           watermarkHPercent = settings.mode === 'text'
             ? settings.sizePercent / aspect
-            : (logoImg ? (settings.logoSizePercent * (logoImg.naturalHeight / logoImg.naturalWidth)) / aspect : settings.logoSizePercent / aspect);
+            : (logoBmp ? (settings.logoSizePercent * (logoBmp.height / logoBmp.width)) / aspect : settings.logoSizePercent / aspect);
         }
         
         const marginWPercent = settings.marginPercent;
@@ -950,10 +1080,82 @@ export default function WatermarkClient() {
     } else {
       setSettings(prev => ({
         ...prev,
-        placement,
-        rotation: placement === 'grid' ? 0 : -45
+        placement
       }));
     }
+  };
+
+  const handleResetPosition = () => {
+    const canvas = canvasRef.current;
+    const firstItem = imagesList[0];
+    const img = firstItem ? imageCacheRef.current[firstItem.id] : null;
+
+    if (!canvas || !img) {
+      setSettings(prev => ({
+        ...prev,
+        positionX: 85,
+        positionY: 88
+      }));
+      return;
+    }
+
+    const canvasW = canvas.width;
+    const canvasH = canvas.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      setSettings(prev => ({
+        ...prev,
+        positionX: 85,
+        positionY: 88
+      }));
+      return;
+    }
+
+    const fontPx = (settings.sizePercent / 100) * canvasW;
+    const logoW = (settings.logoSizePercent / 100) * canvasW;
+    const logoBmp = logoBitmap;
+    const logoH = logoBmp ? (logoW * (logoBmp.height / logoBmp.width)) : 0;
+    
+    let watermarkW = 0;
+    let watermarkH = 0;
+
+    if (settings.mode === 'text') {
+      ctx.save();
+      ctx.font = `${settings.fontWeight} ${fontPx}px ${settings.fontFamily}`;
+      watermarkW = ctx.measureText(settings.text).width;
+      watermarkH = fontPx;
+      ctx.restore();
+    } else if (settings.mode === 'logo') {
+      if (logoBmp) {
+        watermarkW = logoW;
+        watermarkH = logoH;
+      } else {
+        watermarkW = logoW;
+        watermarkH = logoW;
+      }
+    }
+
+    const currentRotation = settings.rotationByMode['free'];
+    const rad = (currentRotation * Math.PI) / 180;
+    const cosVal = Math.abs(Math.cos(rad));
+    const sinVal = Math.abs(Math.sin(rad));
+
+    const wBox = watermarkW * cosVal + watermarkH * sinVal;
+    const hBox = watermarkW * sinVal + watermarkH * cosVal;
+
+    const marginPx = 0.04 * canvasW;
+
+    const cx = canvasW - marginPx - wBox / 2;
+    const cy = canvasH - marginPx - hBox / 2;
+
+    const px = Math.max(0, Math.min(100, (cx / canvasW) * 100));
+    const py = Math.max(0, Math.min(100, (cy / canvasH) * 100));
+
+    setSettings(prev => ({
+      ...prev,
+      positionX: Math.round(px),
+      positionY: Math.round(py)
+    }));
   };
 
   return (
@@ -1043,9 +1245,9 @@ export default function WatermarkClient() {
                   onChange={(e) => setSettings(prev => ({ ...prev, fontFamily: e.target.value }))}
                   className="w-full p-2.5 rounded-xl bg-secondary border border-border/80 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
                 >
-                  <option value='"Geist Sans", var(--font-sans), sans-serif'>Geist Sans</option>
+                  <option value={`${geistSansFamily}, system-ui, sans-serif`}>Geist Sans</option>
                   <option value='Georgia, serif'>Georgia Serif</option>
-                  <option value='"Geist Mono", var(--font-mono), monospace'>Geist Mono</option>
+                  <option value={`${geistMonoFamily}, ui-monospace, monospace`}>Geist Mono</option>
                 </select>
               </div>
 
@@ -1187,7 +1389,7 @@ export default function WatermarkClient() {
                       ref={logoInputRef}
                       onChange={(e) => {
                         if (e.target.files && e.target.files.length > 0) {
-                          setLogoFile(e.target.files[0]);
+                          handleLogoUpload(e.target.files[0]);
                         }
                       }}
                       accept="image/png"
@@ -1215,7 +1417,7 @@ export default function WatermarkClient() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setLogoFile(null)}
+                      onClick={handleRemoveLogo}
                       className="text-destructive hover:text-destructive hover:bg-destructive/10 p-2 shrink-0 h-8 w-8 rounded-lg"
                     >
                       <X className="w-4 h-4" />
@@ -1292,7 +1494,16 @@ export default function WatermarkClient() {
             {/* Free Position coordinates */}
             {settings.placement === 'free' && (
               <div className="space-y-3 pt-1 animate-fade-in">
-                <label className="text-xs font-bold text-foreground block">Position coordinates (%)</label>
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-foreground block">Position coordinates (%)</label>
+                  <button
+                    type="button"
+                    onClick={handleResetPosition}
+                    className="text-[10px] font-extrabold text-primary hover:underline bg-transparent border-none p-0 cursor-pointer"
+                  >
+                    Reset to bottom-right
+                  </button>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <span className="text-[11px] font-bold text-muted-foreground">X (%)</span>
@@ -1391,15 +1602,24 @@ export default function WatermarkClient() {
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs">
                 <span className="font-bold text-foreground">Rotation Degrees</span>
-                <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">{settings.rotation}°</span>
+                <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">{settings.rotationByMode[settings.placement]}°</span>
               </div>
               <input
                 type="range"
                 min={-90}
                 max={90}
                 step={1}
-                value={settings.rotation}
-                onChange={(e) => setSettings(prev => ({ ...prev, rotation: Number(e.target.value) }))}
+                value={settings.rotationByMode[settings.placement]}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setSettings(prev => ({
+                    ...prev,
+                    rotationByMode: {
+                      ...prev.rotationByMode,
+                      [prev.placement]: val
+                    }
+                  }));
+                }}
                 className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
               />
             </div>
