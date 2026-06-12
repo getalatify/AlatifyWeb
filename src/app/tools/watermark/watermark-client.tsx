@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo } from "@/components/shared";
+import { ThemeToggle, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -16,7 +16,11 @@ import {
   Trash2,
   ArrowUp,
   ArrowDown,
-  Loader2
+  Loader2,
+  HelpCircle,
+  CheckCircle2,
+  Shield,
+  EyeOff
 } from "lucide-react";
 import { formatBytes } from "@/lib/utils/format";
 
@@ -1180,15 +1184,15 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
         </Link>
       </div>
 
-      <div className="text-center sm:text-left space-y-1 mt-1">
-        <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest block">
-          Bulk Watermark overlay
-        </span>
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+      <div className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl mt-1 animate-fade-in">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm max-w-max">
           Image Watermark Tool
+        </div>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
+          Add Text or Logo Watermarks to Your Images
         </h1>
-        <p className="text-xs text-muted-foreground font-medium max-w-xl">
-          Overlay text labels or logo images onto your pictures locally. Relative size adjustments preserve visual uniformity across different resolutions.
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          Protect and brand your images with text or logo watermarks — entirely in your browser. Drag the watermark exactly where you want it, tile it diagonally across the whole image, rotate it, and tune the opacity for the look you want. Watermark a single image or a whole batch at once. No upload, no sign-up — your images and logo never leave your device.
         </p>
       </div>
 
@@ -1875,6 +1879,207 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
 
         </section>
 
+      </div>
+
+      <div className="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10">
+        {/* How It Works Guide Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-4 animate-fade-in">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              How It Works
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Protect and brand your photos in four quick steps.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              {
+                step: "01",
+                title: "Upload",
+                text: "Add one or many images (up to 30).",
+              },
+              {
+                step: "02",
+                title: "Configure",
+                text: "Pick a text or logo watermark and style it: size, opacity, color, rotation.",
+              },
+              {
+                step: "03",
+                title: "Position",
+                text: "Snap it to a corner, tile it across the image, or drag it anywhere you like.",
+              },
+              {
+                step: "04",
+                title: "Download",
+                text: "Save your watermarked images individually or as a ZIP.",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+              >
+                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                  {item.step}
+                </span>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* What You Can Do Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2 animate-fade-in">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              What You Can Do
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Protect your work and build your brand with customizable watermark options.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "Protect your work",
+                text: "Deter image theft and unauthorized reuse with a visible watermark.",
+              },
+              {
+                title: "Brand every image",
+                text: "Add your logo or handle to photos before posting or sharing.",
+              },
+              {
+                title: "Bulk-watermark",
+                text: "Apply the same watermark across an entire batch in one go.",
+              },
+              {
+                title: "Tile for safety",
+                text: "Repeat the watermark diagonally so it can't simply be cropped out.",
+              },
+            ].map((useCase, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+              >
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {useCase.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {useCase.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2 animate-fade-in">
+          <div className="text-center sm:text-left flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "Does it upload my images or logo?",
+                a: "No. Everything runs in your browser; your images and logo never leave your device.",
+              },
+              {
+                q: "Can I watermark many images at once?",
+                a: "Yes — add up to 30 images and download them all as a ZIP with the same watermark applied.",
+              },
+              {
+                q: "Can I use my own logo?",
+                a: "Yes. Upload a PNG (transparency supported) and adjust its size and opacity.",
+              },
+              {
+                q: "Will the watermark look the same across different image sizes?",
+                a: "Yes. Sizes are set relative to each image's width, so the watermark stays proportional whether the photo is large or small.",
+              },
+              {
+                q: "Can I stop people from cropping out the watermark?",
+                a: "Use tiled mode to repeat the watermark diagonally across the whole image, which makes it much harder to remove by cropping.",
+              },
+              {
+                q: "What formats can I export?",
+                a: "Keep the original format, or export as JPG, PNG, or WebP.",
+              },
+            ].map((faq, idx) => (
+              <div key={idx} className="space-y-1.5 p-1">
+                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Tools internal link block */}
+        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4 animate-fade-in">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+            Related Privacy Tools
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              href="/tools/exif-cleaner"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    EXIF Privacy Cleaner
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Strip location and camera info from photos locally.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/blur"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <EyeOff className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Blur & Redact Image
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Obscure faces, plates, and info locally.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* Info panel highlighting offline privacy */}
+        <PrivacyNotice>
+          <p>
+            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private watermark coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Securely brand and protect your images directly on your own device.
+          </p>
+        </PrivacyNotice>
       </div>
 
     </main>
