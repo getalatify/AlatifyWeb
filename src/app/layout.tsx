@@ -6,6 +6,25 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider, Footer } from "@/components/shared";
 import { AppBackground } from "@/components/shared/app-background";
 import { Toaster } from "sonner";
+import { JsonLd } from "@/components/json-ld";
+
+const siteSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "Alatify",
+      "url": "https://getalatify.com",
+      "logo": "https://getalatify.com/apple-touch-icon",
+      "sameAs": ["https://x.com/getalatify"]
+    },
+    {
+      "@type": "WebSite",
+      "name": "Alatify",
+      "url": "https://getalatify.com"
+    }
+  ]
+};
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -86,6 +105,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("font-sans", GeistSans.variable, GeistMono.variable)}
     >
+      <head>
+        <JsonLd data={siteSchema} />
+      </head>
       <body className="antialiased">
         <ThemeProvider
           attribute="class"

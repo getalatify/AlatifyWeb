@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@imgly/background-removal": "^1.7.0",
+    "@mediapipe/tasks-vision": "^0.10.35",
     "@radix-ui/react-select": "^2.3.0",
     "@radix-ui/react-slot": "^1.2.4",
     "@types/utif": "^3.0.6",

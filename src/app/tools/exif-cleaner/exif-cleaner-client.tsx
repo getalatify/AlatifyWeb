@@ -3,8 +3,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo } from "@/components/shared";
+import { ThemeToggle, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
+import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
@@ -19,7 +20,9 @@ import {
   Camera,
   Calendar,
   Layers,
-  Laptop
+  Laptop,
+  EyeOff,
+  HelpCircle
 } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
@@ -401,13 +404,13 @@ export default function ExifCleanerClient() {
         <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
             <Shield className="w-3.5 h-3.5 text-primary" />
-            Privacy
+            EXIF Privacy Cleaner
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            EXIF Privacy Cleaner
+            Remove EXIF & GPS Metadata from Your Photos
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Strip location, camera, and metadata from your images before sharing — entirely in your browser. All operations are 100% client-side with absolute offline privacy.
+            Every photo your phone takes carries hidden EXIF metadata — GPS coordinates, camera model, date, and device details — that travels with the file when you share it. Alatify shows you exactly what&apos;s hidden inside, then strips it clean. Everything runs in your browser: your photo is never uploaded, and the cleaning is fully lossless, so only the metadata is removed — your image quality stays untouched.
           </p>
         </section>
 
@@ -742,16 +745,202 @@ export default function ExifCleanerClient() {
           </section>
         )}
 
+        {!activeImage && <UrlInputHelp />}
+
+        {/* How It Works Guide Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-4">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              How It Works
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Clean and strip photo metadata in four quick steps.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              {
+                step: "01",
+                title: "Upload",
+                text: "Drag and drop your photo, or pick a file. It stays on your device.",
+              },
+              {
+                step: "02",
+                title: "Inspect",
+                text: "See all detected metadata, with a prominent warning if GPS location is present.",
+              },
+              {
+                step: "03",
+                title: "Clean",
+                text: "Strip the metadata losslessly. No re-compression, no quality loss.",
+              },
+              {
+                step: "04",
+                title: "Download",
+                text: "Save a clean copy with zero metadata, ready to share safely.",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+              >
+                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                  {item.step}
+                </span>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Why Remove Photo Metadata Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Why Remove Photo Metadata?
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Protect your personal information across common daily scenarios.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "Selling online",
+                text: "Photos taken at home embed your GPS location. Remove it before posting to Facebook Marketplace, eBay, or Craigslist so a listing can't reveal your address.",
+              },
+              {
+                title: "Travel safety",
+                text: "Vacation photos can broadcast that you're away from home. Strip location and timestamps before posting.",
+              },
+              {
+                title: "Stalking & privacy",
+                text: "Exact GPS coordinates can lead strangers to your door. Clean your photos before sharing publicly.",
+              },
+              {
+                title: "Photographers",
+                text: "Remove location data before delivering to clients or publishing online.",
+              },
+            ].map((useCase, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+              >
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {useCase.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {useCase.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "Doesn't Instagram or Facebook already remove EXIF data?",
+                a: "Public posts on most platforms strip EXIF — but they keep the original internally, and many sharing methods (sending the file directly, cloud storage, some platforms) keep the metadata intact. Cleaning it yourself first is the only way to be sure.",
+              },
+              {
+                q: "How do I remove GPS location before selling something online?",
+                a: "Upload the photo, check the GPS warning, strip the metadata, and download the clean copy to post — no location data attached.",
+              },
+              {
+                q: "Will removing metadata reduce my photo's quality?",
+                a: "No. Alatify removes metadata losslessly by editing the file's binary structure directly — your pixels are never re-compressed, so quality is identical.",
+              },
+              {
+                q: "Can I see what metadata my photo contains first?",
+                a: "Yes. Before cleaning, Alatify displays all detected metadata — GPS coordinates, camera model, date, and device info — so you know exactly what you're removing.",
+              },
+              {
+                q: "Is my photo uploaded to a server?",
+                a: "No. Detection and cleaning run entirely in your browser. Your photo never leaves your device.",
+              },
+            ].map((faq, idx) => (
+              <div key={idx} className="space-y-1.5 p-1">
+                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Tools internal link block */}
+        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+            Related Privacy Tools
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              href="/tools/blur"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <EyeOff className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Blur & Redact Image
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Obscure faces, plates, and info locally.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/bg-remover"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    AI Background Remover
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Extract subjects locally in your browser.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+          </div>
+        </section>
+
         {/* Info panel highlighting offline privacy */}
-        <section className="bg-primary/5 border border-primary/10 rounded-2xl p-6 text-xs text-muted-foreground leading-relaxed max-w-5xl mx-auto w-full space-y-2">
-          <p className="font-extrabold text-foreground text-sm flex items-center gap-2">
-            <Shield className="w-4 h-4 text-primary" />
-            🛡 Natively Private & Client-Side Secure
-          </p>
+        <PrivacyNotice>
           <p>
             Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Strip location histories (GPS Latitude/Longitude), device markers (manufacturer/model), software history logs, and capture timestamps instantly and safely before distribution.
           </p>
-        </section>
+        </PrivacyNotice>
       </div>
     </main>
   );

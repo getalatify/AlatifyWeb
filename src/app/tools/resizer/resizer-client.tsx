@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
+import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,10 @@ import {
   Trash2,
   Lock,
   Unlock,
-  AlertTriangle
+  AlertTriangle,
+  CheckCircle2,
+  HelpCircle,
+  Minimize2
 } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 
@@ -367,14 +370,14 @@ export default function ImageResizerPage() {
         {/* Intro Header */}
         <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
-            <Maximize2 className="w-3.5 h-3.5" />
-            Dimensions
+            <Maximize2 className="w-3.5 h-3.5 text-primary" />
+            Image Resizer
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Image Resizer
+            Resize Images to Any Dimension
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Resize images to any dimension or social media preset. Pixel-perfect resampling running entirely inside your browser.
+            Resize images by exact pixels, by percentage, or with a locked aspect ratio — all in your browser. High-quality resampling keeps edges crisp, and you can resize a whole batch at once. No upload, no sign-up — your images never leave your device.
           </p>
         </section>
 
@@ -781,6 +784,201 @@ export default function ImageResizerPage() {
           </section>
         )}
         {!activeImage && <UrlInputHelp />}
+
+        {/* How It Works Guide Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              How It Works
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Resize image dimensions in four quick steps.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              {
+                step: "01",
+                title: "Upload",
+                text: "Add one or many images.",
+              },
+              {
+                step: "02",
+                title: "Set size",
+                text: "Enter exact pixels, scale by percentage, or lock the aspect ratio.",
+              },
+              {
+                step: "03",
+                title: "Resize",
+                text: "Apply to all images at once with high-quality resampling.",
+              },
+              {
+                step: "04",
+                title: "Download",
+                text: "Save individually or as a ZIP.",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+              >
+                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                  {item.step}
+                </span>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Use Cases Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              What You Can Do
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Resize files for any social layout, web performance, or print format.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "Social media",
+                text: "Resize to the exact dimensions platforms expect — square posts, stories, banners, and profile pictures.",
+              },
+              {
+                title: "Web & email",
+                text: "Shrink oversized photos to load faster and fit upload limits.",
+              },
+              {
+                title: "Bulk resizing",
+                text: "Resize an entire folder of images to the same dimensions in one go.",
+              },
+              {
+                title: "Print & documents",
+                text: "Hit precise pixel dimensions for layouts and templates.",
+              },
+            ].map((useCase, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+              >
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {useCase.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {useCase.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "Can I resize to exact pixel dimensions?",
+                a: "Yes — enter exact width and height in pixels, scale by percentage, or lock the aspect ratio to avoid stretching.",
+              },
+              {
+                q: "Does it upload my images to a server?",
+                a: "No. Resizing runs entirely in your browser; your files never leave your device.",
+              },
+              {
+                q: "Will resizing stretch or distort my image?",
+                a: "Not if you keep the aspect ratio locked — it scales proportionally. You can also unlock it for a free resize.",
+              },
+              {
+                q: "Can I resize many images at once?",
+                a: "Yes — batch-resize them all to the same dimensions and download as a ZIP.",
+              },
+              {
+                q: "Will resizing reduce quality?",
+                a: "Alatify uses high-quality resampling to keep results as crisp as possible when scaling.",
+              },
+            ].map((faq, idx) => (
+              <div key={idx} className="space-y-1.5 p-1">
+                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Tools Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+            Related Tools
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              href="/tools/compressor"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Minimize2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Image Compressor
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Reduce file sizes by up to 90% while keeping quality.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/converter"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <RefreshCw className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Format Converter
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Convert files between JPG, PNG, WebP, PDF, and vectors.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* Info panel highlighting offline privacy */}
+        <PrivacyNotice>
+          <p>
+            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Resize images by exact pixels, percentage, or aspect ratio instantly and privately on your own device.
+          </p>
+        </PrivacyNotice>
       </div>
     </main>
   );

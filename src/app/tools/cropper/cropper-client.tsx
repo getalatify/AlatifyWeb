@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
+import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,8 @@ import {
   CheckCircle2,
   Settings,
   Scale,
-  AlertCircle
+  AlertCircle,
+  HelpCircle
 } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 
@@ -527,13 +528,13 @@ export default function CropperClient() {
         <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
             <CropIcon className="w-3.5 h-3.5 text-primary" />
-            Cropping Tool
+            Image Cropper
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Image Cropper
+            Crop & Straighten Your Images
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Crop images precisely with intuitive drag controls. Adjust aspect ratios dynamically, zoom for fine details, rotate freely, and export high-resolution cropped results locally.
+            Crop to a fixed ratio or freely with draggable handles, then straighten with precise rotation — all with real-time preview in your browser. No upload, no sign-up — your photo never leaves your device.
           </p>
         </section>
 
@@ -880,6 +881,201 @@ export default function CropperClient() {
           </section>
         )}
         {!activeImage && <UrlInputHelp />}
+
+        {/* How It Works Guide Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              How It Works
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Crop and straighten images in four quick steps.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              {
+                step: "01",
+                title: "Upload",
+                text: "Drop your image. It stays on your device.",
+              },
+              {
+                step: "02",
+                title: "Crop",
+                text: "Drag the handles for a free crop, or pick a fixed ratio like 1:1 or 16:9.",
+              },
+              {
+                step: "03",
+                title: "Straighten",
+                text: "Rotate to level a crooked photo or align your subject.",
+              },
+              {
+                step: "04",
+                title: "Download",
+                text: "Save your cropped image.",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+              >
+                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                  {item.step}
+                </span>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Use Cases Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              What You Can Do
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Trim composition bounds for any social platform, headshot, or cleanup.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "Social media",
+                text: "Crop to the exact ratios platforms use — 1:1 squares, 16:9 banners, story sizes.",
+              },
+              {
+                title: "Profile pictures",
+                text: "Frame your headshot perfectly for any profile or avatar.",
+              },
+              {
+                title: "Thumbnails",
+                text: "Crop tight, attention-grabbing thumbnails for videos and articles.",
+              },
+              {
+                title: "Cleanup",
+                text: "Trim distracting edges or straighten a tilted horizon.",
+              },
+            ].map((useCase, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+              >
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {useCase.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {useCase.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "Can I crop to a specific ratio?",
+                a: "Yes — choose common ratios like 1:1, 4:3, or 16:9, or drag the handles for a completely free crop.",
+              },
+              {
+                q: "Does it upload my photo to a server?",
+                a: "No. Cropping runs entirely in your browser; your photo never leaves your device.",
+              },
+              {
+                q: "Can I straighten a crooked photo?",
+                a: "Yes — use rotation to level a tilted horizon or align your subject before cropping.",
+              },
+              {
+                q: "Will cropping reduce my image quality?",
+                a: "No — cropping keeps the original pixels within the selected area at full quality.",
+              },
+              {
+                q: "Can I do a free-form crop instead of a fixed ratio?",
+                a: "Yes — drag the handles to any size and position you like.",
+              },
+            ].map((faq, idx) => (
+              <div key={idx} className="space-y-1.5 p-1">
+                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Tools Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+            Related Tools
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              href="/tools/resizer"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Maximize2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Image Resizer
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Resize image dimensions by percentage or pixels.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/converter"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <RefreshCw className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Format Converter
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Convert files between JPG, PNG, WebP, PDF, and vectors.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* Info panel highlighting offline privacy */}
+        <PrivacyNotice>
+          <p>
+            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Crop and rotate images instantly and privately on your own device.
+          </p>
+        </PrivacyNotice>
       </div>
     </main>
   );

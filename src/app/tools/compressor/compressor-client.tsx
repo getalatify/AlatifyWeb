@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
+import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,9 @@ import {
   Image as ImageIcon,
   RefreshCw,
   Trash2,
+  CheckCircle2,
+  HelpCircle,
+  Maximize2
 } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
@@ -232,15 +235,14 @@ export default function ImageCompressorPage() {
         {/* Intro Header */}
         <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
-            <Minimize2 className="w-3.5 h-3.5" />
-            Optimizer
+            <Minimize2 className="w-3.5 h-3.5 text-primary" />
+            Image Compressor
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Image Compressor
+            Compress Images Without Losing Quality
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Reduce image file size by up to 90% with minimal quality loss.
-            Everything runs inside your browser sandbox for absolute privacy.
+            Reduce image file sizes by up to 90% while keeping them crisp — entirely in your browser. Choose lossy compression for the smallest size or lossless to preserve every pixel, and process a whole batch at once. No upload, no sign-up — your images never leave your device.
           </p>
         </section>
 
@@ -533,6 +535,201 @@ export default function ImageCompressorPage() {
           </section>
         )}
         {!activeImage && <UrlInputHelp />}
+
+        {/* How It Works Guide Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              How It Works
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Compress image sizes in four quick steps.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              {
+                step: "01",
+                title: "Upload",
+                text: "Add one or many images.",
+              },
+              {
+                step: "02",
+                title: "Adjust",
+                text: "Choose lossy or lossless, and set your quality target.",
+              },
+              {
+                step: "03",
+                title: "Compress",
+                text: "Shrink them instantly, on your device.",
+              },
+              {
+                step: "04",
+                title: "Download",
+                text: "Save the smaller files individually or as a ZIP.",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+              >
+                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                  {item.step}
+                </span>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Use Cases Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              What You Can Do
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Optimize files for performance, email attachments, or storage space.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "Faster websites",
+                text: "Smaller images load faster and improve page speed and SEO.",
+              },
+              {
+                title: "Email & uploads",
+                text: "Get under attachment and upload size limits without losing quality.",
+              },
+              {
+                title: "Storage",
+                text: "Free up space by shrinking large photo libraries.",
+              },
+              {
+                title: "Social & marketplaces",
+                text: "Meet platform size requirements while keeping images sharp.",
+              },
+            ].map((useCase, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+              >
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {useCase.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {useCase.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "How much smaller can my images get?",
+                a: "Often up to 90% smaller, depending on the image and quality setting, while staying visually crisp.",
+              },
+              {
+                q: "Does it upload my images?",
+                a: "No. Compression runs entirely in your browser; your files never leave your device.",
+              },
+              {
+                q: "What's the difference between lossy and lossless?",
+                a: "Lossy gives the smallest size by discarding some invisible detail; lossless keeps every pixel and still reduces size. You choose.",
+              },
+              {
+                q: "Can I compress many images at once?",
+                a: "Yes — batch-compress and download them all as a ZIP.",
+              },
+              {
+                q: "Which formats are supported?",
+                a: "JPG, PNG, and WebP.",
+              },
+            ].map((faq, idx) => (
+              <div key={idx} className="space-y-1.5 p-1">
+                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Tools Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+            Related Tools
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              href="/tools/converter"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <RefreshCw className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Format Converter
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Convert files between JPG, PNG, WebP, PDF, and vectors.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/resizer"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Maximize2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Image Resizer
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Resize image dimensions by percentage or pixels.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* Info panel highlighting offline privacy */}
+        <PrivacyNotice>
+          <p>
+            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Compress JPG, PNG, and WebP images instantly and privately on your own device.
+          </p>
+        </PrivacyNotice>
       </div>
     </main>
   );
