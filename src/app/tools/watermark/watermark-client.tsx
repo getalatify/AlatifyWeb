@@ -52,11 +52,13 @@ interface WatermarkSettings {
   logoOpacity: number;
 
   // placement settings
-  placement: 'grid' | 'tiled';
+  placement: 'grid' | 'free' | 'tiled';
   gridPosition: 'top-left' | 'top-center' | 'top-right' | 'center-left' | 'center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
   rotation: number;
   marginPercent: number;
   tileSpacingPercent: number;
+  positionX: number;   // 0–100, % of image WIDTH — horizontal position of watermark CENTER, default 50
+  positionY: number;   // 0–100, % of image HEIGHT — vertical position of watermark CENTER, default 50
 
   // output settings
   outputFormat: 'original' | 'image/jpeg' | 'image/png' | 'image/webp';
@@ -81,6 +83,8 @@ const defaultSettings: WatermarkSettings = {
   rotation: 0,
   marginPercent: 4,
   tileSpacingPercent: 10,
+  positionX: 50,
+  positionY: 50,
   outputFormat: 'original',
   quality: 92
 };
@@ -113,6 +117,125 @@ export default function WatermarkClient() {
   const logoImageRef = useRef<HTMLImageElement | null>(null);
   const imageCacheRef = useRef<Record<string, HTMLImageElement>>({});
   const requestRef = useRef<number | null>(null);
+
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartOffsetRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Hit-testing for free positioning mode
+  const hitTestWatermark = useCallback((canvasX: number, canvasY: number, canvas: HTMLCanvasElement): boolean => {
+    if (settings.placement !== 'free') return false;
+
+    const cx = (settings.positionX / 100) * canvas.width;
+    const cy = (settings.positionY / 100) * canvas.height;
+
+    const fontPx = (settings.sizePercent / 100) * canvas.width;
+    const logoW = (settings.logoSizePercent / 100) * canvas.width;
+    const logoH = logoImageRef.current ? (logoW * (logoImageRef.current.naturalHeight / logoImageRef.current.naturalWidth)) : 0;
+
+    let watermarkW = 0;
+    let watermarkH = 0;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return false;
+
+    if (settings.mode === 'text') {
+      ctx.save();
+      ctx.font = `${settings.fontWeight} ${fontPx}px ${settings.fontFamily}`;
+      watermarkW = ctx.measureText(settings.text).width;
+      watermarkH = fontPx;
+      ctx.restore();
+    } else if (settings.mode === 'logo' && logoImageRef.current) {
+      watermarkW = logoW;
+      watermarkH = logoH;
+    }
+
+    const dx = canvasX - cx;
+    const dy = canvasY - cy;
+    const rad = (-settings.rotation * Math.PI) / 180;
+    const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
+    const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
+
+    const pad = 12; // padding for visual forgiveness
+    const halfW = watermarkW / 2 + pad;
+    const halfH = watermarkH / 2 + pad;
+
+    return Math.abs(localX) <= halfW && Math.abs(localY) <= halfH;
+  }, [settings]);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (settings.placement !== 'free') return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const cssX = e.clientX - rect.left;
+    const cssY = e.clientY - rect.top;
+    const canvasX = cssX * (canvas.width / rect.width);
+    const canvasY = cssY * (canvas.height / rect.height);
+
+    if (hitTestWatermark(canvasX, canvasY, canvas)) {
+      canvas.setPointerCapture(e.pointerId);
+      setIsDragging(true);
+
+      const cx = (settings.positionX / 100) * canvas.width;
+      const cy = (settings.positionY / 100) * canvas.height;
+      dragStartOffsetRef.current = {
+        x: canvasX - cx,
+        y: canvasY - cy
+      };
+      canvas.style.cursor = 'grabbing';
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const cssX = e.clientX - rect.left;
+    const cssY = e.clientY - rect.top;
+    const canvasX = cssX * (canvas.width / rect.width);
+    const canvasY = cssY * (canvas.height / rect.height);
+
+    if (isDragging && dragStartOffsetRef.current) {
+      canvas.style.cursor = 'grabbing';
+      
+      const targetCx = canvasX - dragStartOffsetRef.current.x;
+      const targetCy = canvasY - dragStartOffsetRef.current.y;
+
+      let px = (targetCx / canvas.width) * 100;
+      let py = (targetCy / canvas.height) * 100;
+
+      px = Math.max(0, Math.min(100, px));
+      py = Math.max(0, Math.min(100, py));
+
+      setSettings(prev => ({
+        ...prev,
+        positionX: px,
+        positionY: py
+      }));
+    } else if (settings.placement === 'free') {
+      const isHover = hitTestWatermark(canvasX, canvasY, canvas);
+      canvas.style.cursor = isHover ? 'grab' : 'default';
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isDragging) return;
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.releasePointerCapture(e.pointerId);
+      const rect = canvas.getBoundingClientRect();
+      const cssX = e.clientX - rect.left;
+      const cssY = e.clientY - rect.top;
+      const canvasX = cssX * (canvas.width / rect.width);
+      const canvasY = cssY * (canvas.height / rect.height);
+      const isHover = hitTestWatermark(canvasX, canvasY, canvas);
+      canvas.style.cursor = isHover ? 'grab' : 'default';
+    }
+    setIsDragging(false);
+    dragStartOffsetRef.current = null;
+  };
 
   // Utility to determine extension from mime type
   const getWatermarkedFilename = (originalName: string, mimeType: string): string => {
@@ -201,6 +324,40 @@ export default function WatermarkClient() {
           cy = canvasH - marginPx - watermarkH / 2;
           break;
       }
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate((activeSettings.rotation * Math.PI) / 180);
+
+      if (activeSettings.mode === 'text') {
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
+        ctx.globalAlpha = activeSettings.opacity / 100;
+
+        if (activeSettings.shadowEnabled) {
+          ctx.shadowColor = 'rgba(0,0,0,0.5)';
+          ctx.shadowBlur = fontPx * 0.08;
+          ctx.shadowOffsetX = fontPx * 0.04;
+          ctx.shadowOffsetY = fontPx * 0.04;
+        }
+
+        if (activeSettings.strokeEnabled) {
+          ctx.lineWidth = fontPx * 0.06;
+          ctx.strokeStyle = activeSettings.strokeColor;
+          ctx.strokeText(activeSettings.text, 0, 0);
+        }
+
+        ctx.fillStyle = activeSettings.color;
+        ctx.fillText(activeSettings.text, 0, 0);
+      } else if (activeSettings.mode === 'logo' && logoImg) {
+        ctx.globalAlpha = activeSettings.logoOpacity / 100;
+        ctx.drawImage(logoImg, -logoW / 2, -logoH / 2, logoW, logoH);
+      }
+      ctx.restore();
+    } else if (activeSettings.placement === 'free') {
+      const cx = (activeSettings.positionX / 100) * canvasW;
+      const cy = (activeSettings.positionY / 100) * canvasH;
 
       ctx.save();
       ctx.translate(cx, cy);
@@ -321,6 +478,41 @@ export default function WatermarkClient() {
     ctx.drawImage(img, 0, 0, w, h);
 
     renderWatermark(ctx, w, h, settings, logoImageRef.current);
+
+    // Draw selection overlay outline on the preview canvas only (not on exported image)
+    if (settings.placement === 'free') {
+      ctx.save();
+      const cx = (settings.positionX / 100) * w;
+      const cy = (settings.positionY / 100) * h;
+      
+      const fontPx = (settings.sizePercent / 100) * w;
+      const logoW = (settings.logoSizePercent / 100) * w;
+      const logoH = logoImageRef.current ? (logoW * (logoImageRef.current.naturalHeight / logoImageRef.current.naturalWidth)) : 0;
+      
+      let watermarkW = 0;
+      let watermarkH = 0;
+      
+      if (settings.mode === 'text') {
+        ctx.font = `${settings.fontWeight} ${fontPx}px ${settings.fontFamily}`;
+        watermarkW = ctx.measureText(settings.text).width;
+        watermarkH = fontPx;
+      } else if (settings.mode === 'logo' && logoImageRef.current) {
+        watermarkW = logoW;
+        watermarkH = logoH;
+      }
+
+      ctx.translate(cx, cy);
+      ctx.rotate((settings.rotation * Math.PI) / 180);
+
+      // Dash selection rect
+      ctx.strokeStyle = "rgba(0, 150, 255, 0.8)";
+      ctx.lineWidth = Math.max(1.5, w * 0.0015);
+      ctx.setLineDash([4, 4]);
+      
+      const pad = 6; // visual spacing padding
+      ctx.strokeRect(-watermarkW / 2 - pad, -watermarkH / 2 - pad, watermarkW + pad * 2, watermarkH + pad * 2);
+      ctx.restore();
+    }
   }, [imagesList, settings, renderWatermark]);
 
   // RequestAnimationFrame throttler for drag smoothness
@@ -662,12 +854,106 @@ export default function WatermarkClient() {
   };
 
   // Adjust defaults on placement toggles to feel intuitive
-  const handlePlacementChange = (placement: 'grid' | 'tiled') => {
-    setSettings(prev => ({
-      ...prev,
-      placement,
-      rotation: placement === 'grid' ? 0 : -45
-    }));
+  const handlePlacementChange = (placement: 'grid' | 'free' | 'tiled') => {
+    if (placement === 'free') {
+      const firstItem = imagesList[0];
+      const img = firstItem ? imageCacheRef.current[firstItem.id] : null;
+      
+      let px = 50;
+      let py = 50;
+      
+      if (img) {
+        const logoImg = logoImageRef.current;
+        const aspect = img.naturalHeight / img.naturalWidth;
+        
+        let watermarkWPercent = 0;
+        let watermarkHPercent = 0;
+        
+        const canvas = canvasRef.current;
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.save();
+            const fontPx = (settings.sizePercent / 100) * canvas.width;
+            ctx.font = `${settings.fontWeight} ${fontPx}px ${settings.fontFamily}`;
+            const textW = ctx.measureText(settings.text).width;
+            watermarkWPercent = (textW / canvas.width) * 100;
+            watermarkHPercent = (fontPx / canvas.height) * 100;
+            ctx.restore();
+          }
+        }
+        
+        if (watermarkWPercent === 0) {
+          watermarkWPercent = settings.mode === 'text' 
+            ? settings.text.length * settings.sizePercent * 0.6 
+            : settings.logoSizePercent;
+          watermarkHPercent = settings.mode === 'text'
+            ? settings.sizePercent / aspect
+            : (logoImg ? (settings.logoSizePercent * (logoImg.naturalHeight / logoImg.naturalWidth)) / aspect : settings.logoSizePercent / aspect);
+        }
+        
+        const marginWPercent = settings.marginPercent;
+        const marginHPercent = settings.marginPercent / aspect;
+        
+        let cx = 50;
+        let cy = 50;
+        
+        switch (settings.gridPosition) {
+          case 'top-left':
+            cx = marginWPercent + watermarkWPercent / 2;
+            cy = marginHPercent + watermarkHPercent / 2;
+            break;
+          case 'top-center':
+            cx = 50;
+            cy = marginHPercent + watermarkHPercent / 2;
+            break;
+          case 'top-right':
+            cx = 100 - marginWPercent - watermarkWPercent / 2;
+            cy = marginHPercent + watermarkHPercent / 2;
+            break;
+          case 'center-left':
+            cx = marginWPercent + watermarkWPercent / 2;
+            cy = 50;
+            break;
+          case 'center':
+            cx = 50;
+            cy = 50;
+            break;
+          case 'center-right':
+            cx = 100 - marginWPercent - watermarkWPercent / 2;
+            cy = 50;
+            break;
+          case 'bottom-left':
+            cx = marginWPercent + watermarkWPercent / 2;
+            cy = 100 - marginHPercent - watermarkHPercent / 2;
+            break;
+          case 'bottom-center':
+            cx = 50;
+            cy = 100 - marginHPercent - watermarkHPercent / 2;
+            break;
+          case 'bottom-right':
+            cx = 100 - marginWPercent - watermarkWPercent / 2;
+            cy = 100 - marginHPercent - watermarkHPercent / 2;
+            break;
+        }
+        
+        px = Math.max(0, Math.min(100, cx));
+        py = Math.max(0, Math.min(100, cy));
+      }
+      
+      setSettings(prev => ({
+        ...prev,
+        placement,
+        positionX: Math.round(px),
+        positionY: Math.round(py)
+      }));
+    } else {
+      setSettings(prev => ({
+        ...prev,
+        placement,
+        rotation: placement === 'grid' ? 0 : -45
+      }));
+    }
   };
 
   return (
@@ -981,12 +1267,18 @@ export default function WatermarkClient() {
             {/* Placement Layout Pattern */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-foreground">Placement Pattern</label>
-              <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-xl border border-border/60 text-xs font-bold">
+              <div className="grid grid-cols-3 gap-1 p-1 bg-secondary rounded-xl border border-border/60 text-[10px] sm:text-xs font-bold">
                 <button
                   onClick={() => handlePlacementChange('grid')}
                   className={`py-1.5 rounded-lg transition-all ${settings.placement === 'grid' ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   Grid Anchor
+                </button>
+                <button
+                  onClick={() => handlePlacementChange('free')}
+                  className={`py-1.5 rounded-lg transition-all ${settings.placement === 'free' ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  Free Position
                 </button>
                 <button
                   onClick={() => handlePlacementChange('tiled')}
@@ -996,6 +1288,49 @@ export default function WatermarkClient() {
                 </button>
               </div>
             </div>
+
+            {/* Free Position coordinates */}
+            {settings.placement === 'free' && (
+              <div className="space-y-3 pt-1 animate-fade-in">
+                <label className="text-xs font-bold text-foreground block">Position coordinates (%)</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-bold text-muted-foreground">X (%)</span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={Math.round(settings.positionX)}
+                      onChange={(e) => {
+                        let val = Number(e.target.value);
+                        if (isNaN(val)) val = 50;
+                        val = Math.max(0, Math.min(100, val));
+                        setSettings(prev => ({ ...prev, positionX: val }));
+                      }}
+                      className="w-full p-2 rounded-xl bg-secondary border border-border/80 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-bold text-muted-foreground">Y (%)</span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={Math.round(settings.positionY)}
+                      onChange={(e) => {
+                        let val = Number(e.target.value);
+                        if (isNaN(val)) val = 50;
+                        val = Math.max(0, Math.min(100, val));
+                        setSettings(prev => ({ ...prev, positionY: val }));
+                      }}
+                      className="w-full p-2 rounded-xl bg-secondary border border-border/80 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Grid Position 3x3 layout selector */}
             {settings.placement === 'grid' && (
@@ -1142,6 +1477,13 @@ export default function WatermarkClient() {
                   <canvas
                     ref={canvasRef}
                     className="max-h-[350px] sm:max-h-[420px] object-contain rounded-md w-full"
+                    style={{
+                      touchAction: settings.placement === 'free' ? 'none' : 'auto'
+                    }}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerUp}
                   />
                 </div>
 
