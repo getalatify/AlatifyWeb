@@ -15,7 +15,7 @@ const siteSchema = {
       "@type": "Organization",
       "name": "Alatify",
       "url": "https://getalatify.com",
-      "logo": "https://getalatify.com/apple-touch-icon",
+      "logo": "https://getalatify.com/apple-icon.png",
       "sameAs": ["https://x.com/getalatify"]
     },
     {
@@ -86,10 +86,6 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
-  },
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon',
   },
   manifest: '/site.webmanifest',
 };
