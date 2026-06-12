@@ -1316,6 +1316,8 @@ export default function BlurClient() {
           </section>
         )}
 
+        {!activeImage && <UrlInputHelp />}
+
         {/* Divider separator */}
         <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-4" />
 
@@ -1465,7 +1467,6 @@ export default function BlurClient() {
             Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Obscure faces, license plates, and sensitive credentials securely and privately on your own device.
           </p>
         </PrivacyNotice>
-        {!activeImage && <UrlInputHelp />}
       </div>
     </main>
   );

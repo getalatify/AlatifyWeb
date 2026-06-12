@@ -17,7 +17,8 @@ import {
   Crop,
   Shield,
   Search,
-  EyeOff
+  EyeOff,
+  Type
 } from "lucide-react";
 
 const pipelineTools = [
@@ -77,6 +78,14 @@ const pipelineTools = [
     statusColor: "bg-success/10 text-success border-success/20",
     icon: EyeOff,
     href: "/tools/blur",
+  },
+  {
+    name: "Watermark",
+    description: "Apply custom text or logo watermarks to your images locally in your browser with relative sizing.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Type,
+    href: "/tools/watermark",
   },
   {
     name: "AI Upscaler",

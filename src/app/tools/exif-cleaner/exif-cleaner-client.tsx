@@ -745,6 +745,8 @@ export default function ExifCleanerClient() {
           </section>
         )}
 
+        {!activeImage && <UrlInputHelp />}
+
         {/* How It Works Guide Section */}
         <section className="max-w-4xl mx-auto w-full space-y-6 pt-4">
           <div className="text-center sm:text-left">
@@ -939,7 +941,6 @@ export default function ExifCleanerClient() {
             Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Strip location histories (GPS Latitude/Longitude), device markers (manufacturer/model), software history logs, and capture timestamps instantly and safely before distribution.
           </p>
         </PrivacyNotice>
-        {!activeImage && <UrlInputHelp />}
       </div>
     </main>
   );

@@ -1,0 +1,1320 @@
+/* eslint-disable @next/next/no-img-element */
+"use client";
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
+import { ThemeToggle, Logo } from "@/components/shared";
+import { ImageSourceInput } from "@/components/image-source-input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  ArrowLeft,
+  Settings,
+  Download,
+  Plus,
+  X,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+  Loader2
+} from "lucide-react";
+import { formatBytes } from "@/lib/utils/format";
+
+interface ImageItem {
+  id: string;
+  file: File;
+  previewUrl: string;
+  sourcePreviewUrl: string | null;
+  width: number;
+  height: number;
+  hasTransparency: boolean;
+  status: 'pending' | 'processing' | 'ready' | 'error';
+  error?: string;
+  warning?: string;
+}
+
+interface WatermarkSettings {
+  mode: 'text' | 'logo';
+  
+  // text settings
+  text: string;
+  fontFamily: string;
+  fontWeight: 'normal' | 'bold';
+  sizePercent: number;
+  color: string;
+  opacity: number;
+  strokeEnabled: boolean;
+  strokeColor: string;
+  shadowEnabled: boolean;
+
+  // logo settings
+  logoSizePercent: number;
+  logoOpacity: number;
+
+  // placement settings
+  placement: 'grid' | 'tiled';
+  gridPosition: 'top-left' | 'top-center' | 'top-right' | 'center-left' | 'center' | 'center-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+  rotation: number;
+  marginPercent: number;
+  tileSpacingPercent: number;
+
+  // output settings
+  outputFormat: 'original' | 'image/jpeg' | 'image/png' | 'image/webp';
+  quality: number;
+}
+
+const defaultSettings: WatermarkSettings = {
+  mode: 'text',
+  text: "© Alatify",
+  fontFamily: '"Geist Sans", var(--font-sans), sans-serif',
+  fontWeight: 'bold',
+  sizePercent: 5,
+  color: "#FFFFFF",
+  opacity: 50,
+  strokeEnabled: true,
+  strokeColor: "#000000",
+  shadowEnabled: true,
+  logoSizePercent: 20,
+  logoOpacity: 70,
+  placement: 'grid',
+  gridPosition: 'bottom-right',
+  rotation: 0,
+  marginPercent: 4,
+  tileSpacingPercent: 10,
+  outputFormat: 'original',
+  quality: 92
+};
+
+export default function WatermarkClient() {
+  const [imagesList, setImagesList] = useState<ImageItem[]>([]);
+  const [settings, setSettings] = useState<WatermarkSettings>(defaultSettings);
+  
+  // Logo States
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  
+  // Processing States
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState<{
+    total: number;
+    current: number;
+    filename: string;
+    stage: 'idle' | 'processing' | 'zipping' | 'done';
+  }>({
+    total: 0,
+    current: 0,
+    filename: "",
+    stage: "idle"
+  });
+
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const logoInputRef = useRef<HTMLInputElement | null>(null);
+  const addMoreFileInputRef = useRef<HTMLInputElement | null>(null);
+  const logoImageRef = useRef<HTMLImageElement | null>(null);
+  const imageCacheRef = useRef<Record<string, HTMLImageElement>>({});
+  const requestRef = useRef<number | null>(null);
+
+  // Utility to determine extension from mime type
+  const getWatermarkedFilename = (originalName: string, mimeType: string): string => {
+    const base = originalName.replace(/\.[^/.]+$/, "");
+    const mimeToExtension: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/gif': 'gif',
+      'image/bmp': 'bmp',
+      'image/x-icon': 'ico',
+      'image/tiff': 'tiff',
+    };
+    const ext = mimeToExtension[mimeType.toLowerCase()] || "png";
+    return `${base}-watermarked.${ext}`;
+  };
+
+  // Shared watermark rendering routine
+  const renderWatermark = useCallback((
+    ctx: CanvasRenderingContext2D,
+    canvasW: number,
+    canvasH: number,
+    activeSettings: WatermarkSettings,
+    logoImg: HTMLImageElement | null
+  ) => {
+    ctx.save();
+    
+    // Compute sizes relative to canvas width (correctness constraint)
+    const fontPx = (activeSettings.sizePercent / 100) * canvasW;
+    const logoW = (activeSettings.logoSizePercent / 100) * canvasW;
+    const logoH = logoImg ? (logoW * (logoImg.naturalHeight / logoImg.naturalWidth)) : 0;
+    const marginPx = (activeSettings.marginPercent / 100) * canvasW;
+
+    let watermarkW = 0;
+    let watermarkH = 0;
+
+    if (activeSettings.mode === 'text') {
+      ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
+      watermarkW = ctx.measureText(activeSettings.text).width;
+      watermarkH = fontPx;
+    } else if (activeSettings.mode === 'logo' && logoImg) {
+      watermarkW = logoW;
+      watermarkH = logoH;
+    }
+
+    if (activeSettings.placement === 'grid') {
+      // Calculate anchors based on 3x3 positions and bounds
+      let cx = 0;
+      let cy = 0;
+
+      switch (activeSettings.gridPosition) {
+        case 'top-left':
+          cx = marginPx + watermarkW / 2;
+          cy = marginPx + watermarkH / 2;
+          break;
+        case 'top-center':
+          cx = canvasW / 2;
+          cy = marginPx + watermarkH / 2;
+          break;
+        case 'top-right':
+          cx = canvasW - marginPx - watermarkW / 2;
+          cy = marginPx + watermarkH / 2;
+          break;
+        case 'center-left':
+          cx = marginPx + watermarkW / 2;
+          cy = canvasH / 2;
+          break;
+        case 'center':
+          cx = canvasW / 2;
+          cy = canvasH / 2;
+          break;
+        case 'center-right':
+          cx = canvasW - marginPx - watermarkW / 2;
+          cy = canvasH / 2;
+          break;
+        case 'bottom-left':
+          cx = marginPx + watermarkW / 2;
+          cy = canvasH - marginPx - watermarkH / 2;
+          break;
+        case 'bottom-center':
+          cx = canvasW / 2;
+          cy = canvasH - marginPx - watermarkH / 2;
+          break;
+        case 'bottom-right':
+          cx = canvasW - marginPx - watermarkW / 2;
+          cy = canvasH - marginPx - watermarkH / 2;
+          break;
+      }
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate((activeSettings.rotation * Math.PI) / 180);
+
+      if (activeSettings.mode === 'text') {
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
+        ctx.globalAlpha = activeSettings.opacity / 100;
+
+        if (activeSettings.shadowEnabled) {
+          ctx.shadowColor = 'rgba(0,0,0,0.5)';
+          ctx.shadowBlur = fontPx * 0.08;
+          ctx.shadowOffsetX = fontPx * 0.04;
+          ctx.shadowOffsetY = fontPx * 0.04;
+        }
+
+        if (activeSettings.strokeEnabled) {
+          ctx.lineWidth = fontPx * 0.06;
+          ctx.strokeStyle = activeSettings.strokeColor;
+          ctx.strokeText(activeSettings.text, 0, 0);
+        }
+
+        ctx.fillStyle = activeSettings.color;
+        ctx.fillText(activeSettings.text, 0, 0);
+      } else if (activeSettings.mode === 'logo' && logoImg) {
+        ctx.globalAlpha = activeSettings.logoOpacity / 100;
+        ctx.drawImage(logoImg, -logoW / 2, -logoH / 2, logoW, logoH);
+      }
+      ctx.restore();
+    } else {
+      // Tiled Placement
+      ctx.save();
+      ctx.translate(canvasW / 2, canvasH / 2);
+      ctx.rotate((activeSettings.rotation * Math.PI) / 180);
+
+      const spacing = (activeSettings.tileSpacingPercent / 100) * canvasW;
+      const stepX = watermarkW + spacing;
+      const stepY = watermarkH + spacing;
+      const diag = Math.sqrt(canvasW * canvasW + canvasH * canvasH);
+
+      const startX = -diag / 2;
+      const endX = diag / 2;
+      const startY = -diag / 2;
+      const endY = diag / 2;
+
+      for (let x = startX; x < endX; x += stepX) {
+        for (let y = startY; y < endY; y += stepY) {
+          ctx.save();
+          ctx.translate(x + watermarkW / 2, y + watermarkH / 2);
+
+          if (activeSettings.mode === 'text') {
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
+            ctx.globalAlpha = activeSettings.opacity / 100;
+
+            if (activeSettings.shadowEnabled) {
+              ctx.shadowColor = 'rgba(0,0,0,0.5)';
+              ctx.shadowBlur = fontPx * 0.08;
+              ctx.shadowOffsetX = fontPx * 0.04;
+              ctx.shadowOffsetY = fontPx * 0.04;
+            }
+
+            if (activeSettings.strokeEnabled) {
+              ctx.lineWidth = fontPx * 0.06;
+              ctx.strokeStyle = activeSettings.strokeColor;
+              ctx.strokeText(activeSettings.text, 0, 0);
+            }
+
+            ctx.fillStyle = activeSettings.color;
+            ctx.fillText(activeSettings.text, 0, 0);
+          } else if (activeSettings.mode === 'logo' && logoImg) {
+            ctx.globalAlpha = activeSettings.logoOpacity / 100;
+            ctx.drawImage(logoImg, -logoW / 2, -logoH / 2, logoW, logoH);
+          }
+          ctx.restore();
+        }
+      }
+      ctx.restore();
+    }
+
+    ctx.restore();
+  }, []);
+
+  // Main draw preview trigger
+  const drawPreview = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || imagesList.length === 0) return;
+    const firstItem = imagesList[0];
+    const img = imageCacheRef.current[firstItem.id];
+    if (!img) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Cap preview canvas at 1200px max bounds for rendering speed
+    const maxDim = 1200;
+    let w = img.naturalWidth;
+    let h = img.naturalHeight;
+    if (w > maxDim || h > maxDim) {
+      if (w > h) {
+        h = Math.round((h * maxDim) / w);
+        w = maxDim;
+      } else {
+        w = Math.round((w * maxDim) / h);
+        h = maxDim;
+      }
+    }
+
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+    }
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+
+    renderWatermark(ctx, w, h, settings, logoImageRef.current);
+  }, [imagesList, settings, renderWatermark]);
+
+  // RequestAnimationFrame throttler for drag smoothness
+  const triggerPreviewUpdate = useCallback(() => {
+    if (requestRef.current !== null) {
+      cancelAnimationFrame(requestRef.current);
+    }
+    requestRef.current = requestAnimationFrame(() => {
+      drawPreview();
+      requestRef.current = null;
+    });
+  }, [drawPreview]);
+
+  // Load first image into preview cache when imagesList changes
+  useEffect(() => {
+    if (imagesList.length === 0) return;
+    const firstItem = imagesList[0];
+    
+    if (imageCacheRef.current[firstItem.id]) {
+      triggerPreviewUpdate();
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      imageCacheRef.current[firstItem.id] = img;
+      setImagesList(prev => prev.map(item => {
+        if (item.id === firstItem.id) {
+          return {
+            ...item,
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+            status: 'ready'
+          };
+        }
+        return item;
+      }));
+    };
+    img.src = firstItem.previewUrl;
+  }, [imagesList, triggerPreviewUpdate]);
+
+  // Trigger preview redraws on settings change
+  useEffect(() => {
+    triggerPreviewUpdate();
+  }, [settings, triggerPreviewUpdate]);
+
+  // Resolve pending queue items
+  useEffect(() => {
+    const pendingItems = imagesList.filter(item => item.status === 'pending');
+    if (pendingItems.length === 0) return;
+
+    pendingItems.forEach(item => {
+      setImagesList(prev => prev.map(i => i.id === item.id ? { ...i, status: 'processing' } : i));
+
+      const img = new Image();
+      img.onload = () => {
+        setImagesList(prev => prev.map(i => i.id === item.id ? {
+          ...i,
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          status: 'ready'
+        } : i));
+      };
+      img.onerror = () => {
+        setImagesList(prev => prev.map(i => i.id === item.id ? {
+          ...i,
+          status: 'error',
+          error: "Invalid file format."
+        } : i));
+      };
+      img.src = item.previewUrl;
+    });
+  }, [imagesList]);
+
+  // Clean up cache and object urls on unmount
+  useEffect(() => {
+    return () => {
+      if (requestRef.current !== null) {
+        cancelAnimationFrame(requestRef.current);
+      }
+      Object.values(imageCacheRef.current).forEach(img => {
+        img.onload = null;
+        img.onerror = null;
+      });
+      imageCacheRef.current = {};
+    };
+  }, []);
+
+  // Manage logo loading lifecycles
+  useEffect(() => {
+    if (!logoFile) {
+      setLogoUrl(null);
+      logoImageRef.current = null;
+      triggerPreviewUpdate();
+      return;
+    }
+
+    if (logoFile.type !== "image/png") {
+      toast.error("Logo must be a transparent PNG file");
+      setLogoFile(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(logoFile);
+    setLogoUrl(url);
+
+    const img = new Image();
+    img.onload = () => {
+      logoImageRef.current = img;
+      triggerPreviewUpdate();
+    };
+    img.onerror = () => {
+      toast.error("Failed to decode uploaded logo");
+      setLogoFile(null);
+    };
+    img.src = url;
+
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [logoFile, triggerPreviewUpdate]);
+
+  // Add more images to queue
+  const handleImagesAdded = (files: File[]) => {
+    if (imagesList.length + files.length > 30) {
+      toast.warning("Maximum of 30 images allowed per batch. Excess files skipped.");
+    }
+    
+    const limit = 30 - imagesList.length;
+    const filesToAdd = files.slice(0, limit);
+
+    const newItems: ImageItem[] = filesToAdd.map(file => {
+      const id = Math.random().toString(36).substring(2, 9);
+      const previewUrl = URL.createObjectURL(file);
+      return {
+        id,
+        file,
+        previewUrl,
+        sourcePreviewUrl: null,
+        width: 0,
+        height: 0,
+        hasTransparency: false,
+        status: 'pending'
+      };
+    });
+
+    setImagesList(prev => [...prev, ...newItems]);
+  };
+
+  const removeImageItem = (id: string) => {
+    const item = imagesList.find(i => i.id === id);
+    if (item) {
+      if (item.previewUrl && item.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+      delete imageCacheRef.current[id];
+    }
+    setImagesList(prev => prev.filter(i => i.id !== id));
+  };
+
+  const moveImageItem = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === imagesList.length - 1) return;
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    const newList = [...imagesList];
+    const temp = newList[index];
+    newList[index] = newList[newIndex];
+    newList[newIndex] = temp;
+    
+    setImagesList(newList);
+  };
+
+  const clearImagesList = () => {
+    imagesList.forEach(item => {
+      if (item.previewUrl && item.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+    });
+    imageCacheRef.current = {};
+    setImagesList([]);
+    setProcessingProgress({ total: 0, current: 0, filename: "", stage: "idle" });
+  };
+
+  // Perform single image watermarking download
+  const handleSingleExport = async (item: ImageItem) => {
+    setIsProcessing(true);
+    try {
+      const img = imageCacheRef.current[item.id] || await new Promise<HTMLImageElement>((resolve, reject) => {
+        const temp = new Image();
+        temp.onload = () => resolve(temp);
+        temp.onerror = () => reject(new Error("Image failed to load."));
+        temp.src = item.previewUrl;
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Could not initialize canvas context");
+
+      // Draw full-res content
+      ctx.drawImage(img, 0, 0);
+
+      // Overlay watermark in original coordinates
+      renderWatermark(ctx, canvas.width, canvas.height, settings, logoImageRef.current);
+
+      const format = settings.outputFormat === "original" ? item.file.type : settings.outputFormat;
+      const qualityVal = settings.quality / 100;
+
+      const blob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob((b) => resolve(b), format, qualityVal);
+      });
+
+      if (!blob) throw new Error("Canvas render compression error");
+
+      // Clean up canvas references
+      canvas.width = 0;
+      canvas.height = 0;
+
+      const filename = getWatermarkedFilename(item.file.name, format);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast.success(`${item.file.name} watermarked successfully!`);
+    } catch (err) {
+      console.error(err);
+      toast.error(`Could not process ${item.file.name}`);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Perform multi-image batch zip export
+  const handleBatchExport = async () => {
+    const readyItems = imagesList.filter(item => item.status === 'ready');
+    if (readyItems.length === 0) return;
+
+    setIsProcessing(true);
+    setProcessingProgress({
+      total: readyItems.length,
+      current: 0,
+      filename: readyItems[0].file.name,
+      stage: 'processing'
+    });
+
+    try {
+      const JSZip = (await import("jszip")).default;
+      const zip = new JSZip();
+      const usedFilenames = new Set<string>();
+
+      for (let i = 0; i < readyItems.length; i++) {
+        const item = readyItems[i];
+        setProcessingProgress(prev => ({
+          ...prev,
+          current: i,
+          filename: item.file.name,
+          stage: 'processing'
+        }));
+
+        const img = imageCacheRef.current[item.id] || await new Promise<HTMLImageElement>((resolve, reject) => {
+          const temp = new Image();
+          temp.onload = () => resolve(temp);
+          temp.onerror = () => reject(new Error("Image failed to load."));
+          temp.src = item.previewUrl;
+        });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Could not initialize canvas context");
+
+        ctx.drawImage(img, 0, 0);
+        renderWatermark(ctx, canvas.width, canvas.height, settings, logoImageRef.current);
+
+        const format = settings.outputFormat === "original" ? item.file.type : settings.outputFormat;
+        const qualityVal = settings.quality / 100;
+
+        const blob = await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob((b) => resolve(b), format, qualityVal);
+        });
+
+        if (!blob) throw new Error(`Compression error on file: ${item.file.name}`);
+
+        // Clean up canvas references immediately to release heap memory
+        canvas.width = 0;
+        canvas.height = 0;
+
+        const resolvedFilename = getWatermarkedFilename(item.file.name, format);
+        let finalZipName = resolvedFilename;
+        const base = resolvedFilename.replace(/\.[^/.]+$/, "");
+        const ext = resolvedFilename.split('.').pop();
+        let counter = 1;
+        while (usedFilenames.has(finalZipName)) {
+          finalZipName = `${base}_${counter}.${ext}`;
+          counter++;
+        }
+        usedFilenames.add(finalZipName);
+
+        zip.file(finalZipName, blob);
+      }
+
+      setProcessingProgress(prev => ({
+        ...prev,
+        stage: 'zipping'
+      }));
+
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "watermarked-images.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setProcessingProgress(prev => ({
+        ...prev,
+        stage: 'done'
+      }));
+      toast.success("ZIP archive compiled and downloaded successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Batch watermark compilation failed");
+    } finally {
+      setIsProcessing(false);
+      setTimeout(() => {
+        setProcessingProgress(prev => ({ ...prev, stage: 'idle' }));
+      }, 3000);
+    }
+  };
+
+  // Adjust defaults on placement toggles to feel intuitive
+  const handlePlacementChange = (placement: 'grid' | 'tiled') => {
+    setSettings(prev => ({
+      ...prev,
+      placement,
+      rotation: placement === 'grid' ? 0 : -45
+    }));
+  };
+
+  return (
+    <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 text-foreground flex flex-col gap-6 select-none">
+      
+      {/* Header section with back navigation */}
+      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-5 w-full z-10 shrink-0">
+        <div className="flex items-center gap-3">
+          <Logo className="w-9 h-9" />
+          <span className="font-extrabold text-xl tracking-tight">Alatify</span>
+        </div>
+        <ThemeToggle />
+      </header>
+
+      <div className="w-full">
+        <Link
+          href="/tools"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+          Back to all tools
+        </Link>
+      </div>
+
+      <div className="text-center sm:text-left space-y-1 mt-1">
+        <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest block">
+          Bulk Watermark overlay
+        </span>
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+          Image Watermark Tool
+        </h1>
+        <p className="text-xs text-muted-foreground font-medium max-w-xl">
+          Overlay text labels or logo images onto your pictures locally. Relative size adjustments preserve visual uniformity across different resolutions.
+        </p>
+      </div>
+
+      {/* Main split dashboard panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        
+        {/* LEFT PANEL: CONTROLS (1-Column Span on Desktop) */}
+        <section className="lg:col-span-1 p-5 rounded-2xl bg-card border border-border/80 shadow-md space-y-6 max-h-[calc(100vh-220px)] overflow-y-auto custom-scrollbar">
+          
+          {/* Header block */}
+          <div className="flex items-center gap-2 border-b border-border/40 pb-2.5">
+            <Settings className="w-4 h-4 text-primary" />
+            <h2 className="font-extrabold text-xs uppercase tracking-wider text-muted-foreground">
+              Watermark Configurations
+            </h2>
+          </div>
+
+          {/* Mode Selector Segmented Toggle */}
+          <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-xl border border-border/60 text-xs font-bold">
+            <button
+              onClick={() => setSettings(prev => ({ ...prev, mode: 'text' }))}
+              className={`py-2 rounded-lg transition-all duration-150 ${settings.mode === "text" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              Text Watermark
+            </button>
+            <button
+              onClick={() => setSettings(prev => ({ ...prev, mode: 'logo' }))}
+              className={`py-2 rounded-lg transition-all duration-150 ${settings.mode === "logo" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              Logo Watermark
+            </button>
+          </div>
+
+          {/* TEXT MODE CONFIGURATIONS */}
+          {settings.mode === 'text' && (
+            <div className="space-y-4 animate-fade-in">
+              
+              {/* Text Input */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground">Watermark Text</label>
+                <input
+                  type="text"
+                  value={settings.text}
+                  onChange={(e) => setSettings(prev => ({ ...prev, text: e.target.value }))}
+                  className="w-full p-2.5 rounded-xl bg-secondary border border-border/80 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
+                />
+              </div>
+
+              {/* Font Family Selection */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground">Font Family</label>
+                <select
+                  value={settings.fontFamily}
+                  onChange={(e) => setSettings(prev => ({ ...prev, fontFamily: e.target.value }))}
+                  className="w-full p-2.5 rounded-xl bg-secondary border border-border/80 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
+                >
+                  <option value='"Geist Sans", var(--font-sans), sans-serif'>Geist Sans</option>
+                  <option value='Georgia, serif'>Georgia Serif</option>
+                  <option value='"Geist Mono", var(--font-mono), monospace'>Geist Mono</option>
+                </select>
+              </div>
+
+              {/* Font Weight Toggles */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-foreground">Font Weight</label>
+                <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-xl border border-border/60 text-xs font-bold">
+                  <button
+                    onClick={() => setSettings(prev => ({ ...prev, fontWeight: 'normal' }))}
+                    className={`py-1.5 rounded-lg transition-all ${settings.fontWeight === 'normal' ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    Normal
+                  </button>
+                  <button
+                    onClick={() => setSettings(prev => ({ ...prev, fontWeight: 'bold' }))}
+                    className={`py-1.5 rounded-lg transition-all ${settings.fontWeight === 'bold' ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    Bold
+                  </button>
+                </div>
+              </div>
+
+              {/* Relative Font Size Slider */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-foreground">Font Size (% of Image Width)</span>
+                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">{settings.sizePercent}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={1}
+                  max={20}
+                  step={0.5}
+                  value={settings.sizePercent}
+                  onChange={(e) => setSettings(prev => ({ ...prev, sizePercent: Number(e.target.value) }))}
+                  className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+              </div>
+
+              {/* Text Color + Opacity */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-foreground">Color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={settings.color}
+                      onChange={(e) => setSettings(prev => ({ ...prev, color: e.target.value }))}
+                      className="w-9 h-9 p-0 rounded-lg border border-border cursor-pointer bg-transparent shadow-sm shrink-0"
+                    />
+                    <input
+                      type="text"
+                      value={settings.color.toUpperCase()}
+                      onChange={(e) => setSettings(prev => ({ ...prev, color: e.target.value }))}
+                      className="w-full p-2 text-center rounded-lg bg-secondary border border-border text-xs font-bold uppercase"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold text-foreground">Opacity</span>
+                    <span className="font-extrabold text-primary">{settings.opacity}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={settings.opacity}
+                    onChange={(e) => setSettings(prev => ({ ...prev, opacity: Number(e.target.value) }))}
+                    className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary mt-2.5"
+                  />
+                </div>
+              </div>
+
+              {/* Stroke Configurations */}
+              <div className="space-y-2 pt-2 border-t border-border/40">
+                <label className="flex items-center gap-2 text-xs font-bold text-foreground cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={settings.strokeEnabled}
+                    onChange={(e) => setSettings(prev => ({ ...prev, strokeEnabled: e.target.checked }))}
+                    className="rounded border-border/80 bg-secondary text-primary focus:ring-primary w-4 h-4"
+                  />
+                  <span>Enable Stroke Outline</span>
+                </label>
+
+                {settings.strokeEnabled && (
+                  <div className="flex items-center gap-2.5 pl-6 animate-fade-in">
+                    <input
+                      type="color"
+                      value={settings.strokeColor}
+                      onChange={(e) => setSettings(prev => ({ ...prev, strokeColor: e.target.value }))}
+                      className="w-8 h-8 p-0 rounded-lg border border-border cursor-pointer bg-transparent shadow-sm shrink-0"
+                    />
+                    <input
+                      type="text"
+                      value={settings.strokeColor.toUpperCase()}
+                      onChange={(e) => setSettings(prev => ({ ...prev, strokeColor: e.target.value }))}
+                      className="w-24 p-1.5 text-center rounded-lg bg-secondary border border-border text-xs font-bold uppercase"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Shadow Config */}
+              <div className="space-y-2 pt-2 border-t border-border/40">
+                <label className="flex items-center gap-2 text-xs font-bold text-foreground cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={settings.shadowEnabled}
+                    onChange={(e) => setSettings(prev => ({ ...prev, shadowEnabled: e.target.checked }))}
+                    className="rounded border-border/80 bg-secondary text-primary focus:ring-primary w-4 h-4"
+                  />
+                  <span>Enable Text Drop Shadow</span>
+                </label>
+              </div>
+
+            </div>
+          )}
+
+          {/* LOGO MODE CONFIGURATIONS */}
+          {settings.mode === 'logo' && (
+            <div className="space-y-4 animate-fade-in">
+              
+              {/* Dropzone logo input */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-foreground block">
+                  Select Watermark Logo File
+                </span>
+                
+                {!logoFile ? (
+                  <div
+                    onClick={() => logoInputRef.current?.click()}
+                    className="border-2 border-dashed border-border/80 hover:border-primary/45 rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer bg-secondary/15 hover:bg-secondary/30 transition-all text-muted-foreground"
+                  >
+                    <input
+                      type="file"
+                      ref={logoInputRef}
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          setLogoFile(e.target.files[0]);
+                        }
+                      }}
+                      accept="image/png"
+                      className="hidden"
+                    />
+                    <Plus className="w-6 h-6 mb-1 text-muted-foreground/50" />
+                    <span className="text-xs font-bold">Upload Logo (PNG)</span>
+                    <span className="text-[10px] text-muted-foreground/60">Transparency support required</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-secondary border border-border/80">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      {logoUrl && (
+                        <img
+                          src={logoUrl}
+                          alt="Logo preview"
+                          className="w-10 h-10 object-contain bg-canvas rounded border border-border shrink-0"
+                        />
+                      )}
+                      <div className="text-left overflow-hidden">
+                        <p className="text-xs font-bold truncate text-foreground">{logoFile.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{formatBytes(logoFile.size)}</p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setLogoFile(null)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 p-2 shrink-0 h-8 w-8 rounded-lg"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Logo Size Percent */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-foreground">Logo Width (% of Image Width)</span>
+                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">{settings.logoSizePercent}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={5}
+                  max={60}
+                  step={1}
+                  value={settings.logoSizePercent}
+                  onChange={(e) => setSettings(prev => ({ ...prev, logoSizePercent: Number(e.target.value) }))}
+                  className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+              </div>
+
+              {/* Logo Opacity */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-foreground">Logo Opacity</span>
+                  <span className="font-extrabold text-primary">{settings.logoOpacity}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={settings.logoOpacity}
+                  onChange={(e) => setSettings(prev => ({ ...prev, logoOpacity: Number(e.target.value) }))}
+                  className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+              </div>
+
+            </div>
+          )}
+
+          {/* SHARED PLACEMENT PARAMETERS */}
+          <div className="space-y-4 pt-4 border-t border-border/40">
+            
+            {/* Placement Layout Pattern */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-foreground">Placement Pattern</label>
+              <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-xl border border-border/60 text-xs font-bold">
+                <button
+                  onClick={() => handlePlacementChange('grid')}
+                  className={`py-1.5 rounded-lg transition-all ${settings.placement === 'grid' ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  Grid Anchor
+                </button>
+                <button
+                  onClick={() => handlePlacementChange('tiled')}
+                  className={`py-1.5 rounded-lg transition-all ${settings.placement === 'tiled' ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  Tiled Repeated
+                </button>
+              </div>
+            </div>
+
+            {/* Grid Position 3x3 layout selector */}
+            {settings.placement === 'grid' && (
+              <div className="space-y-3 pt-1 animate-fade-in">
+                <label className="text-xs font-bold text-foreground block">Anchor corner</label>
+                <div className="grid grid-cols-3 gap-1.5 w-32 p-1.5 bg-secondary rounded-xl border border-border/60">
+                  {(['top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right'] as const).map((pos) => (
+                    <button
+                      key={pos}
+                      onClick={() => setSettings(prev => ({ ...prev, gridPosition: pos }))}
+                      title={pos}
+                      className={`w-8 h-8 rounded-lg border transition-all ${settings.gridPosition === pos ? "bg-primary border-primary shadow-md text-primary-foreground scale-105" : "bg-card border-border/60 text-muted-foreground hover:bg-secondary/80 hover:text-foreground"}`}
+                    >
+                      <div className={`w-2 h-2 rounded-full mx-auto ${settings.gridPosition === pos ? "bg-background" : "bg-muted-foreground/35"}`} />
+                    </button>
+                  ))}
+                </div>
+
+                {/* Margin slider */}
+                <div className="space-y-2 pt-1.5">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold text-foreground">Edge Margin (% of Image Width)</span>
+                    <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">{settings.marginPercent}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={20}
+                    step={0.5}
+                    value={settings.marginPercent}
+                    onChange={(e) => setSettings(prev => ({ ...prev, marginPercent: Number(e.target.value) }))}
+                    className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Tiled parameters */}
+            {settings.placement === 'tiled' && (
+              <div className="space-y-2 pt-1 animate-fade-in">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-foreground">Tile Spacing (% of Image Width)</span>
+                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">{settings.tileSpacingPercent}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={5}
+                  max={50}
+                  step={0.5}
+                  value={settings.tileSpacingPercent}
+                  onChange={(e) => setSettings(prev => ({ ...prev, tileSpacingPercent: Number(e.target.value) }))}
+                  className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+              </div>
+            )}
+
+            {/* Rotation slider */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-bold text-foreground">Rotation Degrees</span>
+                <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">{settings.rotation}°</span>
+              </div>
+              <input
+                type="range"
+                min={-90}
+                max={90}
+                step={1}
+                value={settings.rotation}
+                onChange={(e) => setSettings(prev => ({ ...prev, rotation: Number(e.target.value) }))}
+                className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+            </div>
+
+          </div>
+
+          {/* OUTPUT SETTINGS */}
+          <div className="space-y-3 pt-4 border-t border-border/40">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-foreground block">Output Format</label>
+              <select
+                value={settings.outputFormat}
+                onChange={(e) => setSettings(prev => ({ ...prev, outputFormat: e.target.value as WatermarkSettings['outputFormat'] }))}
+                className="w-full p-2.5 rounded-xl bg-secondary border border-border/85 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
+              >
+                <option value="original">Keep original format</option>
+                <option value="image/jpeg">Convert to JPEG</option>
+                <option value="image/png">Convert to PNG (Lossless)</option>
+                <option value="image/webp">Convert to WebP</option>
+              </select>
+            </div>
+
+            {(settings.outputFormat === "image/jpeg" || settings.outputFormat === "image/webp") && (
+              <div className="space-y-2 animate-fade-in">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-bold text-foreground">Export Quality</span>
+                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">{settings.quality}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={10}
+                  max={100}
+                  step={1}
+                  value={settings.quality}
+                  onChange={(e) => setSettings(prev => ({ ...prev, quality: Number(e.target.value) }))}
+                  className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                />
+              </div>
+            )}
+          </div>
+
+        </section>
+
+        {/* RIGHT PANEL: LIVE PREVIEW + BATCH QUEUE AREA (2-Column Span on Desktop) */}
+        <section className="lg:col-span-2 space-y-6 flex flex-col items-center">
+          
+          {/* Dropzone or Preview display */}
+          {imagesList.length === 0 ? (
+            <div className="w-full">
+              <ImageSourceInput
+                multiple={true}
+                onImagesReady={handleImagesAdded}
+                onImageReady={(file) => handleImagesAdded([file])}
+                maxSizeMB={50}
+              />
+            </div>
+          ) : (
+            <div className="w-full space-y-4">
+              
+              {/* Canvas Preview Box */}
+              <div className="w-full rounded-2xl bg-card border border-border/60 shadow-md p-4 flex flex-col items-center justify-center relative min-h-[300px]">
+                
+                {/* Note message */}
+                <div className="absolute top-3 right-3 text-[10px] text-muted-foreground font-bold px-2 py-1 bg-secondary rounded-lg border border-border/45 z-10">
+                  Preview shows first image
+                </div>
+
+                <div
+                  className="relative bg-canvas rounded-xl p-3 flex items-center justify-center border border-border/40 overflow-hidden shadow-inner max-w-full"
+                  style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 8 8'%3E%3Crect width='4' height='4' fill='%23000000' fill-opacity='0.03'/%3E%3Crect x='4' y='4' width='4' height='4' fill='%23000000' fill-opacity='0.03'/%3E%3C/svg%3E")`,
+                    backgroundRepeat: "repeat",
+                  }}
+                >
+                  <canvas
+                    ref={canvasRef}
+                    className="max-h-[350px] sm:max-h-[420px] object-contain rounded-md w-full"
+                  />
+                </div>
+
+                <p className="text-[10px] text-muted-foreground font-semibold text-center mt-2">
+                  Preview resolution is capped at 1200px. Watermark applies to full-resolution on export.
+                </p>
+              </div>
+
+              {/* Progress and Process block */}
+              <div className="w-full p-4 sm:p-5 rounded-2xl bg-card border border-border/60 shadow-sm space-y-4">
+                
+                {/* Batch processing state bar */}
+                {processingProgress.stage !== 'idle' && (
+                  <div className="space-y-2.5 animate-fade-in">
+                    <div className="flex justify-between items-center text-xs font-bold">
+                      <span className="text-primary uppercase tracking-wider text-[10px]">
+                        {processingProgress.stage === 'processing'
+                          ? `Processing full-resolution images (${processingProgress.current + 1}/${processingProgress.total})`
+                          : processingProgress.stage === 'zipping'
+                          ? "Assembling ZIP file archive..."
+                          : "Watermarking completed!"}
+                      </span>
+                      <span className="text-foreground shrink-0">
+                        {Math.round((processingProgress.current / processingProgress.total) * 100)}%
+                      </span>
+                    </div>
+                    
+                    <div className="w-full h-2 bg-secondary rounded-full overflow-hidden border border-border/50">
+                      <div
+                        className="h-full bg-primary transition-all duration-300 rounded-full"
+                        style={{
+                          width: `${(processingProgress.current / processingProgress.total) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    
+                    {processingProgress.stage === 'processing' && (
+                      <p className="text-[10px] text-muted-foreground truncate leading-normal">
+                        Rendering: {processingProgress.filename}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Primary Button Trigger */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    onClick={imagesList.length === 1 ? () => handleSingleExport(imagesList[0]) : handleBatchExport}
+                    disabled={isProcessing || imagesList.some(item => item.status === 'pending' || item.status === 'processing')}
+                    className="flex-1 py-6 text-sm font-extrabold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4" />
+                        <span>
+                          {imagesList.length === 1
+                            ? "Apply & Download Image"
+                            : `Apply & Download ${imagesList.filter(item => item.status === 'ready').length} Images`}
+                        </span>
+                      </>
+                    )}
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={clearImagesList}
+                    disabled={isProcessing}
+                    className="py-6 px-6 text-sm font-extrabold rounded-xl border border-border/80 text-muted-foreground hover:text-foreground hover:bg-secondary/40 shrink-0 gap-2 flex items-center justify-center"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Clear Batch</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Batch Queue File List */}
+              <div className="w-full p-4 sm:p-5 rounded-2xl bg-card border border-border/60 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    Images Queue list ({imagesList.length} / 30)
+                  </span>
+                  <Button
+                    variant="ghost"
+                    onClick={() => addMoreFileInputRef.current?.click()}
+                    disabled={imagesList.length >= 30}
+                    className="text-xs font-bold gap-1 text-primary hover:bg-primary/5 hover:text-primary rounded-lg h-8 px-2"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Add More
+                  </Button>
+                </div>
+
+                <div className="max-h-[250px] overflow-y-auto custom-scrollbar space-y-2.5 pr-1">
+                  {imagesList.map((item, idx) => (
+                    <div
+                      key={item.id}
+                      className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${idx === 0 ? "bg-primary/5 border-primary/20" : "bg-secondary/20 border-border/60"}`}
+                    >
+                      <div className="flex items-center gap-3 overflow-hidden">
+                        <img
+                          src={item.previewUrl}
+                          alt="Thumbnail preview"
+                          className="w-10 h-10 object-cover rounded border border-border bg-card shrink-0"
+                        />
+                        <div className="text-left overflow-hidden">
+                          <p className="text-xs font-bold truncate text-foreground max-w-[150px] sm:max-w-[280px]">
+                            {item.file.name}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            {formatBytes(item.file.size)} {item.width > 0 && `· ${item.width} × ${item.height}`}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        {/* Order navigation */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveImageItem(idx, 'up')}
+                          disabled={idx === 0}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg"
+                        >
+                          <ArrowUp className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveImageItem(idx, 'down')}
+                          disabled={idx === imagesList.length - 1}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg"
+                        >
+                          <ArrowDown className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeImageItem(item.id)}
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg ml-1"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <input
+                  type="file"
+                  ref={addMoreFileInputRef}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      handleImagesAdded(Array.from(e.target.files));
+                    }
+                  }}
+                  multiple
+                  accept="image/png, image/jpeg, image/jpg, image/webp"
+                  className="hidden"
+                />
+              </div>
+
+            </div>
+          )}
+
+        </section>
+
+      </div>
+
+    </main>
+  );
+}
