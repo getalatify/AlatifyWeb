@@ -1,0 +1,12 @@
+<svg width="100%" height="100%" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Solid rounded-square background -->
+  <rect width="512" height="512" rx="112" fill="#0a0a0a" />
+  
+  <!-- Centered "A" monogram with comfortable padding -->
+  <g transform="translate(106, 106) scale(3)">
+    <g stroke="#f5f5f5" strokeWidth="9" strokeLinecap="round" fill="none">
+      <path d="M15 87 L50 13 L85 87" strokeLinejoin="miter" />
+      <path d="M28 63 L72 63" />
+    </g>
+  </g>
+</svg>
