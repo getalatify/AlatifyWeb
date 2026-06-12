@@ -4,11 +4,11 @@ import dynamic from "next/dynamic";
 const CropperClient = dynamic(() => import("./cropper-client"), { ssr: false });
 
 export const metadata: Metadata = {
-  title: 'Free Image Cropper',
-  description: 'Crop images with custom sizes or predefined aspect ratios. Fluid client-side resizing, rotate, and zoom entirely in your browser.',
+  title: "Free Image Cropper — Crop & Straighten Online, No Upload | Alatify",
+  description: "Crop images to any ratio, adjust freely with draggable handles, and straighten with rotation — in your browser. No upload, no sign-up. Your photo stays on your device.",
   openGraph: {
-    title: 'Free Image Cropper | Alatify',
-    description: 'Crop and rotate images locally. Select custom aspect ratios, lock dimensions, and export instantly without server uploads.',
+    title: "Free Image Cropper — Crop & Straighten Online, No Upload | Alatify",
+    description: "Crop images to any ratio, adjust freely with draggable handles, and straighten with rotation — in your browser. No upload, no sign-up. Your photo stays on your device.",
   },
 };
 

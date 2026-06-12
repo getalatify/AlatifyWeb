@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
+import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,10 @@ import {
   ArrowUp,
   ArrowDown,
   X,
-  Plus
+  Plus,
+  HelpCircle,
+  Minimize2,
+  Maximize2
 } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { toast } from "sonner";
@@ -1234,14 +1237,14 @@ export default function FormatConverterPage() {
         {/* Intro Header */}
         <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
-            <RefreshCw className="w-3.5 h-3.5" />
-            Conversion Suite
+            <RefreshCw className="w-3.5 h-3.5 text-primary" />
+            Image Format Converter
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Format Converter
+            Convert Images Between Any Format
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Convert image formats instantly with zero uploads. Supports professional iPhone HEIC/HEIF files, vector SVG icon resizing, print TIFF documents, favicons (ICO), BMPs, and image-to-PDF compilation.
+            Convert images between nine formats — including web favorites like WebP, design formats like SVG and TIFF, and specialty formats like ICO (favicons) and PDF — entirely in your browser. Drag in multiple files, pick an output format, and convert in one click. No upload, no sign-up, no watermark — your files never leave your device.
           </p>
         </section>
 
@@ -2167,6 +2170,205 @@ export default function FormatConverterPage() {
           </section>
         )}
         {imagesList.length === 0 && <UrlInputHelp />}
+
+        {/* How It Works Guide Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              How It Works
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Convert image formats in four quick steps.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              {
+                step: "01",
+                title: "Upload",
+                text: "Add one or many images (drag-drop or file picker).",
+              },
+              {
+                step: "02",
+                title: "Choose format",
+                text: "Pick your output: JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, or GIF.",
+              },
+              {
+                step: "03",
+                title: "Convert",
+                text: "Process them all at once, instantly, on your device.",
+              },
+              {
+                step: "04",
+                title: "Download",
+                text: "Save individually, or grab everything as a ZIP.",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+              >
+                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                  {item.step}
+                </span>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Use Cases Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              What You Can Do
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Convert files for any design, print, or web deployment scenario.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "PNG ↔ WebP",
+                text: "Shrink images for faster-loading websites without quality loss.",
+              },
+              {
+                title: "Image to ICO",
+                text: "Create favicons for your website in the correct format.",
+              },
+              {
+                title: "Image to PDF",
+                text: "Combine several images into a single multi-page PDF.",
+              },
+              {
+                title: "Image to SVG",
+                text: "Trace raster images into scalable vector graphics.",
+              },
+              {
+                title: "HEIC to JPG",
+                text: "Convert iPhone photos into universally compatible JPGs.",
+              },
+            ].map((useCase, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+              >
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {useCase.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {useCase.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "Which formats can I convert between?",
+                a: "JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, and GIF — plus HEIC input from iPhones.",
+              },
+              {
+                q: "Does it upload my files to a server?",
+                a: "No. Conversion runs entirely in your browser; your files never leave your device.",
+              },
+              {
+                q: "Can I convert many images at once?",
+                a: "Yes — drag in multiple files, convert them all in one click, and download as a ZIP.",
+              },
+              {
+                q: "How do I convert a PNG to an ICO favicon?",
+                a: "Upload the PNG, choose ICO as the output format, and download — ready to use as a site favicon.",
+              },
+              {
+                q: "Can I convert HEIC photos from my iPhone?",
+                a: "Yes. Add your HEIC files and convert them to JPG or PNG instantly.",
+              },
+            ].map((faq, idx) => (
+              <div key={idx} className="space-y-1.5 p-1">
+                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Tools Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+            Related Tools
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              href="/tools/compressor"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Minimize2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Image Compressor
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Reduce file sizes by up to 90% while keeping quality.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/resizer"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Maximize2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Image Resizer
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Resize image dimensions by percentage or pixels.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* Info panel highlighting offline privacy */}
+        <PrivacyNotice>
+          <p>
+            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Convert images between JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, and GIF formats instantly and privately on your own device.
+          </p>
+        </PrivacyNotice>
       </div>
     </main>
   );

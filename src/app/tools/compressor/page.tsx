@@ -4,11 +4,11 @@ import dynamic from "next/dynamic";
 const CompressorClient = dynamic(() => import("./compressor-client"), { ssr: false });
 
 export const metadata: Metadata = {
-  title: 'Free Image Compressor',
-  description: 'Compress JPG, PNG, and WebP images up to 90% without losing quality. All processing happens in your browser — your files never leave your device.',
+  title: "Free Image Compressor — Reduce File Size, No Upload | Alatify",
+  description: "Compress JPG, PNG, and WebP images to a smaller size in your browser — lossy or lossless, batch processing, no upload, no sign-up. Shrink files while keeping quality.",
   openGraph: {
-    title: 'Free Image Compressor | Alatify',
-    description: 'Compress images up to 90% in your browser. Private, unlimited, no signup.',
+    title: "Free Image Compressor — Reduce File Size, No Upload | Alatify",
+    description: "Compress JPG, PNG, and WebP images to a smaller size in your browser — lossy or lossless, batch processing, no upload, no sign-up. Shrink files while keeping quality.",
   },
 };
 

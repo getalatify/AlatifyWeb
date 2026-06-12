@@ -4,11 +4,11 @@ import dynamic from "next/dynamic";
 const StockFinderClient = dynamic(() => import("./stock-finder-client"), { ssr: false });
 
 export const metadata: Metadata = {
-  title: 'Stock Image Finder',
-  description: 'Search free stock photos from Unsplash, Pexels, and Pixabay — and edit them instantly offline using our browser-based tools.',
+  title: "Free Stock Photos, Illustrations & Vectors — Search & Edit | Alatify",
+  description: "Search millions of free stock photos, illustrations, and vectors from Unsplash, Pexels, and Pixabay in one place — then edit them instantly with Alatify's browser tools. No sign-up.",
   openGraph: {
-    title: 'Stock Image Finder | Alatify',
-    description: 'Find and edit high-quality stock photos instantly and privately in your browser. Seamless integration with background remover, cropper, compressor, and more.',
+    title: "Free Stock Photos, Illustrations & Vectors — Search & Edit | Alatify",
+    description: "Search millions of free stock photos, illustrations, and vectors from Unsplash, Pexels, and Pixabay in one place — then edit them instantly with Alatify's browser tools. No sign-up.",
   },
 };
 

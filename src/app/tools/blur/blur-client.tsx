@@ -3,8 +3,9 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo } from "@/components/shared";
+import { ThemeToggle, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
+import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -27,9 +28,11 @@ import {
   CheckCircle2,
   Info,
   Download,
-  AlertTriangle
+  AlertTriangle,
+  Scissors
 } from "lucide-react";
 import { formatBytes } from "@/lib/utils/format";
+import { FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision";
 
 interface Region {
   id: string;
@@ -48,6 +51,8 @@ interface Region {
 export default function BlurClient() {
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
+  const [isDetecting, setIsDetecting] = useState(false);
+  const faceDetectorRef = useRef<FaceDetector | null>(null);
   
   // UI Panel Controls
   const [drawMode, setDrawMode] = useState<"box" | "brush">("box");
@@ -74,6 +79,38 @@ export default function BlurClient() {
   const completedCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const effectCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Intercept window.fetch to cache WASM and model assets locally
+  useEffect(() => {
+    if (typeof window === "undefined" || !("caches" in window)) return;
+
+    const originalFetch = window.fetch;
+    window.fetch = async function (input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+      const url = typeof input === "string" ? input : (input instanceof URL ? input.href : input.url);
+
+      if (url.includes("/wasm/") || url.includes("/models/")) {
+        try {
+          const cache = await caches.open("alatify-model-cache");
+          const cachedResponse = await cache.match(url);
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          const response = await originalFetch(input, init);
+          if (response.ok) {
+            await cache.put(url, response.clone());
+          }
+          return response;
+        } catch {
+          return originalFetch(input, init);
+        }
+      }
+      return originalFetch(input, init);
+    };
+
+    return () => {
+      window.fetch = originalFetch;
+    };
+  }, []);
 
   // Clean up object URL on change
   useEffect(() => {
@@ -632,6 +669,118 @@ export default function BlurClient() {
     toast.success("Image removed.");
   };
 
+  const handleAutoDetectFaces = async () => {
+    if (!imageRef.current || !activeImage) {
+      toast.error("Please load an image first.");
+      return;
+    }
+
+    setIsDetecting(true);
+    try {
+      // Lazy-load and cache face detector if not already loaded
+      if (!faceDetectorRef.current) {
+        // Retrieve model via cached fetch
+        const cache = await caches.open("alatify-model-cache");
+        const modelUrl = "/models/blaze_face_short_range.tflite";
+        let modelResponse = await cache.match(modelUrl);
+        if (!modelResponse) {
+          const resp = await fetch(modelUrl);
+          if (!resp.ok) {
+            throw new Error("Failed to download local face detection model.");
+          }
+          await cache.put(modelUrl, resp.clone());
+          modelResponse = resp;
+        }
+        const blob = await modelResponse.blob();
+        const arrayBuffer = await blob.arrayBuffer();
+
+        // Retrieve wasm files via cached fetches to warm up the cache
+        const wasmFiles = [
+          "/wasm/vision_wasm_internal.wasm",
+          "/wasm/vision_wasm_internal.js",
+          "/wasm/vision_wasm_internal_simd.wasm",
+          "/wasm/vision_wasm_internal_simd.js"
+        ];
+        for (const file of wasmFiles) {
+          const match = await cache.match(file);
+          if (!match) {
+            try {
+              const resp = await fetch(file);
+              if (resp.ok) {
+                await cache.put(file, resp.clone());
+              }
+            } catch (e) {
+              console.warn("WASM caching failed:", e);
+            }
+          }
+        }
+
+        const vision = await FilesetResolver.forVisionTasks("/wasm");
+        const detector = await FaceDetector.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetBuffer: new Uint8Array(arrayBuffer),
+            delegate: "GPU"
+          },
+          runningMode: "IMAGE"
+        });
+        faceDetectorRef.current = detector;
+      }
+
+      // Execute detection on natural image
+      const results = faceDetectorRef.current.detect(imageRef.current);
+      const detections = results.detections || [];
+
+      if (detections.length === 0) {
+        toast.info("No faces detected — add regions manually.");
+        setIsDetecting(false);
+        return;
+      }
+
+      // Map detections to new regions
+      const newRegions: Region[] = [];
+      const imgW = imageRef.current.naturalWidth;
+      const imgH = imageRef.current.naturalHeight;
+
+      for (const detection of detections) {
+        if (!detection.boundingBox) continue;
+        const box = detection.boundingBox;
+
+        // Bounding box from MediaPipe is in pixels relative to natural size
+        // Clamp bounds to prevent painting issues
+        const x = Math.max(0, Math.min(imgW, box.originX));
+        const y = Math.max(0, Math.min(imgH, box.originY));
+        const w = Math.max(2, Math.min(imgW - x, box.width));
+        const h = Math.max(2, Math.min(imgH - y, box.height));
+
+        newRegions.push({
+          id: Math.random().toString(36).substring(2, 9),
+          type: "box",
+          x,
+          y,
+          w,
+          h,
+          points: [],
+          brushSize: 0,
+          effect: activeEffect,
+          blurStrength: activeBlurStrength,
+          pixelSize: activePixelSize
+        });
+      }
+
+      if (newRegions.length > 0) {
+        setRegions((prev) => [...prev, ...newRegions]);
+        toast.success(`Detected and redacted ${newRegions.length} face${newRegions.length > 1 ? "s" : ""}.`);
+      } else {
+        toast.info("No faces detected — add regions manually.");
+      }
+    } catch (err) {
+      console.error("Face detection failed:", err);
+      toast.error(err instanceof Error ? err.message : "Face detection failed.");
+    } finally {
+      setIsDetecting(false);
+    }
+  };
+
   // Export Download
   const handleDownload = () => {
     const canvas = canvasRef.current;
@@ -942,6 +1091,33 @@ export default function BlurClient() {
                   </h2>
                 </div>
 
+                {/* Auto-Detect Faces Section */}
+                <div className="space-y-2">
+                  <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                    Automation
+                  </span>
+                  <Button
+                    onClick={handleAutoDetectFaces}
+                    disabled={isDetecting}
+                    className="w-full text-xs font-bold py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-md hover:shadow-lg flex items-center justify-center gap-2 h-10 transition-all"
+                  >
+                    {isDetecting ? (
+                      <>
+                        <span className="h-4 w-4 border-2 border-primary-foreground border-t-transparent animate-spin rounded-full" />
+                        <span>Detecting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-4 h-4" />
+                        <span>Auto-Detect Faces</span>
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed mt-1">
+                    ⚡ Local face detection. Works best on clear, front-facing faces. Manual touch-up is available.
+                  </p>
+                </div>
+
                 {/* Selection Mode Toggle */}
                 <div className="space-y-2">
                   <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
@@ -1233,6 +1409,63 @@ export default function BlurClient() {
             ))}
           </div>
         </section>
+
+        {/* Related Tools internal link block */}
+        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+            Related Privacy Tools
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              href="/tools/exif-cleaner"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    EXIF Privacy Cleaner
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Strip GPS location and camera metadata.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/bg-remover"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Scissors className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    AI Background Remover
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Extract subjects locally in your browser.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* Info panel highlighting offline privacy */}
+        <PrivacyNotice>
+          <p>
+            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Obscure faces, license plates, and sensitive credentials securely and privately on your own device.
+          </p>
+        </PrivacyNotice>
+        {!activeImage && <UrlInputHelp />}
       </div>
     </main>
   );

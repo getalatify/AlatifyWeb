@@ -4,11 +4,11 @@ import dynamic from "next/dynamic";
 const ExifCleanerClient = dynamic(() => import("./exif-cleaner-client"), { ssr: false });
 
 export const metadata: Metadata = {
-  title: 'EXIF Privacy Cleaner',
-  description: 'Strip location, camera, and metadata from your images before sharing — entirely in your browser. 100% private and offline.',
+  title: "Remove EXIF & GPS Metadata from Photos — Free, No Upload | Alatify",
+  description: "Strip GPS location, camera details, and hidden metadata from your photos before sharing — 100% private, runs in your browser, no upload, fully lossless.",
   openGraph: {
-    title: 'EXIF Privacy Cleaner | Alatify',
-    description: 'Protect your privacy by cleaning EXIF metadata, GPS locations, camera tags, and editor history from images offline.',
+    title: "Remove EXIF & GPS Metadata from Photos — Free, No Upload | Alatify",
+    description: "Strip GPS location, camera details, and hidden metadata from your photos before sharing — 100% private, runs in your browser, no upload, fully lossless.",
   },
 };
 

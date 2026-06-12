@@ -5,3 +5,5 @@ export { ThemeProvider } from "./theme-provider";
 export { ThemeToggle } from "./theme-toggle";
 export { Footer } from "./footer";
 export { Logo } from "./logo";
+export { PrivacyNotice } from "./privacy-notice";
+

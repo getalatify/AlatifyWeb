@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo } from "@/components/shared";
+import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,10 @@ import {
   Cpu,
   Download,
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  HelpCircle,
+  EyeOff,
+  Shield
 } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
@@ -689,13 +692,13 @@ export default function BgRemoverClient() {
         <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
             <Cpu className="w-3.5 h-3.5 text-primary" />
-            AI Extraction
+            AI Background Remover
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Background Remover
+            Remove Image Backgrounds — Free, Unlimited &amp; Private
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Remove image backgrounds instantly using client-side AI. Model downloads and processing run entirely on your browser—private, secure, and completely unlimited.
+            Most free background removers upload your image to their servers — and many quietly use it to train their AI or cap free downloads at low resolution. Alatify&apos;s runs entirely in your browser using GPU-accelerated on-device AI. Your photo never leaves your device. No sign-up, no watermark, no resolution limit, and no cap on how many you process — full quality, fully private, unlimited.
           </p>
         </section>
 
@@ -1131,6 +1134,201 @@ export default function BgRemoverClient() {
           </section>
         )}
         {!activeImage && <UrlInputHelp />}
+
+        {/* How It Works Guide Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-4">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              How It Works
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Remove any background in four quick steps.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              {
+                step: "01",
+                title: "Upload",
+                text: "Drop your image. It stays on your device.",
+              },
+              {
+                step: "02",
+                title: "Process",
+                text: "On-device AI detects the subject and removes the background, GPU-accelerated, in seconds.",
+              },
+              {
+                step: "03",
+                title: "Review",
+                text: "Get a clean cutout with a transparent background, at full resolution.",
+              },
+              {
+                step: "04",
+                title: "Download",
+                text: "Save your transparent PNG. No watermark, no limits.",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+              >
+                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                  {item.step}
+                </span>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* What You Can Use It For Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              What You Can Use It For
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              From e-commerce listings to social posts and design assets.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "Product photos & e-commerce",
+                text: "Clean transparent or white-background product shots for Amazon, Etsy, Shopify, and eBay listings.",
+              },
+              {
+                title: "Profile pictures & headshots",
+                text: "Isolate yourself for a clean professional or LinkedIn photo.",
+              },
+              {
+                title: "Transparent PNGs for design",
+                text: "Cut out logos, objects, or people to drop into designs, slides, and thumbnails.",
+              },
+              {
+                title: "Social media",
+                text: "Place your subject on any background for posts, stories, and graphics.",
+              },
+            ].map((useCase, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+              >
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {useCase.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {useCase.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "Is it really free and unlimited?",
+                a: "Yes — no sign-up, no watermark, no daily limit, and no resolution cap. It runs on your own device, so there's nothing for us to meter.",
+              },
+              {
+                q: "Does it upload my image to a server?",
+                a: "No. Unlike most free removers that process server-side — and some that use your uploads to train their AI — Alatify runs the AI entirely in your browser. Your image never leaves your device.",
+              },
+              {
+                q: "Do I get the full resolution?",
+                a: "Yes. Many free tools cap downloads at low resolution and charge for HD. Alatify gives you the full-resolution cutout for free.",
+              },
+              {
+                q: "How does it work without uploading?",
+                a: "It uses on-device AI (via WebGPU/WebAssembly) that runs locally in your browser — your own device does the processing.",
+              },
+              {
+                q: "What can I use the result for?",
+                a: "Product photos, transparent PNGs for design, profile pictures, social posts, and marketplace listings — anywhere you need a clean cutout.",
+              },
+            ].map((faq, idx) => (
+              <div key={idx} className="space-y-1.5 p-1">
+                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Tools internal link block */}
+        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+            Related Privacy Tools
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              href="/tools/blur"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <EyeOff className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Blur &amp; Redact Image
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Obscure faces, plates, and info locally.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/exif-cleaner"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    EXIF Privacy Cleaner
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Strip GPS &amp; metadata before sharing.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* Info panel highlighting offline privacy */}
+        <PrivacyNotice>
+          <p>
+            Alatify removes image backgrounds entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, full-resolution, watermark-free transparent PNGs, processed privately on your own device.
+          </p>
+        </PrivacyNotice>
       </div>
 
       <ProcessingOverlay

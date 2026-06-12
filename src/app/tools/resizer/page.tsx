@@ -4,11 +4,11 @@ import dynamic from "next/dynamic";
 const ResizerClient = dynamic(() => import("./resizer-client"), { ssr: false });
 
 export const metadata: Metadata = {
-  title: 'Free Image Resizer',
-  description: 'Resize images to any custom dimension, scale by percentage, or use social media presets in your browser. Pixel-perfect, private, and fast.',
+  title: "Free Image Resizer — Resize by Pixels or Percentage, No Upload | Alatify",
+  description: "Resize images by exact pixels, percentage, or aspect ratio in your browser — batch resize with high-quality resampling, no upload, no sign-up. Files stay on your device.",
   openGraph: {
-    title: 'Free Image Resizer | Alatify',
-    description: 'Resize images online using your local device. Standard presets for Instagram, YouTube, TikTok, and custom crops.',
+    title: "Free Image Resizer — Resize by Pixels or Percentage, No Upload | Alatify",
+    description: "Resize images by exact pixels, percentage, or aspect ratio in your browser — batch resize with high-quality resampling, no upload, no sign-up. Files stay on your device.",
   },
 };
 

@@ -4,11 +4,11 @@ import dynamic from "next/dynamic";
 const ConverterClient = dynamic(() => import("./converter-client"), { ssr: false });
 
 export const metadata: Metadata = {
-  title: 'Free Image Format Converter',
-  description: 'Convert JPG to PNG, PNG to WebP, HEIC to JPG, or export vector SVG and PDF files natively in your browser. All processing happens locally.',
+  title: "Free Image Converter — Convert to PNG, JPG, WebP, ICO, SVG & PDF | Alatify",
+  description: "Convert images between 9 formats — PNG, JPG, WebP, ICO, SVG, TIFF, BMP, GIF, PDF — right in your browser. Batch convert, no upload, no sign-up. Files stay on your device.",
   openGraph: {
-    title: 'Free Image Format Converter | Alatify',
-    description: 'Convert image formats online locally on your device. Free, private, no file uploads.',
+    title: "Free Image Converter — Convert to PNG, JPG, WebP, ICO, SVG & PDF | Alatify",
+    description: "Convert images between 9 formats — PNG, JPG, WebP, ICO, SVG, TIFF, BMP, GIF, PDF — right in your browser. Batch convert, no upload, no sign-up. Files stay on your device.",
   },
 };
 

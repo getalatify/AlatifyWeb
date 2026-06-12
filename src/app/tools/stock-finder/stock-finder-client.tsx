@@ -21,7 +21,9 @@ import {
   AlertCircle,
   Loader2,
   ExternalLink,
-  Image as ImageIcon
+  Image as ImageIcon,
+  CheckCircle2,
+  HelpCircle
 } from 'lucide-react';
 import { StockImage } from '@/app/api/stock-search/route';
 
@@ -226,13 +228,13 @@ export default function StockFinderClient() {
         <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            Stock Photos
+            Stock Image Finder
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Stock Image Finder
+            Free Stock Photos, Illustrations & Vectors
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Search millions of high-quality free stock photos from Unsplash, Pexels, and Pixabay. Download them directly or edit them instantly in one click using our offline tools.
+            Search across Unsplash, Pexels, and Pixabay at once — and unlike most stock finders that only show photos, Alatify also surfaces illustrations and vectors. Find the perfect image, then jump straight into Alatify&apos;s editing tools to remove its background, compress it, or convert it — all free, no sign-up.
           </p>
         </section>
 
@@ -605,6 +607,194 @@ export default function StockFinderClient() {
               )}
             </div>
           )}
+        </section>
+
+        {/* How It Works Guide Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2 select-none">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              How It Works
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Find and prepare stock assets in four quick steps.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              {
+                step: "01",
+                title: "Search",
+                text: "Type a keyword to search free stock across Unsplash, Pexels, and Pixabay at once.",
+              },
+              {
+                step: "02",
+                title: "Filter",
+                text: "Narrow by content type (photos, illustrations, or vectors), source, and orientation.",
+              },
+              {
+                step: "03",
+                title: "Pick",
+                text: "Choose the image you want.",
+              },
+              {
+                step: "04",
+                title: "Edit or download",
+                text: "Open it in one click in Alatify's tools, or download it directly.",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+              >
+                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                  {item.step}
+                </span>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Use Cases Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2 select-none">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              What You Can Find
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Millions of royalty-free photography, vectors, and illustrations ready for design.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "Photos",
+                text: "High-quality, royalty-free photography for blogs, articles, and social posts.",
+              },
+              {
+                title: "Illustrations & vectors",
+                text: "Scalable graphics for presentations, designs, and thumbnails — not just photos.",
+              },
+              {
+                title: "Hero & banner images",
+                text: "Wide, high-resolution shots for websites and headers.",
+              },
+              {
+                title: "Edit-ready",
+                text: "Send any result straight into Alatify to cut out the background, compress, or convert.",
+              },
+            ].map((useCase, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+              >
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {useCase.title}
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {useCase.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2 select-none">
+          <div className="text-center sm:text-left flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "Are the images free to use?",
+                a: "Yes — results come from Unsplash, Pexels, and Pixabay, which offer free-to-use images. Some sources ask for attribution to the photographer, shown alongside each image.",
+              },
+              {
+                q: "Can I find illustrations and vectors, not just photos?",
+                a: "Yes. Most stock finders only show photos — Alatify also surfaces illustrations and vectors, so you can search by content type.",
+              },
+              {
+                q: "Can I edit an image right after finding it?",
+                a: "Yes — open any result in one click in Alatify's browser tools to remove its background, compress it, convert it, and more.",
+              },
+              {
+                q: "Do I need to sign up?",
+                a: "No. Search and edit freely, no account required.",
+              },
+              {
+                q: "Where do the images come from?",
+                a: "Three of the largest free stock libraries: Unsplash, Pexels, and Pixabay.",
+              },
+            ].map((faq, idx) => (
+              <div key={idx} className="space-y-1.5 p-1">
+                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>{faq.q}</span>
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Tools Section */}
+        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4 select-none">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+            Related Tools
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Link
+              href="/tools/bg-remover"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Scissors className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Background Remover
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Extract subjects locally in your browser.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/compressor"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <Minimize2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    Image Compressor
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Reduce file sizes by up to 90% while keeping quality.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+          </div>
         </section>
       </div>
     </main>

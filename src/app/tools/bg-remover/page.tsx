@@ -4,11 +4,11 @@ import dynamic from "next/dynamic";
 const BgRemoverClient = dynamic(() => import("./bg-remover-client"), { ssr: false });
 
 export const metadata: Metadata = {
-  title: 'AI Background Remover',
-  description: 'Remove backgrounds from images instantly using local on-device AI. 100% free, private, and automatic subject isolation without server uploads.',
+  title: "Free Background Remover — Unlimited, Full-Res, No Upload | Alatify",
+  description: "Remove image backgrounds in your browser — unlimited, full resolution, no sign-up, no watermark. Your photo never leaves your device. AI-powered and 100% private.",
   openGraph: {
-    title: 'AI Background Remover | Alatify',
-    description: 'Extract subjects and remove image backgrounds natively in your browser. All AI processing runs completely offline.',
+    title: "Free Background Remover — Unlimited, Full-Res, No Upload | Alatify",
+    description: "Remove image backgrounds in your browser — unlimited, full resolution, no sign-up, no watermark. Your photo never leaves your device. AI-powered and 100% private.",
   },
 };
 
