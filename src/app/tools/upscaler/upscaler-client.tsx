@@ -1162,6 +1162,64 @@ function PreviewCard({
   );
 }
 
+function useDownscaledUrl(url: string | null, maxDim = 1024) {
+  const [downscaledUrl, setDownscaledUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!url) {
+      setDownscaledUrl(null);
+      return;
+    }
+
+    let active = true;
+    let createdUrl: string | null = null;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      if (!active) return;
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      const long = Math.max(w, h);
+
+      if (long <= maxDim) {
+        setDownscaledUrl(url);
+        return;
+      }
+
+      const ratio = maxDim / long;
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(w * ratio);
+      canvas.height = Math.round(h * ratio);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        setDownscaledUrl(url);
+        return;
+      }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        if (!active || !blob) return;
+        createdUrl = URL.createObjectURL(blob);
+        setDownscaledUrl(createdUrl);
+      }, "image/jpeg", 0.85);
+    };
+    img.onerror = () => {
+      if (!active) return;
+      setDownscaledUrl(url);
+    };
+    img.src = url;
+
+    return () => {
+      active = false;
+      if (createdUrl) {
+        URL.revokeObjectURL(createdUrl);
+      }
+    };
+  }, [url, maxDim]);
+
+  return downscaledUrl;
+}
+
 /** Before/after compare slider. */
 function CompareSlider({
   beforeUrl,
@@ -1174,31 +1232,82 @@ function CompareSlider({
 }) {
   const [pos, setPos] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
+  const handleButtonRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
 
-  const setFromClientX = useCallback((clientX: number) => {
-    const el = containerRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
+  const rectRef = useRef<DOMRect | null>(null);
+  const clientXRef = useRef<number>(0);
+  const tickingRef = useRef<boolean>(false);
+  const rafIdRef = useRef<number | null>(null);
+
+  // Generate lightweight display-sized URLs to prevent performance lag on mobile
+  const displayBeforeUrl = useDownscaledUrl(beforeUrl);
+  const displayAfterUrl = useDownscaledUrl(afterUrl);
+
+  const updatePosition = useCallback(() => {
+    const rect = rectRef.current;
+    if (!rect) return;
+    const clientX = clientXRef.current;
     const p = ((clientX - rect.left) / rect.width) * 100;
     setPos(Math.max(0, Math.min(100, p)));
+    tickingRef.current = false;
   }, []);
+
+  const onPointerMove = useCallback((clientX: number) => {
+    clientXRef.current = clientX;
+    if (!tickingRef.current) {
+      tickingRef.current = true;
+      rafIdRef.current = requestAnimationFrame(updatePosition);
+    }
+  }, [updatePosition]);
+
+  const startDrag = useCallback((clientX: number) => {
+    const el = containerRef.current;
+    if (!el) return;
+    rectRef.current = el.getBoundingClientRect();
+    draggingRef.current = true;
+    onPointerMove(clientX);
+  }, [onPointerMove]);
 
   useEffect(() => {
     const move = (e: PointerEvent) => {
       if (!draggingRef.current) return;
-      setFromClientX(e.clientX);
+      onPointerMove(e.clientX);
     };
     const up = () => {
       draggingRef.current = false;
     };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
+    // Use passive event listeners for window level movements
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointerup", up, { passive: true });
     return () => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
     };
-  }, [setFromClientX]);
+  }, [onPointerMove]);
+
+  useEffect(() => {
+    const handleEl = handleButtonRef.current;
+    if (!handleEl) return;
+
+    const preventDefault = (e: TouchEvent) => {
+      // Explicitly prevent scrolling/gestures when swiping directly on the handle button
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+    };
+
+    handleEl.addEventListener("touchstart", preventDefault, { passive: false });
+    handleEl.addEventListener("touchmove", preventDefault, { passive: false });
+
+    return () => {
+      handleEl.removeEventListener("touchstart", preventDefault);
+      handleEl.removeEventListener("touchmove", preventDefault);
+    };
+  }, []);
 
   return (
     <div className="w-full p-3 sm:p-4 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3">
@@ -1211,37 +1320,58 @@ function CompareSlider({
       </div>
       <div
         ref={containerRef}
-        className="relative w-full aspect-square sm:aspect-[4/3] rounded-xl overflow-hidden border border-border/50 bg-canvas cursor-ew-resize select-none touch-none"
+        className="relative w-full aspect-square sm:aspect-[4/3] rounded-xl overflow-hidden border border-border/50 bg-canvas cursor-ew-resize select-none touch-pan-y"
         onPointerDown={(e) => {
-          draggingRef.current = true;
-          setFromClientX(e.clientX);
+          if (e.button !== 0) return;
+          startDrag(e.clientX);
         }}
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 8 8'%3E%3Crect width='4' height='4' fill='%23000000' fill-opacity='0.03'/%3E%3Crect x='4' y='4' width='4' height='4' fill='%23000000' fill-opacity='0.03'/%3E%3C/svg%3E")`,
           backgroundRepeat: "repeat",
+          contain: "layout paint",
         }}
       >
-        {/* After (full) */}
-        <img src={afterUrl} alt="Upscaled" className="absolute inset-0 w-full h-full object-contain pointer-events-none" />
+        {/* After (full/display-size) */}
+        <img
+          src={displayAfterUrl || afterUrl}
+          alt="Upscaled"
+          className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+        />
         {/* Before (clipped via clip-path so it stays pixel-aligned with After) */}
         <img
-          src={beforeUrl}
+          src={displayBeforeUrl || beforeUrl}
           alt="Original"
           className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-          style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
+          style={{
+            clipPath: `inset(0 ${100 - pos}% 0 0)`,
+            willChange: "transform, clip-path",
+          }}
         />
         {/* Labels */}
-        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-background/80 border border-border text-foreground">
+        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-background/80 border border-border text-foreground select-none pointer-events-none">
           Before
         </span>
-        <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-background/80 border border-border text-foreground">
+        <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-background/80 border border-border text-foreground select-none pointer-events-none">
           After
         </span>
-        {/* Handle */}
-        <div className="absolute top-0 bottom-0 w-0.5 bg-primary shadow-[0_0_0_1px_rgba(255,255,255,0.4)]" style={{ left: `${pos}%` }}>
-          <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md">
-            <ArrowLeft className="w-3 h-3" />
-            <ArrowLeft className="w-3 h-3 rotate-180 -ml-1" />
+        {/* Handle Container */}
+        <div
+          className="absolute inset-y-0 left-0 w-full pointer-events-none"
+          style={{
+            transform: `translate3d(${pos}%, 0, 0)`,
+            willChange: "transform",
+          }}
+        >
+          {/* Handle Line */}
+          <div className="absolute top-0 bottom-0 w-0.5 bg-primary shadow-[0_0_0_1px_rgba(255,255,255,0.4)] left-0">
+            {/* Handle Button */}
+            <div
+              ref={handleButtonRef}
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 left-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md cursor-ew-resize pointer-events-auto"
+            >
+              <ArrowLeft className="w-3 h-3" />
+              <ArrowLeft className="w-3 h-3 rotate-180 -ml-1" />
+            </div>
           </div>
         </div>
       </div>
