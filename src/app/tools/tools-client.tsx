@@ -90,10 +90,10 @@ const pipelineTools = [
   {
     name: "AI Upscaler",
     description: "Enhance image resolution up to 4x using on-device AI. Sharper details, completely private.",
-    status: "Coming Soon",
-    statusColor: "bg-warning/10 text-warning border-warning/20",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
     icon: Sparkles,
-    href: null,
+    href: "/tools/upscaler",
   },
 ];
 

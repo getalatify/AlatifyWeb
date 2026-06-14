@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools/blur',
     '/tools/stock-finder',
     '/tools/watermark',
+    '/tools/upscaler',
     '/privacy',
     '/terms',
     '/about',

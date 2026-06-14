@@ -21,6 +21,14 @@ interface ProcessingOverlayProps {
   downloadProgress?: number;
   downloadingFile?: string;
   modelType?: 'isnet_fp16' | 'isnet_quint8' | 'isnet';
+  // Optional overrides so other tools (e.g. the AI Upscaler) can reuse this
+  // overlay with their own copy. When omitted, default behaviour is unchanged.
+  modelSizeLabel?: string;
+  processingTitle?: string;
+  processingDescription?: string;
+  /** When in the processing stage, show "X / Y tiles" + a determinate bar. */
+  tileDone?: number;
+  tileTotal?: number;
 }
 
 const modelSizes = {
@@ -38,6 +46,11 @@ export function ProcessingOverlay({
   downloadProgress = 0,
   downloadingFile = "",
   modelType = "isnet_fp16",
+  modelSizeLabel,
+  processingTitle,
+  processingDescription,
+  tileDone,
+  tileTotal,
 }: ProcessingOverlayProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -77,10 +90,20 @@ export function ProcessingOverlay({
 
   if (!isProcessing || !mounted) return null;
 
-  const modelSize = modelSizes[modelType] || "~22MB";
+  const modelSize = modelSizeLabel || modelSizes[modelType] || "~22MB";
+  const tileMode =
+    stage === "processing" &&
+    typeof tileDone === "number" &&
+    typeof tileTotal === "number" &&
+    tileTotal > 0;
+  const tilePercent = tileMode
+    ? Math.min(100, Math.round((tileDone! / tileTotal!) * 100))
+    : 0;
 
-  let title = "Removing background...";
-  let description = "This usually takes 30-60 seconds. Please don't close this tab.";
+  let title = processingTitle || "Removing background...";
+  let description =
+    processingDescription ||
+    "This usually takes 30-60 seconds. Please don't close this tab.";
   let showProgressBar = false;
 
   if (stage === "downloading") {
@@ -89,12 +112,14 @@ export function ProcessingOverlay({
     showProgressBar = true;
   } else if (stage === "initializing" || stage === "compiling") {
     title = "Setting up AI engine…";
-    description = stage === "compiling" 
-      ? "Compiling WebGPU shaders for hardware acceleration..." 
+    description = stage === "compiling"
+      ? "Compiling WebGPU shaders for hardware acceleration..."
       : "Initializing execution environment...";
   } else if (stage === "processing") {
-    title = "Removing background…";
-    description = "Running local subject extraction on your device's hardware.";
+    title = processingTitle || "Removing background…";
+    description =
+      processingDescription ||
+      "Running local subject extraction on your device's hardware.";
   }
 
   return createPortal(
@@ -121,6 +146,21 @@ export function ProcessingOverlay({
             <div className="flex justify-between items-center text-[10px] text-muted-foreground font-semibold">
               <span className="truncate max-w-[150px]">{downloadingFile || "Downloading..."}</span>
               <span>{downloadProgress}%</span>
+            </div>
+          </div>
+        )}
+
+        {tileMode && (
+          <div className="w-full mt-2 space-y-1.5">
+            <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden border border-border/60">
+              <div
+                className="bg-primary h-full rounded-full transition-all duration-300 shadow-sm"
+                style={{ width: `${tilePercent}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center text-[10px] text-muted-foreground font-semibold">
+              <span>Upscaling… {tileDone} / {tileTotal} tiles</span>
+              <span>{tilePercent}%</span>
             </div>
           </div>
         )}
