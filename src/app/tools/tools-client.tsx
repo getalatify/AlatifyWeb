@@ -19,7 +19,7 @@ import {
   Search,
   EyeOff,
   Type,
-  Binary
+  Binary,
   QrCode
 } from "lucide-react";
 
