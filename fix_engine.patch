@@ -1,0 +1,83 @@
+--- src/lib/id-protector/engine.ts
++++ src/lib/id-protector/engine.ts
+@@ -23,12 +23,24 @@
+   source: HTMLImageElement,
+   redactions: Redaction[],
+   watermark: WatermarkConfig | null,
+-  canvas: HTMLCanvasElement
++  canvas: HTMLCanvasElement,
++  isDisplayPreview: boolean = false
+ ): void {
+   const ctx = canvas.getContext('2d');
+   if (!ctx) return;
+
+-  // Size canvas to source natural dimensions
+-  canvas.width = source.naturalWidth;
+-  canvas.height = source.naturalHeight;
++  // If generating a preview for display, we bound the canvas size to something manageable
++  // to avoid blocking the main thread when drawing 60fps.
++  if (isDisplayPreview) {
++    const MAX_PREVIEW_SIZE = 1200;
++    const scale = Math.min(1, MAX_PREVIEW_SIZE / Math.max(source.naturalWidth, source.naturalHeight));
++    canvas.width = source.naturalWidth * scale;
++    canvas.height = source.naturalHeight * scale;
++    ctx.scale(scale, scale);
++  } else {
++    // Size canvas to source natural dimensions for full export
++    canvas.width = source.naturalWidth;
++    canvas.height = source.naturalHeight;
++  }
+
+   // Draw source image
+   ctx.drawImage(source, 0, 0, source.naturalWidth, source.naturalHeight);
+@@ -48,8 +60,7 @@
+       ctx.filter = `blur(${Math.max(source.naturalWidth, source.naturalHeight) * 0.02}px)`; // Dynamic blur size
+       // Draw image again to get the blurred version in the clipped area
+-      // Need to draw slightly larger to avoid blur edge artifacts
+-      const padding = Math.max(canvas.width, canvas.height) * 0.05;
+-      ctx.drawImage(source, -padding, -padding, canvas.width + padding * 2, canvas.height + padding * 2);
++      // Draw exactly in place to align correctly
++      ctx.drawImage(source, 0, 0, source.naturalWidth, source.naturalHeight);
+       ctx.restore();
+     }
+   }
+@@ -60,9 +71,9 @@
+
+     // Convert percentage values
+     const opacity = watermark.opacityPct / 100;
+-    const fontSize = canvas.width * (watermark.fontScalePct / 100);
++    const fontSize = source.naturalWidth * (watermark.fontScalePct / 100);
+     const angleRad = (watermark.angleDeg * Math.PI) / 180;
+-    const spacing = canvas.width * (watermark.spacingPct / 100);
++    const spacing = source.naturalWidth * (watermark.spacingPct / 100);
+
+     // Set text properties
+     ctx.globalAlpha = opacity;
+@@ -73,13 +84,13 @@
+
+     if (watermark.tiled) {
+       // Rotate canvas center
+-      const centerX = canvas.width / 2;
+-      const centerY = canvas.height / 2;
++      const centerX = source.naturalWidth / 2;
++      const centerY = source.naturalHeight / 2;
+
+       ctx.translate(centerX, centerY);
+       ctx.rotate(angleRad);
+
+       // Calculate how far to tile
+       // We need to tile enough to cover the whole image even when rotated
+-      const diag = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height);
++      const diag = Math.sqrt(source.naturalWidth * source.naturalWidth + source.naturalHeight * source.naturalHeight);
+       const halfDiag = diag / 2;
+
+@@ -95,8 +106,8 @@
+         }
+       }
+     } else {
+-      ctx.translate(canvas.width / 2, canvas.height / 2);
+-      ctx.rotate(angleRad);
++      ctx.translate(source.naturalWidth / 2, source.naturalHeight / 2);
++      ctx.rotate(angleRad);
+       ctx.fillText(watermark.text, 0, 0);
+     }
