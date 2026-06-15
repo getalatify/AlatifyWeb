@@ -18,7 +18,8 @@ import {
   Shield,
   Search,
   EyeOff,
-  Type
+  Type,
+  Binary
 } from "lucide-react";
 
 const pipelineTools = [
@@ -94,6 +95,14 @@ const pipelineTools = [
     statusColor: "bg-success/10 text-success border-success/20",
     icon: Sparkles,
     href: "/tools/upscaler",
+  },
+  {
+    name: "Steganography",
+    description: "Hide an encrypted text message inside an ordinary-looking image — entirely on your device.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Binary,
+    href: "/tools/steganography",
   },
 ];
 
