@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools/stock-finder',
     '/tools/watermark',
     '/tools/upscaler',
+    '/tools/steganography',
     '/tools/qr-toolkit',
     '/privacy',
     '/terms',

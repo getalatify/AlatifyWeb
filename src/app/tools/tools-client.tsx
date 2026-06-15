@@ -19,6 +19,7 @@ import {
   Search,
   EyeOff,
   Type,
+  Binary
   QrCode
 } from "lucide-react";
 
@@ -105,6 +106,12 @@ const pipelineTools = [
     href: "/tools/upscaler",
   },
   {
+    name: "Steganography",
+    description: "Hide an encrypted text message inside an ordinary-looking image — entirely on your device.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Binary,
+    href: "/tools/steganography",
     name: "QR Toolkit",
     description: "Generate clean, tracker-free QR codes and scan unknown ones safely.",
     status: "Available",
