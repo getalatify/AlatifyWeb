@@ -89,6 +89,14 @@ const pipelineTools = [
     href: "/tools/watermark",
   },
   {
+    name: "ID Privacy Shield",
+    description: "Redact and watermark sensitive documents — entirely on your device.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Shield,
+    href: "/tools/id-protector",
+  },
+  {
     name: "AI Upscaler",
     description: "Enhance image resolution up to 4x using on-device AI. Sharper details, completely private.",
     status: "Available",
