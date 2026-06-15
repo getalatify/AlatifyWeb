@@ -20,6 +20,7 @@ import {
   EyeOff,
   Type,
   Binary
+  QrCode
 } from "lucide-react";
 
 const pipelineTools = [
@@ -89,6 +90,14 @@ const pipelineTools = [
     href: "/tools/watermark",
   },
   {
+    name: "ID Privacy Shield",
+    description: "Redact and watermark sensitive documents — entirely on your device.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: Shield,
+    href: "/tools/id-protector",
+  },
+  {
     name: "AI Upscaler",
     description: "Enhance image resolution up to 4x using on-device AI. Sharper details, completely private.",
     status: "Available",
@@ -103,6 +112,12 @@ const pipelineTools = [
     statusColor: "bg-success/10 text-success border-success/20",
     icon: Binary,
     href: "/tools/steganography",
+    name: "QR Toolkit",
+    description: "Generate clean, tracker-free QR codes and scan unknown ones safely.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: QrCode,
+    href: "/tools/qr-toolkit",
   },
 ];
 
