@@ -18,7 +18,8 @@ import {
   Shield,
   Search,
   EyeOff,
-  Type
+  Type,
+  QrCode
 } from "lucide-react";
 
 const pipelineTools = [
@@ -94,6 +95,14 @@ const pipelineTools = [
     statusColor: "bg-success/10 text-success border-success/20",
     icon: Sparkles,
     href: "/tools/upscaler",
+  },
+  {
+    name: "QR Toolkit",
+    description: "Generate clean, tracker-free QR codes and scan unknown ones safely.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: QrCode,
+    href: "/tools/qr-toolkit",
   },
 ];
 
