@@ -30,7 +30,19 @@ export default function Home() {
             Alatify
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <Link
+            href="/tools"
+            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Tools
+          </Link>
+          <Link
+            href="/support"
+            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Support Us
+          </Link>
           <LanguageToggle />
           <ThemeToggle />
         </div>
