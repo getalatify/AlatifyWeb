@@ -31,8 +31,8 @@ export function renderToCanvas(
   if (!ctx) return;
 
   if (isDisplayPreview) {
-    // For preview, bound the canvas to max 1200px width/height to avoid massive repaints
-    const MAX_PREVIEW_SIZE = 1200;
+    // For preview, bound the canvas to max 1500px width/height to avoid massive repaints
+    const MAX_PREVIEW_SIZE = 1500;
     const scale = Math.min(1, MAX_PREVIEW_SIZE / Math.max(source.naturalWidth, source.naturalHeight));
     canvas.width = source.naturalWidth * scale;
     canvas.height = source.naturalHeight * scale;
