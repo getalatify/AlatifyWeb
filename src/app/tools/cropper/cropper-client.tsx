@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { ThemeToggle, LanguageToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -160,6 +161,7 @@ const aspectRatios = [
 ];
 
 export default function CropperClient() {
+  const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
@@ -511,7 +513,10 @@ export default function CropperClient() {
             Back to tools
           </Link>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Hidden File Input for Replace */}
@@ -534,7 +539,7 @@ export default function CropperClient() {
             Crop & Straighten Your Images
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Crop to a fixed ratio or freely with draggable handles, then straighten with precise rotation — all with real-time preview in your browser. No upload, no sign-up — your photo never leaves your device.
+            {t("tools.cropper.intro")}
           </p>
         </section>
 
@@ -897,22 +902,22 @@ export default function CropperClient() {
               {
                 step: "01",
                 title: "Upload",
-                text: "Drop your image. It stays on your device.",
+                text: t("tools.cropper.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Crop",
-                text: "Drag the handles for a free crop, or pick a fixed ratio like 1:1 or 16:9.",
+                text: t("tools.cropper.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Straighten",
-                text: "Rotate to level a crooked photo or align your subject.",
+                text: t("tools.cropper.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Download",
-                text: "Save your cropped image.",
+                text: t("tools.cropper.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -947,19 +952,19 @@ export default function CropperClient() {
             {[
               {
                 title: "Social media",
-                text: "Crop to the exact ratios platforms use — 1:1 squares, 16:9 banners, story sizes.",
+                text: t("tools.cropper.useCases.case1"),
               },
               {
                 title: "Profile pictures",
-                text: "Frame your headshot perfectly for any profile or avatar.",
+                text: t("tools.cropper.useCases.case2"),
               },
               {
                 title: "Thumbnails",
-                text: "Crop tight, attention-grabbing thumbnails for videos and articles.",
+                text: t("tools.cropper.useCases.case3"),
               },
               {
                 title: "Cleanup",
-                text: "Trim distracting edges or straighten a tilted horizon.",
+                text: t("tools.cropper.useCases.case4"),
               },
             ].map((useCase, idx) => (
               <div
@@ -988,24 +993,24 @@ export default function CropperClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Can I crop to a specific ratio?",
-                a: "Yes — choose common ratios like 1:1, 4:3, or 16:9, or drag the handles for a completely free crop.",
+                q: t("tools.cropper.faq.q1"),
+                a: t("tools.cropper.faq.a1"),
               },
               {
-                q: "Does it upload my photo to a server?",
-                a: "No. Cropping runs entirely in your browser; your photo never leaves your device.",
+                q: t("tools.cropper.faq.q2"),
+                a: t("tools.cropper.faq.a2"),
               },
               {
-                q: "Can I straighten a crooked photo?",
-                a: "Yes — use rotation to level a tilted horizon or align your subject before cropping.",
+                q: t("tools.cropper.faq.q3"),
+                a: t("tools.cropper.faq.a3"),
               },
               {
-                q: "Will cropping reduce my image quality?",
-                a: "No — cropping keeps the original pixels within the selected area at full quality.",
+                q: t("tools.cropper.faq.q4"),
+                a: t("tools.cropper.faq.a4"),
               },
               {
-                q: "Can I do a free-form crop instead of a fixed ratio?",
-                a: "Yes — drag the handles to any size and position you like.",
+                q: t("tools.cropper.faq.q5"),
+                a: t("tools.cropper.faq.a5"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -1073,7 +1078,7 @@ export default function CropperClient() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Crop and rotate images instantly and privately on your own device.
+            {t("tools.cropper.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

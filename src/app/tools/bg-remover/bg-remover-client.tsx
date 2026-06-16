@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { ThemeToggle, LanguageToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,7 @@ async function verifyWebGPUSupport(): Promise<boolean> {
 }
 
 export default function BgRemoverClient() {
+  const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
@@ -673,7 +675,10 @@ export default function BgRemoverClient() {
           </Link>
         </div>
         <div className={cn(isProcessing && "pointer-events-none opacity-50")}>
+          <div className="flex items-center gap-2">
+          <LanguageToggle />
           <ThemeToggle />
+        </div>
         </div>
       </header>
 
@@ -698,7 +703,7 @@ export default function BgRemoverClient() {
             Remove Image Backgrounds — Free, Unlimited &amp; Private
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Most free background removers upload your image to their servers — and many quietly use it to train their AI or cap free downloads at low resolution. Alatify&apos;s runs entirely in your browser using GPU-accelerated on-device AI. Your photo never leaves your device. No sign-up, no watermark, no resolution limit, and no cap on how many you process — full quality, fully private, unlimited.
+            {t("tools.bg-remover.intro")}
           </p>
         </section>
 
@@ -1150,22 +1155,22 @@ export default function BgRemoverClient() {
               {
                 step: "01",
                 title: "Upload",
-                text: "Drop your image. It stays on your device.",
+                text: t("tools.bg-remover.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Process",
-                text: "On-device AI detects the subject and removes the background, GPU-accelerated, in seconds.",
+                text: t("tools.bg-remover.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Review",
-                text: "Get a clean cutout with a transparent background, at full resolution.",
+                text: t("tools.bg-remover.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Download",
-                text: "Save your transparent PNG. No watermark, no limits.",
+                text: t("tools.bg-remover.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -1200,19 +1205,19 @@ export default function BgRemoverClient() {
             {[
               {
                 title: "Product photos & e-commerce",
-                text: "Clean transparent or white-background product shots for Amazon, Etsy, Shopify, and eBay listings.",
+                text: t("tools.bg-remover.useCases.case1"),
               },
               {
                 title: "Profile pictures & headshots",
-                text: "Isolate yourself for a clean professional or LinkedIn photo.",
+                text: t("tools.bg-remover.useCases.case2"),
               },
               {
                 title: "Transparent PNGs for design",
-                text: "Cut out logos, objects, or people to drop into designs, slides, and thumbnails.",
+                text: t("tools.bg-remover.useCases.case3"),
               },
               {
                 title: "Social media",
-                text: "Place your subject on any background for posts, stories, and graphics.",
+                text: t("tools.bg-remover.useCases.case4"),
               },
             ].map((useCase, idx) => (
               <div
@@ -1241,24 +1246,24 @@ export default function BgRemoverClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Is it really free and unlimited?",
-                a: "Yes — no sign-up, no watermark, no daily limit, and no resolution cap. It runs on your own device, so there's nothing for us to meter.",
+                q: t("tools.bg-remover.faq.q1"),
+                a: t("tools.bg-remover.faq.a1"),
               },
               {
-                q: "Does it upload my image to a server?",
-                a: "No. Unlike most free removers that process server-side — and some that use your uploads to train their AI — Alatify runs the AI entirely in your browser. Your image never leaves your device.",
+                q: t("tools.bg-remover.faq.q2"),
+                a: t("tools.bg-remover.faq.a2"),
               },
               {
-                q: "Do I get the full resolution?",
-                a: "Yes. Many free tools cap downloads at low resolution and charge for HD. Alatify gives you the full-resolution cutout for free.",
+                q: t("tools.bg-remover.faq.q3"),
+                a: t("tools.bg-remover.faq.a3"),
               },
               {
-                q: "How does it work without uploading?",
-                a: "It uses on-device AI (via WebGPU/WebAssembly) that runs locally in your browser — your own device does the processing.",
+                q: t("tools.bg-remover.faq.q4"),
+                a: t("tools.bg-remover.faq.a4"),
               },
               {
-                q: "What can I use the result for?",
-                a: "Product photos, transparent PNGs for design, profile pictures, social posts, and marketplace listings — anywhere you need a clean cutout.",
+                q: t("tools.bg-remover.faq.q5"),
+                a: t("tools.bg-remover.faq.a5"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -1346,7 +1351,7 @@ export default function BgRemoverClient() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify removes image backgrounds entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, full-resolution, watermark-free transparent PNGs, processed privately on your own device.
+            {t("tools.bg-remover.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

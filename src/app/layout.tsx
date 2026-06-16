@@ -90,6 +90,8 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
+import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -111,15 +113,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* Single site-wide animated background layer (fixed, z-index -1) */}
-          <AppBackground />
-          <div className="flex flex-col min-h-screen">
-            <div className="flex-1">
-              {children}
+          <LanguageProvider>
+            {/* Single site-wide animated background layer (fixed, z-index -1) */}
+            <AppBackground />
+            <div className="flex flex-col min-h-screen">
+              <div className="flex-1">
+                {children}
+              </div>
+              <Footer />
             </div>
-            <Footer />
-          </div>
-          <Toaster richColors position="top-right" />
+            <Toaster richColors position="top-right" />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

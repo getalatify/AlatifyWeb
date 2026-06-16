@@ -2,9 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo } from "@/components/shared";
+import { ThemeToggle, Logo, LanguageToggle } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Lock } from "lucide-react";
+import { useT } from "@/lib/i18n/useT";
 
 /**
  * HOMEPAGE — monochrome. The animated background is the single global
@@ -12,6 +13,8 @@ import { ArrowRight, Zap, Lock } from "lucide-react";
  * and uses the global neutral tokens for all surfaces and text.
  */
 export default function Home() {
+  const t = useT();
+
   const handleScrollToFeatures = () => {
     const section = document.getElementById("features-section");
     section?.scrollIntoView({ behavior: "smooth" });
@@ -27,7 +30,10 @@ export default function Home() {
             Alatify
           </span>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Hero Section */}
@@ -48,7 +54,7 @@ export default function Home() {
 
         {/* Tagline */}
         <p className="text-lg text-muted-foreground font-medium sm:text-xl max-w-lg mx-auto leading-relaxed">
-          Privacy-first image tools that run entirely in your browser
+          {t("home.hero.tagline")}
         </p>
 
         {/* CTA Buttons — contrast-based */}
@@ -81,7 +87,7 @@ export default function Home() {
           </div>
           <h3 className="text-lg font-bold text-foreground">Zero Uploads</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            All algorithms execute locally inside your sandboxed browser tab. No server holds your files.
+            {t("home.features.card1.text")}
           </p>
         </div>
 
@@ -92,7 +98,7 @@ export default function Home() {
           </div>
           <h3 className="text-lg font-bold text-foreground">Near-Instant Speed</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Bypass upload latencies entirely. Process megapixel images instantaneously utilizing client WebAssembly.
+            {t("home.features.card2.text")}
           </p>
         </div>
       </div>

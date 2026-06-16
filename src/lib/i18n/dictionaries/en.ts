@@ -1,0 +1,424 @@
+export const en = {
+  "home": {
+    "hero": {
+      "tagline": "Privacy-first image tools that run entirely in your browser"
+    },
+    "features": {
+      "card1": {
+        "text": "All algorithms execute locally inside your sandboxed browser tab. No server holds your files."
+      },
+      "card2": {
+        "text": "Bypass upload latencies entirely. Process megapixel images instantaneously utilizing client WebAssembly."
+      }
+    }
+  },
+  "about": {
+    "intro": "Image tools should respect your privacy.",
+    "why": {
+      "p1": "Most online image tools require uploading your files to their servers. That means your images — possibly containing personal moments, business assets, or sensitive content — pass through someone else's infrastructure.",
+      "p2": "Alatify is different: every tool runs entirely in your browser using WebAssembly. Your files never leave your device. We believe in providing fast, powerful, and absolutely private utilities that respect user autonomy."
+    },
+    "offer": {
+      "li1": "A complete browser suite consisting of an Image Compressor, Background Remover, Image Resizer, Format Converter, and Image Cropper.",
+      "li2": "No user registration, no server-side uploads, and no analytics cookies.",
+      "li3": "Process files of any size without registration, credit cards, or hidden limits.",
+      "li4": "Transparent, offline-capable code execution using standard web containers."
+    },
+    "who": {
+      "p1": "Alatify was designed and built by an independent developer in Indonesia. Driven by a passion for privacy-first tech and clean user experiences, the platform is crafted to prove that browser-based applications can achieve professional-grade capabilities without compromising user privacy.",
+      "p2": "Our tech stack features Next.js, WebAssembly, and Tailwind CSS, with hosting and static asset delivery provided by Vercel. If you find Alatify useful, please share it with others who value privacy!"
+    },
+    "road": {
+      "p1": "Alatify is designed to expand. We are currently working on V2 features, including an EXIF Privacy Cleaner to strip photo metadata and an AI-powered AI Upscaler to multiply image resolutions cleanly inside your client sandbox.",
+      "p2_start": "Your feedback is invaluable. If you have suggestions, feature requests, or bugs to report, reach out to us at",
+      "p2_end": "."
+    }
+  },
+  "privacy": {
+    "short": "Alatify doesn't collect, store, or transmit your images or personal data. All processing happens entirely in your browser. There's no account registration, no user tracking, and no third-party analytics.",
+    "collect": {
+      "p1": "Because Alatify is engineered to run 100% locally on your computer, we do not access or collect any of the following items:",
+      "li1": "Your files never upload to any remote server. They are parsed and modified locally in your browser sandbox.",
+      "li2": "We don't log your connection parameters.",
+      "li3": "We do not monitor how often you use our tools or what settings you apply.",
+      "li4": "We don't use tracking code, third-party cookies, or browser fingerprinting.",
+      "li5": "No names, email addresses, payment credentials, or accounts are required."
+    },
+    "do": {
+      "p1": "To provide our image processing utilities without server overhead, Alatify operates on these principles:",
+      "li1": "We compile tools utilizing WebAssembly and client-side JavaScript. All computations are executed inside your browser thread using your local hardware resources.",
+      "li2": "AI models (such as the Background Remover engine weights) are downloaded into your browser cache once. They are stored locally on your device for repeat usage and are never transmitted.",
+      "li3": "Our web assets (HTML, CSS, JS) are served as static files via global Content Delivery Networks (CDNs) for high availability."
+    },
+    "thirdParty": {
+      "p1": "We minimize third-party connections. The only external services involved are standard web host providers required to display this page:",
+      "li1": "Our platform is hosted on Vercel. Vercel automatically processes standard web server logs (which contain anonymous headers) to serve static resources and protect against DDoS events.",
+      "li2": "The neural network models utilized in background removal are downloaded directly to your browser from imgly CDN hosts. Once downloaded, they run locally.",
+      "li3": "We deliberately exclude Google Analytics, Facebook Pixel, Mixpanel, Hotjar, or any other tracking tools."
+    },
+    "rights": {
+      "p1": "Under GDPR, CCPA, and global privacy standards, your rights are automatically respected:",
+      "li1": "You do not need to request deletion of your data because we never collected it.",
+      "li2": "You can completely remove cached neural weights and model data by clearing your browser cache.",
+      "li3": "Since there is zero data collection or tracking, there is no need for cookie banners, opt-out forms, or privacy preference centers."
+    },
+    "contact": {
+      "start": "Have questions about our local-first architecture? Contact us at",
+      "end": ""
+    }
+  },
+  "terms": {
+    "short": "Use Alatify freely for personal or commercial purposes. We provide these browser-based tools \"as-is\" without warranties. You remain fully responsible for the images you process, and you must not use Alatify to handle illegal content.",
+    "license": {
+      "p1": "We grant you a permissive, royalty-free license to use Alatify under the following terms:",
+      "li1": "You are free to modify and export images for commercial products, personal designs, social media branding, or print publications.",
+      "li2": "You are not required to credit Alatify or link back to our service in your finished works.",
+      "li3": "There are no processing rate limits, upload caps, or account walls since all processes are powered by your own local device."
+    },
+    "user": {
+      "p1": "Because Alatify is local-only, we do not monitor or restrict what images you import. However, by using the service, you agree to the following responsibilities:",
+      "li1": "You verify that you own or have appropriate licensing rights to the images you import and modify.",
+      "li2": "You must not use Alatify to process illegal, abusive, or harmful material, including copyrighted assets without permission, or other illegal material.",
+      "li3": "You accept responsibility for ensuring your device has adequate CPU and RAM resources to run heavy WebAssembly computations safely."
+    },
+    "disclaimer": {
+      "p1": "Please review the standard limitations of liability that govern our browser-based service:",
+      "li1": "Alatify is provided without warranties of any kind, express or implied. We do not guarantee continuous availability, compatibility with all file formats, or error-free rendering.",
+      "li2": "Because your image files are processed on the fly and never stored on any servers, we cannot recover lost configurations or edits. We are not liable for any data loss.",
+      "li3": "Output results (compression, resizing, formatting) are approximations. Verify all output parameters and file integrity before deploying images to production."
+    },
+    "changes": "These terms may change periodically. The latest and governing terms of service will always be accessible on this page. Your continued use of Alatify after amendments are posted constitutes acceptance of those updated terms.",
+    "contact": {
+      "start": "Have questions about our terms of service? Contact us at",
+      "end": ""
+    }
+  },
+  "shared": {
+    "privacyNotice": {
+      "body": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side data retention."
+    }
+  },
+  "tools": {
+    "compressor": {
+      "intro": "Reduce image file sizes by up to 90% while keeping them crisp — entirely in your browser. Choose lossy compression for the smallest size or lossless to preserve every pixel, and process a whole batch at once. No upload, no sign-up — your images never leave your device.",
+      "howItWorks": {
+        "step1": "Add one or many images.",
+        "step2": "Choose lossy or lossless, and set your quality target.",
+        "step3": "Shrink them instantly, on your device.",
+        "step4": "Save the smaller files individually or as a ZIP."
+      },
+      "useCases": {
+        "case1": "Smaller images load faster and improve page speed and SEO.",
+        "case2": "Get under attachment and upload size limits without losing quality.",
+        "case3": "Free up space by shrinking large photo libraries.",
+        "case4": "Meet platform size requirements while keeping images sharp."
+      },
+      "faq": {
+        "q1": "How much smaller can my images get?",
+        "a1": "Often up to 90% smaller, depending on the image and quality setting, while staying visually crisp.",
+        "q2": "Does it upload my images?",
+        "a2": "No. Compression runs entirely in your browser; your files never leave your device.",
+        "q3": "What's the difference between lossy and lossless?",
+        "a3": "Lossy gives the smallest size by discarding some invisible detail; lossless keeps every pixel and still reduces size. You choose.",
+        "q4": "Can I compress many images at once?",
+        "a4": "Yes — batch-compress and download them all as a ZIP.",
+        "q5": "Which formats are supported?",
+        "a5": "JPG, PNG, and WebP."
+      },
+      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Compress JPG, PNG, and WebP images instantly and privately on your own device."
+    },
+    "bg-remover": {
+      "intro": "Most free background removers upload your image to their servers — and many quietly use it to train their AI or cap free downloads at low resolution. Alatify's runs entirely in your browser using GPU-accelerated on-device AI. Your photo never leaves your device. No sign-up, no watermark, no resolution limit, and no cap on how many you process — full quality, fully private, unlimited.",
+      "howItWorks": {
+        "step1": "Drop your image. It stays on your device.",
+        "step2": "On-device AI detects the subject and removes the background, GPU-accelerated, in seconds.",
+        "step3": "Get a clean cutout with a transparent background, at full resolution.",
+        "step4": "Save your transparent PNG. No watermark, no limits."
+      },
+      "useCases": {
+        "case1": "Clean transparent or white-background product shots for Amazon, Etsy, Shopify, and eBay listings.",
+        "case2": "Isolate yourself for a clean professional or LinkedIn photo.",
+        "case3": "Cut out logos, objects, or people to drop into designs, slides, and thumbnails.",
+        "case4": "Place your subject on any background for posts, stories, and graphics."
+      },
+      "faq": {
+        "q1": "Is it really free and unlimited?",
+        "a1": "Yes — no sign-up, no watermark, no daily limit, and no resolution cap. It runs on your own device, so there's nothing for us to meter.",
+        "q2": "Does it upload my image to a server?",
+        "a2": "No. Unlike most free removers that process server-side — and some that use your uploads to train their AI — Alatify runs the AI entirely in your browser. Your image never leaves your device.",
+        "q3": "Do I get the full resolution?",
+        "a3": "Yes. Many free tools cap downloads at low resolution and charge for HD. Alatify gives you the full-resolution cutout for free.",
+        "q4": "How does it work without uploading?",
+        "a4": "It uses on-device AI (via WebGPU/WebAssembly) that runs locally in your browser — your own device does the processing.",
+        "q5": "What can I use the result for?",
+        "a5": "Product photos, transparent PNGs for design, profile pictures, social posts, and marketplace listings — anywhere you need a clean cutout."
+      },
+      "privacyNotice": "Alatify removes image backgrounds entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, full-resolution, watermark-free transparent PNGs, processed privately on your own device."
+    },
+    "blur": {
+      "intro": "Obscure faces, license plates, and sensitive credentials securely in your web browser. Drag rectangular boxes or draw freeform brush strokes to completely destroy sensitive pixel data offline.",
+      "howItWorks": {
+        "step1": "Upload your image via drag-drop, file dialogue, or download from a secure URL.",
+        "step2": "Select Box mode for plates/text, or Brush mode for organic targets like faces.",
+        "step3": "Draw rectangles or paint paths. Tweak sizes and blur intensities dynamically.",
+        "step4": "Click Download. Alatify destroys the underlying pixel data and strips EXIF metadata."
+      },
+      "faq": {
+        "q1": "How do I blur a license plate before selling a car online?",
+        "a1": "Upload the photo, toggle to Box Mode or Brush Mode, cover the license plate area, and apply the pixelate or blur effect. This prevents auto-scrapers and data aggregators from linking your vehicle to your personal license registration.",
+        "q2": "Can I redact sensitive passwords or credentials from screenshots?",
+        "a2": "Yes. For highly sensitive passwords, financial numbers, or keys, we strongly recommend using the Solid Fill effect. Unlike blur or pixelation which might be partially reversed by AI, Solid Fill replaces the target area with complete black pixels.",
+        "q3": "Is it safe to blur children or faces before posting online?",
+        "a3": "Absolutely. Choose Brush Mode to paint over faces with customizable brush sizing. Since everything runs locally inside your sandboxed web browser, the unredacted original photo is never transmitted over the internet.",
+        "q4": "Does this page upload my image to a server?",
+        "a4": "No. All Alatify utilities operate on a strict privacy model. Image rendering, box drafting, pixel rendering, and file compilation are executed entirely client-side. The original file never leaves your machine."
+      },
+      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Obscure faces, license plates, and sensitive credentials securely and privately on your own device."
+    },
+    "converter": {
+      "intro": "Convert images between nine formats — including web favorites like WebP, design formats like SVG and TIFF, and specialty formats like ICO (favicons) and PDF — entirely in your browser. Drag in multiple files, pick an output format, and convert in one click. No upload, no sign-up, no watermark — your files never leave your device.",
+      "howItWorks": {
+        "step1": "Add one or many images (drag-drop or file picker).",
+        "step2": "Pick your output: JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, or GIF.",
+        "step3": "Process them all at once, instantly, on your device.",
+        "step4": "Save individually, or grab everything as a ZIP."
+      },
+      "useCases": {
+        "case1": "Shrink images for faster-loading websites without quality loss.",
+        "case2": "Create favicons for your website in the correct format.",
+        "case3": "Combine several images into a single multi-page PDF.",
+        "case4": "Trace raster images into scalable vector graphics.",
+        "case5": "Convert iPhone photos into universally compatible JPGs."
+      },
+      "faq": {
+        "q1": "Which formats can I convert between?",
+        "a1": "JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, and GIF — plus HEIC input from iPhones.",
+        "q2": "Does it upload my files to a server?",
+        "a2": "No. Conversion runs entirely in your browser; your files never leave your device.",
+        "q3": "Can I convert many images at once?",
+        "a3": "Yes — drag in multiple files, convert them all in one click, and download as a ZIP.",
+        "q4": "How do I convert a PNG to an ICO favicon?",
+        "a4": "Upload the PNG, choose ICO as the output format, and download — ready to use as a site favicon.",
+        "q5": "Can I convert HEIC photos from my iPhone?",
+        "a5": "Yes. Add your HEIC files and convert them to JPG or PNG instantly."
+      },
+      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Convert images between JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, and GIF formats instantly and privately on your own device."
+    },
+    "cropper": {
+      "intro": "Crop to a fixed ratio or freely with draggable handles, then straighten with precise rotation — all with real-time preview in your browser. No upload, no sign-up — your photo never leaves your device.",
+      "howItWorks": {
+        "step1": "Drop your image. It stays on your device.",
+        "step2": "Drag the handles for a free crop, or pick a fixed ratio like 1:1 or 16:9.",
+        "step3": "Rotate to level a crooked photo or align your subject.",
+        "step4": "Save your cropped image."
+      },
+      "useCases": {
+        "case1": "Crop to the exact ratios platforms use — 1:1 squares, 16:9 banners, story sizes.",
+        "case2": "Frame your headshot perfectly for any profile or avatar.",
+        "case3": "Crop tight, attention-grabbing thumbnails for videos and articles.",
+        "case4": "Trim distracting edges or straighten a tilted horizon."
+      },
+      "faq": {
+        "q1": "Can I crop to a specific ratio?",
+        "a1": "Yes — choose common ratios like 1:1, 4:3, or 16:9, or drag the handles for a completely free crop.",
+        "q2": "Does it upload my photo to a server?",
+        "a2": "No. Cropping runs entirely in your browser; your photo never leaves your device.",
+        "q3": "Can I straighten a crooked photo?",
+        "a3": "Yes — use rotation to level a tilted horizon or align your subject before cropping.",
+        "q4": "Will cropping reduce my image quality?",
+        "a4": "No — cropping keeps the original pixels within the selected area at full quality.",
+        "q5": "Can I do a free-form crop instead of a fixed ratio?",
+        "a5": "Yes — drag the handles to any size and position you like."
+      },
+      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Crop and rotate images instantly and privately on your own device."
+    },
+    "exif-cleaner": {
+      "intro": "Every photo your phone takes carries hidden EXIF metadata — GPS coordinates, camera model, date, and device details — that travels with the file when you share it. Alatify shows you exactly what's hidden inside, then strips it clean. Everything runs in your browser: your photo is never uploaded, and the cleaning is fully lossless, so only the metadata is removed — your image quality stays untouched.",
+      "howItWorks": {
+        "step1": "Drag and drop your photo, or pick a file. It stays on your device.",
+        "step2": "See all detected metadata, with a prominent warning if GPS location is present.",
+        "step3": "Strip the metadata losslessly. No re-compression, no quality loss.",
+        "step4": "Save a clean copy with zero metadata, ready to share safely."
+      },
+      "useCases": {
+        "case1": "Photos taken at home embed your GPS location. Remove it before posting to Facebook Marketplace, eBay, or Craigslist so a listing can't reveal your address.",
+        "case2": "Vacation photos can broadcast that you're away from home. Strip location and timestamps before posting.",
+        "case3": "Exact GPS coordinates can lead strangers to your door. Clean your photos before sharing publicly.",
+        "case4": "Remove location data before delivering to clients or publishing online."
+      },
+      "faq": {
+        "q1": "Doesn't Instagram or Facebook already remove EXIF data?",
+        "a1": "Public posts on most platforms strip EXIF — but they keep the original internally, and many sharing methods (sending the file directly, cloud storage, some platforms) keep the metadata intact. Cleaning it yourself first is the only way to be sure.",
+        "q2": "How do I remove GPS location before selling something online?",
+        "a2": "Upload the photo, check the GPS warning, strip the metadata, and download the clean copy to post — no location data attached.",
+        "q3": "Will removing metadata reduce my photo's quality?",
+        "a3": "No. Alatify removes metadata losslessly by editing the file's binary structure directly — your pixels are never re-compressed, so quality is identical.",
+        "q4": "Can I see what metadata my photo contains first?",
+        "a4": "Yes. Before cleaning, Alatify displays all detected metadata — GPS coordinates, camera model, date, and device info — so you know exactly what you're removing.",
+        "q5": "Is my photo uploaded to a server?",
+        "a5": "No. Detection and cleaning run entirely in your browser. Your photo never leaves your device."
+      },
+      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Strip location histories (GPS Latitude/Longitude), device markers (manufacturer/model), software history logs, and capture timestamps instantly and safely before distribution."
+    },
+    "id-protector": {
+      "intro": "Every day, millions of raw ID photos (KTP, SIM, passports) are shared online, exposing them to identity theft and fraud. The ID Privacy Shield allows you to redact sensitive details with solid irreversible blocks and apply tiled watermarks to enforce specific usage contexts. Everything runs 100% locally in your browser: your documents never touch a server, and the downloaded file automatically strips all hidden metadata.",
+      "howItWorks": {
+        "step1": "Select your KTP, SIM, passport, or ID photo. Your document never leaves your browser.",
+        "step2": "Draw SOLID redaction boxes over sensitive fields like NIK/ID numbers, signatures, and addresses.",
+        "step3": "Add a diagonal tiled watermark stating the purpose and date to prevent unauthorized reuse.",
+        "step4": "Save the protected PNG directly. Redactions are baked into the pixels and metadata is stripped."
+      },
+      "useCases": {
+        "case1": "Secure your KTP, SIM, or passport copy before sending it to rental providers. Add a watermark containing the rental agency name and date to avoid reuse.",
+        "case2": "Redact non-essential numbers and signature blocks before submitting your ID to gig platforms or freelance marketplace verification portals.",
+        "case3": "Avoid sending raw, unprotected ID photos over WhatsApp or email for hotel reservations, freelance contracts, or service registrations."
+      },
+      "faq": {
+        "q1": "Are my ID files uploaded to a server?",
+        "a1": "No. ID Privacy Shield runs entirely in your web browser. All processing, redaction, and watermark overlay is done locally via sandbox canvas APIs. Your private documents never touch our servers.",
+        "q2": "Can the solid redaction blocks be reversed?",
+        "a2": "No. When you use Solid redactions, the pixels are baked directly into the output PNG, permanently overwriting the original pixels. Note that Blur is theoretically reversible, so we strongly recommend Solid blocks for highly sensitive data.",
+        "q3": "Does the watermark prevent cropping?",
+        "a3": "Yes. By choosing the Tiled Pattern option, the watermark is rendered repeatedly across the entire document canvas. This makes it impossible to crop the watermark out without cropping out the ID content itself.",
+        "q4": "Does this tool work on mobile devices?",
+        "a4": "Yes. ID Privacy Shield is responsive and fully supports touch controls, allowing you to draw redaction blocks and download documents on smartphones and tablets.",
+        "q5": "Is metadata and EXIF data stripped?",
+        "a5": "Yes. Re-encoding the modified image to PNG automatically strips all EXIF metadata, GPS coordinates, device tags, and history parameters for maximum privacy."
+      },
+      "privacyNotice": "Alatify processes your ID files completely locally using sandbox APIs inside your browser tab. We never upload any of your documents or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Redact sensitive identity numbers, overlay diagonal tiled watermarks, and strip GPS/camera EXIF metadata instantly and safely on your own device before distribution."
+    },
+    "qr-toolkit": {
+      "intro": "Create completely offline, static QR codes that belong to you forever without dynamic expiration traps. Scan unknown QR codes and audit their endpoints safely inside your browser tab: strip tracking parameters and analyze URLs before opening them.",
+      "howItWorks": {
+        "step1": "Select URL, Text, or Wi-Fi mode. Type the details. QR renders immediately offline.",
+        "step2": "Tune sizes, margins, custom colors, and error correction before downloading PNG/SVG.",
+        "step3": "Point your camera or drop an image. Decodes are executed locally inside your browser.",
+        "step4": "Verify domain targets, scrub tracking params, and review warnings on shortened paths."
+      },
+      "faq": {
+        "q1": "What is a tracker-free QR code?",
+        "a1": "Many QR generator services force you to use dynamic links pointing to redirect proxies. This tracks your location, device, and frequency. Alatify generates static QR codes encoding raw text directly: zero tracking, zero expiry, completely yours.",
+        "q2": "Why does the Safe Scanner strip URL tracking parameters?",
+        "a2": "QR codes are increasingly used for marketing tracking or phishing (quishing). When you scan a URL, we detect parameters like UTMs and client IDs, strip them, and reveal the direct domain so you know exactly where you are landing.",
+        "q3": "Can the scanner follow shortener links to inspect the destination?",
+        "a3": "No. Resolving redirects from shorteners like bit.ly or tinyurl requires sending requests to external servers, which leaks your IP and metadata. To remain 100% private, we flag shortened URLs with a safety notice so you can proceed with caution.",
+        "q4": "Are my scanned camera feeds or uploaded images sent to any server?",
+        "a4": "Never. All decoders and generators operate locally on your client machine using JS execution sandboxes. There are no API endpoints, analytics trackers, or network fetches used during operation."
+      },
+      "privacyNotice": "Alatify processes your QR codes completely locally using sandboxed client APIs inside your browser tab. We never upload any of your URLs, plain text contents, camera feeds, or uploaded graphics files. The tool is 100% offline and telemetry-free, keeping all scanned destinations and generated payloads fully private to your device."
+    },
+    "resizer": {
+      "intro": "Resize images by exact pixels, by percentage, or with a locked aspect ratio — all in your browser. High-quality resampling keeps edges crisp, and you can resize a whole batch at once. No upload, no sign-up — your images never leave your device.",
+      "howItWorks": {
+        "step1": "Add one or many images.",
+        "step2": "Enter exact pixels, scale by percentage, or lock the aspect ratio.",
+        "step3": "Apply to all images at once with high-quality resampling.",
+        "step4": "Save individually or as a ZIP."
+      },
+      "useCases": {
+        "case1": "Resize to the exact dimensions platforms expect — square posts, stories, banners, and profile pictures.",
+        "case2": "Shrink oversized photos to load faster and fit upload limits.",
+        "case3": "Resize an entire folder of images to the same dimensions in one go.",
+        "case4": "Hit precise pixel dimensions for layouts and templates."
+      },
+      "faq": {
+        "q1": "Can I resize to exact pixel dimensions?",
+        "a1": "Yes — enter exact width and height in pixels, scale by percentage, or lock the aspect ratio to avoid stretching.",
+        "q2": "Does it upload my images to a server?",
+        "a2": "No. Resizing runs entirely in your browser; your files never leave your device.",
+        "q3": "Will resizing stretch or distort my image?",
+        "a3": "Not if you keep the aspect ratio locked — it scales proportionally. You can also unlock it for a free resize.",
+        "q4": "Can I resize many images at once?",
+        "a4": "Yes — batch-resize them all to the same dimensions and download as a ZIP.",
+        "q5": "Will resizing reduce quality?",
+        "a5": "Alatify uses high-quality resampling to keep results as crisp as possible when scaling."
+      },
+      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Resize images by exact pixels, percentage, or aspect ratio instantly and privately on your own device."
+    },
+    "steganography": {
+      "intro": "Protect your communications offline. Embed private texts into images via Least Significant Bit (LSB) steganography, with optional AES-GCM password encryption. The files remain identical to the naked eye. Everything runs entirely in your browser sandbox: no servers, no leaks.",
+      "howItWorks": {
+        "step1": "Select a carrier host image. Transparent layers are flattened to solid white in-memory.",
+        "step2": "Type secret message. Entering a password triggers AES-GCM 256-bit encryption before packing.",
+        "step3": "Binary bits of the packed payload replace the Least Significant Bits of RGB image channels.",
+        "step4": "Export as PNG format only. This guarantees that compression algorithms do not alter LSB pixels."
+      },
+      "faq": {
+        "q1": "Will my steganography survive sending via WhatsApp or Instagram?",
+        "a1": "No. Chat apps and social media automatically convert files to lossy JPEGs/WebPs to save bandwidth. This destroys LSB pixel variations. To preserve messages, share stego PNGs as uncompressed Document files or direct download links.",
+        "q2": "Is LSB steganography mathematically undetectable?",
+        "a2": "No. LSB steganography leaves the carrier visually indistinguishable to the human eye. However, specialized stego scanners can detect statistical alterations in the pixel distribution (steganalysis). For high-security deniability, encrypt with a robust password.",
+        "q3": "What message formats can I embed?",
+        "a3": "You can embed any plain text, markdown notes, license keys, or configuration strings. We enforce clear capacity limit checks to prevent truncation, based on the natural dimensions of the uploaded carrier image.",
+        "q4": "Are my images or password data sent to any server?",
+        "a4": "Never. All encryption (using Web Crypto API) and pixel-level LSB adjustments happen client-side in-browser. Your original files and passwords never leave your device."
+      },
+      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files, secret messages, or passwords to external clouds. LSB embedding, PBKDF2 key derivation, and AES-GCM encryption run entirely offline, protecting your data from server-side leaks."
+    },
+    "upscaler": {
+      "intro": "Sharpen and enlarge your photos with a Real-ESRGAN neural network that runs entirely in your browser. Runs 100% in your browser — your image never leaves your device.",
+      "howItWorks": {
+        "step1": "Drop your image. It stays on your device.",
+        "step2": "Pick 2x for speed or 4x for maximum detail.",
+        "step3": "On-device AI enhances the image tile by tile, GPU-accelerated where supported.",
+        "step4": "Save your sharper, higher-resolution PNG."
+      },
+      "useCases": {
+        "case1": "Enlarge old or low-resolution photos without losing sharpness or detail.",
+        "case2": "Sharpen and upscale product images for clean Amazon, Shopify, or Etsy listings.",
+        "case3": "Prepare images for large-format physical printing or high-DPI displays.",
+        "case4": "Restore detail and fix artifacts in heavily compressed or downscaled graphics.",
+        "case5": "Upscale Midjourney, DALL-E, or Stable Diffusion outputs for high-res downloads.",
+        "case6": "Enhance screen captures and graphics for presentations and slide decks."
+      },
+      "faq": {
+        "q1": "Are my images uploaded to a server?",
+        "a1": "No. All processing happens locally in your browser — your images never leave your device.",
+        "q2": "How does the AI upscaler work?",
+        "a2": "It uses a Real-ESRGAN neural network that reconstructs detail and sharpens edges, running on your device's GPU via WebGPU (with a CPU fallback).",
+        "q3": "What's the difference between 2x and 4x?",
+        "a3": "2x is faster and good for moderate enlargement; 4x produces a larger, sharper result but takes longer.",
+        "q4": "Is it free?",
+        "a4": "Yes — completely free, no account or sign-up.",
+        "q5": "Which formats are supported?",
+        "a5": "JPG, PNG, and WebP; output is a lossless PNG.",
+        "q6": "Why does the first run take a moment?",
+        "a6": "The first use downloads a ~33MB AI model once. It's cached afterward, so later runs are instant and even work offline.",
+        "q7": "Is there a size limit?",
+        "a7": "Very large images are scaled down before upscaling to stay reliable on phones and mid-range devices.",
+        "q8": "Does it work offline?",
+        "a8": "Yes — once the model is cached, your browser can upscale with no internet connection."
+      },
+      "privacyNotice": "Alatify upscales images entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, high-resolution, watermark-free upscaled images, processed privately on your own device."
+    },
+    "watermark": {
+      "howItWorks": {
+        "step1": "Add one or many images (up to 30).",
+        "step2": "Pick a text or logo watermark and style it: size, opacity, color, rotation.",
+        "step3": "Snap it to a corner, tile it across the image, or drag it anywhere you like.",
+        "step4": "Save your watermarked images individually or as a ZIP."
+      },
+      "useCases": {
+        "case1": "Deter image theft and unauthorized reuse with a visible watermark.",
+        "case2": "Add your logo or handle to photos before posting or sharing.",
+        "case3": "Apply the same watermark across an entire batch in one go.",
+        "case4": "Repeat the watermark diagonally so it can't simply be cropped out."
+      },
+      "faq": {
+        "q1": "Does it upload my images or logo?",
+        "a1": "No. Everything runs in your browser; your images and logo never leave your device.",
+        "q2": "Can I watermark many images at once?",
+        "a2": "Yes — add up to 30 images and download them all as a ZIP with the same watermark applied.",
+        "q3": "Can I use my own logo?",
+        "a3": "Yes. Upload a PNG (transparency supported) and adjust its size and opacity.",
+        "q4": "Will the watermark look the same across different image sizes?",
+        "a4": "Yes. Sizes are set relative to each image's width, so the watermark stays proportional whether the photo is large or small.",
+        "q5": "Can I stop people from cropping out the watermark?",
+        "a5": "Use tiled mode to repeat the watermark diagonally across the whole image, which makes it much harder to remove by cropping.",
+        "q6": "What formats can I export?",
+        "a6": "Keep the original format, or export as JPG, PNG, or WebP."
+      },
+      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private watermark coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Securely brand and protect your images directly on your own device."
+    }
+  }
+};

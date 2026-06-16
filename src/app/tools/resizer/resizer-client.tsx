@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { ThemeToggle, LanguageToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ const socialPresets = [
 ];
 
 export default function ImageResizerPage() {
+  const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
@@ -355,7 +357,10 @@ export default function ImageResizerPage() {
             Back to tools
           </Link>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Hidden File Input for Replaces */}
@@ -378,7 +383,7 @@ export default function ImageResizerPage() {
             Resize Images to Any Dimension
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Resize images by exact pixels, by percentage, or with a locked aspect ratio — all in your browser. High-quality resampling keeps edges crisp, and you can resize a whole batch at once. No upload, no sign-up — your images never leave your device.
+            {t("tools.resizer.intro")}
           </p>
         </section>
 
@@ -801,22 +806,22 @@ export default function ImageResizerPage() {
               {
                 step: "01",
                 title: "Upload",
-                text: "Add one or many images.",
+                text: t("tools.resizer.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Set size",
-                text: "Enter exact pixels, scale by percentage, or lock the aspect ratio.",
+                text: t("tools.resizer.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Resize",
-                text: "Apply to all images at once with high-quality resampling.",
+                text: t("tools.resizer.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Download",
-                text: "Save individually or as a ZIP.",
+                text: t("tools.resizer.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -851,19 +856,19 @@ export default function ImageResizerPage() {
             {[
               {
                 title: "Social media",
-                text: "Resize to the exact dimensions platforms expect — square posts, stories, banners, and profile pictures.",
+                text: t("tools.resizer.useCases.case1"),
               },
               {
                 title: "Web & email",
-                text: "Shrink oversized photos to load faster and fit upload limits.",
+                text: t("tools.resizer.useCases.case2"),
               },
               {
                 title: "Bulk resizing",
-                text: "Resize an entire folder of images to the same dimensions in one go.",
+                text: t("tools.resizer.useCases.case3"),
               },
               {
                 title: "Print & documents",
-                text: "Hit precise pixel dimensions for layouts and templates.",
+                text: t("tools.resizer.useCases.case4"),
               },
             ].map((useCase, idx) => (
               <div
@@ -892,24 +897,24 @@ export default function ImageResizerPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Can I resize to exact pixel dimensions?",
-                a: "Yes — enter exact width and height in pixels, scale by percentage, or lock the aspect ratio to avoid stretching.",
+                q: t("tools.resizer.faq.q1"),
+                a: t("tools.resizer.faq.a1"),
               },
               {
-                q: "Does it upload my images to a server?",
-                a: "No. Resizing runs entirely in your browser; your files never leave your device.",
+                q: t("tools.resizer.faq.q2"),
+                a: t("tools.resizer.faq.a2"),
               },
               {
-                q: "Will resizing stretch or distort my image?",
-                a: "Not if you keep the aspect ratio locked — it scales proportionally. You can also unlock it for a free resize.",
+                q: t("tools.resizer.faq.q3"),
+                a: t("tools.resizer.faq.a3"),
               },
               {
-                q: "Can I resize many images at once?",
-                a: "Yes — batch-resize them all to the same dimensions and download as a ZIP.",
+                q: t("tools.resizer.faq.q4"),
+                a: t("tools.resizer.faq.a4"),
               },
               {
-                q: "Will resizing reduce quality?",
-                a: "Alatify uses high-quality resampling to keep results as crisp as possible when scaling.",
+                q: t("tools.resizer.faq.q5"),
+                a: t("tools.resizer.faq.a5"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -997,7 +1002,7 @@ export default function ImageResizerPage() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Resize images by exact pixels, percentage, or aspect ratio instantly and privately on your own device.
+            {t("tools.resizer.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

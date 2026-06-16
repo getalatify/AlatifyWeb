@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { ThemeToggle, LanguageToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { toast } from "sonner";
 
 export default function FormatConverterPage() {
+  const t = useT();
   interface ImageItem {
     id: string;
     file: File;
@@ -1221,7 +1223,10 @@ export default function FormatConverterPage() {
             Back to tools
           </Link>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Hidden File Input for Replace */}
@@ -1244,7 +1249,7 @@ export default function FormatConverterPage() {
             Convert Images Between Any Format
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Convert images between nine formats — including web favorites like WebP, design formats like SVG and TIFF, and specialty formats like ICO (favicons) and PDF — entirely in your browser. Drag in multiple files, pick an output format, and convert in one click. No upload, no sign-up, no watermark — your files never leave your device.
+            {t("tools.converter.intro")}
           </p>
         </section>
 
@@ -2186,22 +2191,22 @@ export default function FormatConverterPage() {
               {
                 step: "01",
                 title: "Upload",
-                text: "Add one or many images (drag-drop or file picker).",
+                text: t("tools.converter.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Choose format",
-                text: "Pick your output: JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, or GIF.",
+                text: t("tools.converter.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Convert",
-                text: "Process them all at once, instantly, on your device.",
+                text: t("tools.converter.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Download",
-                text: "Save individually, or grab everything as a ZIP.",
+                text: t("tools.converter.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -2236,23 +2241,23 @@ export default function FormatConverterPage() {
             {[
               {
                 title: "PNG ↔ WebP",
-                text: "Shrink images for faster-loading websites without quality loss.",
+                text: t("tools.converter.useCases.case1"),
               },
               {
                 title: "Image to ICO",
-                text: "Create favicons for your website in the correct format.",
+                text: t("tools.converter.useCases.case2"),
               },
               {
                 title: "Image to PDF",
-                text: "Combine several images into a single multi-page PDF.",
+                text: t("tools.converter.useCases.case3"),
               },
               {
                 title: "Image to SVG",
-                text: "Trace raster images into scalable vector graphics.",
+                text: t("tools.converter.useCases.case4"),
               },
               {
                 title: "HEIC to JPG",
-                text: "Convert iPhone photos into universally compatible JPGs.",
+                text: t("tools.converter.useCases.case5"),
               },
             ].map((useCase, idx) => (
               <div
@@ -2281,24 +2286,24 @@ export default function FormatConverterPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Which formats can I convert between?",
-                a: "JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, and GIF — plus HEIC input from iPhones.",
+                q: t("tools.converter.faq.q1"),
+                a: t("tools.converter.faq.a1"),
               },
               {
-                q: "Does it upload my files to a server?",
-                a: "No. Conversion runs entirely in your browser; your files never leave your device.",
+                q: t("tools.converter.faq.q2"),
+                a: t("tools.converter.faq.a2"),
               },
               {
-                q: "Can I convert many images at once?",
-                a: "Yes — drag in multiple files, convert them all in one click, and download as a ZIP.",
+                q: t("tools.converter.faq.q3"),
+                a: t("tools.converter.faq.a3"),
               },
               {
-                q: "How do I convert a PNG to an ICO favicon?",
-                a: "Upload the PNG, choose ICO as the output format, and download — ready to use as a site favicon.",
+                q: t("tools.converter.faq.q4"),
+                a: t("tools.converter.faq.a4"),
               },
               {
-                q: "Can I convert HEIC photos from my iPhone?",
-                a: "Yes. Add your HEIC files and convert them to JPG or PNG instantly.",
+                q: t("tools.converter.faq.q5"),
+                a: t("tools.converter.faq.a5"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -2366,7 +2371,7 @@ export default function FormatConverterPage() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Convert images between JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, and GIF formats instantly and privately on your own device.
+            {t("tools.converter.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

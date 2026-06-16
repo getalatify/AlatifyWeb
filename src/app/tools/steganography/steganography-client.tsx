@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
@@ -284,6 +285,7 @@ function extractBitsFromData(
 // MAIN COMPONENT
 // =========================================================================
 export default function SteganographyClient() {
+  const t = useT();
   const [activeTab, setActiveTab] = useState<"encode" | "decode">("encode");
 
   // Encode tab states
@@ -572,7 +574,10 @@ export default function SteganographyClient() {
             Back to tools
           </Link>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
 
       <div className="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10">
@@ -586,7 +591,7 @@ export default function SteganographyClient() {
             Hide Encrypted Messages inside Ordinary Images
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Protect your communications offline. Embed private texts into images via Least Significant Bit (LSB) steganography, with optional AES-GCM password encryption. The files remain identical to the naked eye. Everything runs entirely in your browser sandbox: no servers, no leaks.
+            {t("tools.steganography.intro")}
           </p>
         </section>
 
@@ -1015,22 +1020,22 @@ export default function SteganographyClient() {
               {
                 step: "01",
                 title: "Upload host",
-                text: "Select a carrier host image. Transparent layers are flattened to solid white in-memory.",
+                text: t("tools.steganography.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Encrypt & Pack",
-                text: "Type secret message. Entering a password triggers AES-GCM 256-bit encryption before packing.",
+                text: t("tools.steganography.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "LSB Embedding",
-                text: "Binary bits of the packed payload replace the Least Significant Bits of RGB image channels.",
+                text: t("tools.steganography.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "PNG Lossless",
-                text: "Export as PNG format only. This guarantees that compression algorithms do not alter LSB pixels.",
+                text: t("tools.steganography.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -1062,20 +1067,20 @@ export default function SteganographyClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Will my steganography survive sending via WhatsApp or Instagram?",
-                a: "No. Chat apps and social media automatically convert files to lossy JPEGs/WebPs to save bandwidth. This destroys LSB pixel variations. To preserve messages, share stego PNGs as uncompressed Document files or direct download links.",
+                q: t("tools.steganography.faq.q1"),
+                a: t("tools.steganography.faq.a1"),
               },
               {
-                q: "Is LSB steganography mathematically undetectable?",
-                a: "No. LSB steganography leaves the carrier visually indistinguishable to the human eye. However, specialized stego scanners can detect statistical alterations in the pixel distribution (steganalysis). For high-security deniability, encrypt with a robust password.",
+                q: t("tools.steganography.faq.q2"),
+                a: t("tools.steganography.faq.a2"),
               },
               {
-                q: "What message formats can I embed?",
-                a: "You can embed any plain text, markdown notes, license keys, or configuration strings. We enforce clear capacity limit checks to prevent truncation, based on the natural dimensions of the uploaded carrier image.",
+                q: t("tools.steganography.faq.q3"),
+                a: t("tools.steganography.faq.a3"),
               },
               {
-                q: "Are my images or password data sent to any server?",
-                a: "Never. All encryption (using Web Crypto API) and pixel-level LSB adjustments happen client-side in-browser. Your original files and passwords never leave your device.",
+                q: t("tools.steganography.faq.q4"),
+                a: t("tools.steganography.faq.a4"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -1143,7 +1148,7 @@ export default function SteganographyClient() {
         {/* Offline Privacy Notice */}
         <PrivacyNotice>
           <p>
-            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files, secret messages, or passwords to external clouds. LSB embedding, PBKDF2 key derivation, and AES-GCM encryption run entirely offline, protecting your data from server-side leaks.
+            {t("tools.steganography.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

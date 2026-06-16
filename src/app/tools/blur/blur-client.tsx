@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,7 @@ interface Region {
 }
 
 export default function BlurClient() {
+  const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
@@ -958,7 +960,10 @@ export default function BlurClient() {
             Back to tools
           </Link>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Hidden upload reference */}
@@ -981,7 +986,7 @@ export default function BlurClient() {
             Blur & Redact
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Obscure faces, license plates, and sensitive credentials securely in your web browser. Drag rectangular boxes or draw freeform brush strokes to completely destroy sensitive pixel data offline.
+            {t("tools.blur.intro")}
           </p>
         </section>
 
@@ -1336,22 +1341,22 @@ export default function BlurClient() {
               {
                 step: "01",
                 title: "Upload File",
-                text: "Upload your image via drag-drop, file dialogue, or download from a secure URL.",
+                text: t("tools.blur.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Choose Settings",
-                text: "Select Box mode for plates/text, or Brush mode for organic targets like faces.",
+                text: t("tools.blur.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Obscure Regions",
-                text: "Draw rectangles or paint paths. Tweak sizes and blur intensities dynamically.",
+                text: t("tools.blur.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Scrub & Save",
-                text: "Click Download. Alatify destroys the underlying pixel data and strips EXIF metadata.",
+                text: t("tools.blur.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -1383,20 +1388,20 @@ export default function BlurClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "How do I blur a license plate before selling a car online?",
-                a: "Upload the photo, toggle to Box Mode or Brush Mode, cover the license plate area, and apply the pixelate or blur effect. This prevents auto-scrapers and data aggregators from linking your vehicle to your personal license registration.",
+                q: t("tools.blur.faq.q1"),
+                a: t("tools.blur.faq.a1"),
               },
               {
-                q: "Can I redact sensitive passwords or credentials from screenshots?",
-                a: "Yes. For highly sensitive passwords, financial numbers, or keys, we strongly recommend using the Solid Fill effect. Unlike blur or pixelation which might be partially reversed by AI, Solid Fill replaces the target area with complete black pixels.",
+                q: t("tools.blur.faq.q2"),
+                a: t("tools.blur.faq.a2"),
               },
               {
-                q: "Is it safe to blur children or faces before posting online?",
-                a: "Absolutely. Choose Brush Mode to paint over faces with customizable brush sizing. Since everything runs locally inside your sandboxed web browser, the unredacted original photo is never transmitted over the internet.",
+                q: t("tools.blur.faq.q3"),
+                a: t("tools.blur.faq.a3"),
               },
               {
-                q: "Does this page upload my image to a server?",
-                a: "No. All Alatify utilities operate on a strict privacy model. Image rendering, box drafting, pixel rendering, and file compilation are executed entirely client-side. The original file never leaves your machine.",
+                q: t("tools.blur.faq.q4"),
+                a: t("tools.blur.faq.a4"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -1464,7 +1469,7 @@ export default function BlurClient() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Obscure faces, license plates, and sensitive credentials securely and privately on your own device.
+            {t("tools.blur.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo } from "@/components/shared";
+import { ThemeToggle, Logo, LanguageToggle } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { 
@@ -143,7 +143,10 @@ export default function ToolsHubPage() {
             Alatify
           </span>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Back to home — placed BELOW the header box, aligned with the logo */}

@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -107,6 +108,7 @@ interface WatermarkClientProps {
 }
 
 export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: WatermarkClientProps) {
+  const t = useT();
   const [imagesList, setImagesList] = useState<ImageItem[]>([]);
   const [settings, setSettings] = useState<WatermarkSettings>(() => ({
     ...defaultSettings,
@@ -1171,7 +1173,10 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
           <Logo className="w-9 h-9" />
           <span className="font-extrabold text-xl tracking-tight">Alatify</span>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
       </header>
 
       <div className="w-full">
@@ -1897,22 +1902,22 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
               {
                 step: "01",
                 title: "Upload",
-                text: "Add one or many images (up to 30).",
+                text: t("tools.watermark.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Configure",
-                text: "Pick a text or logo watermark and style it: size, opacity, color, rotation.",
+                text: t("tools.watermark.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Position",
-                text: "Snap it to a corner, tile it across the image, or drag it anywhere you like.",
+                text: t("tools.watermark.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Download",
-                text: "Save your watermarked images individually or as a ZIP.",
+                text: t("tools.watermark.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -1947,19 +1952,19 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
             {[
               {
                 title: "Protect your work",
-                text: "Deter image theft and unauthorized reuse with a visible watermark.",
+                text: t("tools.watermark.useCases.case1"),
               },
               {
                 title: "Brand every image",
-                text: "Add your logo or handle to photos before posting or sharing.",
+                text: t("tools.watermark.useCases.case2"),
               },
               {
                 title: "Bulk-watermark",
-                text: "Apply the same watermark across an entire batch in one go.",
+                text: t("tools.watermark.useCases.case3"),
               },
               {
                 title: "Tile for safety",
-                text: "Repeat the watermark diagonally so it can't simply be cropped out.",
+                text: t("tools.watermark.useCases.case4"),
               },
             ].map((useCase, idx) => (
               <div
@@ -1988,28 +1993,28 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Does it upload my images or logo?",
-                a: "No. Everything runs in your browser; your images and logo never leave your device.",
+                q: t("tools.watermark.faq.q1"),
+                a: t("tools.watermark.faq.a1"),
               },
               {
-                q: "Can I watermark many images at once?",
-                a: "Yes — add up to 30 images and download them all as a ZIP with the same watermark applied.",
+                q: t("tools.watermark.faq.q2"),
+                a: t("tools.watermark.faq.a2"),
               },
               {
-                q: "Can I use my own logo?",
-                a: "Yes. Upload a PNG (transparency supported) and adjust its size and opacity.",
+                q: t("tools.watermark.faq.q3"),
+                a: t("tools.watermark.faq.a3"),
               },
               {
-                q: "Will the watermark look the same across different image sizes?",
-                a: "Yes. Sizes are set relative to each image's width, so the watermark stays proportional whether the photo is large or small.",
+                q: t("tools.watermark.faq.q4"),
+                a: t("tools.watermark.faq.a4"),
               },
               {
-                q: "Can I stop people from cropping out the watermark?",
-                a: "Use tiled mode to repeat the watermark diagonally across the whole image, which makes it much harder to remove by cropping.",
+                q: t("tools.watermark.faq.q5"),
+                a: t("tools.watermark.faq.a5"),
               },
               {
-                q: "What formats can I export?",
-                a: "Keep the original format, or export as JPG, PNG, or WebP.",
+                q: t("tools.watermark.faq.q6"),
+                a: t("tools.watermark.faq.a6"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -2077,7 +2082,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private watermark coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Securely brand and protect your images directly on your own device.
+            {t("tools.watermark.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -88,6 +89,7 @@ interface MetadataState {
 }
 
 export default function ExifCleanerClient() {
+  const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
@@ -385,7 +387,10 @@ export default function ExifCleanerClient() {
           </Link>
         </div>
         <div className={cn(isCleaning && "pointer-events-none opacity-50")}>
+          <div className="flex items-center gap-2">
+          <LanguageToggle />
           <ThemeToggle />
+        </div>
         </div>
       </header>
 
@@ -410,7 +415,7 @@ export default function ExifCleanerClient() {
             Remove EXIF & GPS Metadata from Your Photos
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Every photo your phone takes carries hidden EXIF metadata — GPS coordinates, camera model, date, and device details — that travels with the file when you share it. Alatify shows you exactly what&apos;s hidden inside, then strips it clean. Everything runs in your browser: your photo is never uploaded, and the cleaning is fully lossless, so only the metadata is removed — your image quality stays untouched.
+            {t("tools.exif-cleaner.intro")}
           </p>
         </section>
 
@@ -762,22 +767,22 @@ export default function ExifCleanerClient() {
               {
                 step: "01",
                 title: "Upload",
-                text: "Drag and drop your photo, or pick a file. It stays on your device.",
+                text: t("tools.exif-cleaner.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Inspect",
-                text: "See all detected metadata, with a prominent warning if GPS location is present.",
+                text: t("tools.exif-cleaner.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Clean",
-                text: "Strip the metadata losslessly. No re-compression, no quality loss.",
+                text: t("tools.exif-cleaner.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Download",
-                text: "Save a clean copy with zero metadata, ready to share safely.",
+                text: t("tools.exif-cleaner.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -812,19 +817,19 @@ export default function ExifCleanerClient() {
             {[
               {
                 title: "Selling online",
-                text: "Photos taken at home embed your GPS location. Remove it before posting to Facebook Marketplace, eBay, or Craigslist so a listing can't reveal your address.",
+                text: t("tools.exif-cleaner.useCases.case1"),
               },
               {
                 title: "Travel safety",
-                text: "Vacation photos can broadcast that you're away from home. Strip location and timestamps before posting.",
+                text: t("tools.exif-cleaner.useCases.case2"),
               },
               {
                 title: "Stalking & privacy",
-                text: "Exact GPS coordinates can lead strangers to your door. Clean your photos before sharing publicly.",
+                text: t("tools.exif-cleaner.useCases.case3"),
               },
               {
                 title: "Photographers",
-                text: "Remove location data before delivering to clients or publishing online.",
+                text: t("tools.exif-cleaner.useCases.case4"),
               },
             ].map((useCase, idx) => (
               <div
@@ -853,24 +858,24 @@ export default function ExifCleanerClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Doesn't Instagram or Facebook already remove EXIF data?",
-                a: "Public posts on most platforms strip EXIF — but they keep the original internally, and many sharing methods (sending the file directly, cloud storage, some platforms) keep the metadata intact. Cleaning it yourself first is the only way to be sure.",
+                q: t("tools.exif-cleaner.faq.q1"),
+                a: t("tools.exif-cleaner.faq.a1"),
               },
               {
-                q: "How do I remove GPS location before selling something online?",
-                a: "Upload the photo, check the GPS warning, strip the metadata, and download the clean copy to post — no location data attached.",
+                q: t("tools.exif-cleaner.faq.q2"),
+                a: t("tools.exif-cleaner.faq.a2"),
               },
               {
-                q: "Will removing metadata reduce my photo's quality?",
-                a: "No. Alatify removes metadata losslessly by editing the file's binary structure directly — your pixels are never re-compressed, so quality is identical.",
+                q: t("tools.exif-cleaner.faq.q3"),
+                a: t("tools.exif-cleaner.faq.a3"),
               },
               {
-                q: "Can I see what metadata my photo contains first?",
-                a: "Yes. Before cleaning, Alatify displays all detected metadata — GPS coordinates, camera model, date, and device info — so you know exactly what you're removing.",
+                q: t("tools.exif-cleaner.faq.q4"),
+                a: t("tools.exif-cleaner.faq.a4"),
               },
               {
-                q: "Is my photo uploaded to a server?",
-                a: "No. Detection and cleaning run entirely in your browser. Your photo never leaves your device.",
+                q: t("tools.exif-cleaner.faq.q5"),
+                a: t("tools.exif-cleaner.faq.a5"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -938,7 +943,7 @@ export default function ExifCleanerClient() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Strip location histories (GPS Latitude/Longitude), device markers (manufacturer/model), software history logs, and capture timestamps instantly and safely before distribution.
+            {t("tools.exif-cleaner.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>
