@@ -53,6 +53,12 @@ export function Footer() {
           >
             About
           </Link>
+          <Link
+            href="/support"
+            className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
+          >
+            Support Us
+          </Link>
         </div>
 
         {/* Column 3 - Connect Info */}

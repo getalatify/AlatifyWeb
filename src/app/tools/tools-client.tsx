@@ -143,7 +143,15 @@ export default function ToolsHubPage() {
             Alatify
           </span>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-4 sm:gap-6">
+          <Link
+            href="/support"
+            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Support Us
+          </Link>
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Back to home — placed BELOW the header box, aligned with the logo */}
