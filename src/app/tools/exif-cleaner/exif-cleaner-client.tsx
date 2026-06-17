@@ -4,29 +4,13 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  Shield,
-  Loader2,
-  AlertCircle,
-  RefreshCw,
-  Trash2,
-  Image as ImageIcon,
-  Download,
-  CheckCircle2,
-  Camera,
-  Calendar,
-  Layers,
-  Laptop,
-  EyeOff,
-  HelpCircle
-} from "lucide-react";
+import { Shield, Loader2, AlertCircle, RefreshCw, Trash2, Image as ImageIcon, Download, CheckCircle2, Camera, Calendar, Layers, Laptop, EyeOff, HelpCircle } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
-import { cn } from "@/lib/utils";
+;
 import { usePendingImage } from "@/hooks/use-pending-image";
 import { stripImageMetadata } from "@/lib/utils/metadata-stripper";
 import { toast } from "sonner";
@@ -367,32 +351,7 @@ export default function ExifCleanerClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className={cn(
-              "flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group",
-              isCleaning && "pointer-events-none opacity-50"
-            )}
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className={cn(isCleaning && "pointer-events-none opacity-50")}>
-          <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-        </div>
-      </header>
+      <Header showBackToTools />
 
       {/* Hidden File Input for Replace */}
       <input
@@ -531,7 +490,7 @@ export default function ExifCleanerClient() {
                         <div className="space-y-1">
                           <p className="font-extrabold text-xs">⚠ Coordinates Embedded</p>
                           <p className="text-[10px] text-muted-foreground leading-normal">
-                            This image reveals exactly where the photo was taken:
+                            {t("tools.exif-cleaner.coordinatesNotice")}
                           </p>
                           <code className="text-[10px] font-mono block bg-destructive/10 dark:bg-destructive/20 px-2 py-1 rounded border border-destructive/10 mt-1 select-all">
                             Lat: {metadata.latitude?.toFixed(6)}° · Lon: {metadata.longitude?.toFixed(6)}°
@@ -546,7 +505,7 @@ export default function ExifCleanerClient() {
                         <CheckCircle2 className="w-8 h-8 text-success mx-auto" />
                         <p className="text-xs font-bold text-foreground">No metadata found</p>
                         <p className="text-[11px] text-muted-foreground leading-relaxed">
-                          This image is already clean. No EXIF, GPS, camera, or software tags were detected.
+                          {t("tools.exif-cleaner.alreadyCleanNotice")}
                         </p>
                       </div>
                     ) : (
@@ -911,7 +870,7 @@ export default function ExifCleanerClient() {
                     Blur & Redact Image
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Obscure faces, plates, and info locally.
+                    {t("shared.related.blur")}
                   </p>
                 </div>
               </div>
@@ -931,7 +890,7 @@ export default function ExifCleanerClient() {
                     AI Background Remover
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Extract subjects locally in your browser.
+                    {t("shared.related.bg-remover")}
                   </p>
                 </div>
               </div>

@@ -4,12 +4,11 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
-  ArrowLeft,
   Settings,
   Download,
   Plus,
@@ -24,6 +23,7 @@ import {
   EyeOff
 } from "lucide-react";
 import { formatBytes } from "@/lib/utils/format";
+
 
 interface ImageItem {
   id: string;
@@ -1168,26 +1168,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
     <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 text-foreground flex flex-col gap-6 select-none">
       
       {/* Header section with back navigation */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-5 w-full z-10 shrink-0">
-        <div className="flex items-center gap-3">
-          <Logo className="w-9 h-9" />
-          <span className="font-extrabold text-xl tracking-tight">Alatify</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </header>
-
-      <div className="w-full">
-        <Link
-          href="/tools"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-        >
-          <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-          Back to all tools
-        </Link>
-      </div>
+      <Header showBackToTools />
 
       <div className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl mt-1 animate-fade-in">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm max-w-max">
@@ -1197,7 +1178,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
           Add Text or Logo Watermarks to Your Images
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          Protect and brand your images with text or logo watermarks — entirely in your browser. Drag the watermark exactly where you want it, tile it diagonally across the whole image, rotate it, and tune the opacity for the look you want. Watermark a single image or a whole batch at once. No upload, no sign-up — your images and logo never leave your device.
+          {t("tools.watermark.intro")}
         </p>
       </div>
 
@@ -1717,7 +1698,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                 </div>
 
                 <p className="text-[10px] text-muted-foreground font-semibold text-center mt-2">
-                  Preview resolution is capped at 1200px. Watermark applies to full-resolution on export.
+                  {t("tools.watermark.previewResolutionNotice")}
                 </p>
               </div>
 
@@ -2050,7 +2031,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                     EXIF Privacy Cleaner
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Strip location and camera info from photos locally.
+                    {t("shared.related.exif-cleaner-info")}
                   </p>
                 </div>
               </div>
@@ -2070,7 +2051,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                     Blur & Redact Image
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Obscure faces, plates, and info locally.
+                    {t("shared.related.blur")}
                   </p>
                 </div>
               </div>

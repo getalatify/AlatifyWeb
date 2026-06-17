@@ -7,6 +7,11 @@ import { Button } from "@/components/ui/button";
 
 export function LanguageToggle() {
   const { language, setLanguage } = useLanguage();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <Button
@@ -17,7 +22,10 @@ export function LanguageToggle() {
       aria-label="Toggle language"
     >
       <Languages className="h-4 w-4 opacity-70" />
-      <span className="text-xs font-semibold tracking-wider">{language.toUpperCase()}</span>
+      <span className="text-xs font-semibold tracking-wider">
+        {mounted ? language.toUpperCase() : "EN"}
+      </span>
     </Button>
   );
 }
+

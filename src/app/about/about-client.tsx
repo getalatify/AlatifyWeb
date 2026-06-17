@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { ThemeToggle, Logo, LanguageToggle } from "@/components/shared";
-import { ArrowLeft, Info, Sparkles, Heart, Globe, MessageSquare } from "lucide-react";
+import { Header } from "@/components/shared";
+import { Info, Sparkles, Heart, Globe, MessageSquare } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
 
 export default function AboutClient() {
@@ -16,27 +15,7 @@ export default function AboutClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showBackToTools />
 
       {/* Content Container */}
       <div className="flex-1 w-full max-w-2xl mx-auto px-4 py-12 sm:py-16 z-10 space-y-10 select-text">
@@ -79,7 +58,7 @@ export default function AboutClient() {
           </h2>
           <ul className="space-y-3 pl-5 list-disc text-xs sm:text-sm text-muted-foreground">
             <li>
-              <strong className="text-foreground">5 essential image tools:</strong> {t("about.offer.li1")}
+              <strong className="text-foreground">A full image toolkit:</strong> {t("about.offer.li1")}
             </li>
             <li>
               <strong className="text-foreground">Privacy by design:</strong> {t("about.offer.li2")}

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo } from "@/components/shared";
+import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeft, Copy, Heart, ExternalLink, AlertTriangle } from "lucide-react";
@@ -59,15 +59,7 @@ export default function SupportClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex items-center gap-3 pl-2">
-          <Logo className="w-8 h-8" />
-          <span className="font-extrabold text-xl tracking-tight text-foreground">
-            Alatify
-          </span>
-        </div>
-        <ThemeToggle />
-      </header>
+      <Header  />
 
       {/* Back to tools — placed BELOW the header box, aligned with the logo */}
       <div className="max-w-7xl mx-auto w-full px-6 mt-3 z-10 shrink-0">

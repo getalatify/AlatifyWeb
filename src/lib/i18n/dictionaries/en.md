@@ -16,10 +16,10 @@ export const en = {
     "intro": "Image tools should respect your privacy.",
     "why": {
       "p1": "Most online image tools require uploading your files to their servers. That means your images — possibly containing personal moments, business assets, or sensitive content — pass through someone else's infrastructure.",
-      "p2": "Alatify is different: every tool runs entirely in your browser, using your own device's resources. Your files never leave your device. We believe in providing fast, powerful, and absolutely private utilities that respect user autonomy."
+      "p2": "Alatify is different: every tool runs entirely in your browser using WebAssembly. Your files never leave your device. We believe in providing fast, powerful, and absolutely private utilities that respect user autonomy."
     },
     "offer": {
-      "li1": "A full browser suite — Background Remover, Image Compressor, Format Converter, Resizer, Cropper, EXIF Cleaner, Watermark, QR Toolkit, and more — all running locally in your browser.",
+      "li1": "A complete browser suite consisting of an Image Compressor, Background Remover, Image Resizer, Format Converter, and Image Cropper.",
       "li2": "No user registration, no server-side uploads, and no analytics cookies.",
       "li3": "Process files of any size without registration, credit cards, or hidden limits.",
       "li4": "Transparent, offline-capable code execution using standard web containers."
@@ -481,8 +481,5 @@ export const en = {
         "a5": "Three of the largest free stock libraries: Unsplash, Pexels, and Pixabay."
       }
     }
-  },
-  "toolsPage": {
-    "intro": "A curated collection of privacy-first image tools that run entirely in your browser — no uploads, no sign-up, fully private. From Background Remover and Image Compressor to format conversion, resizing, and more, every tool processes your images right on your device."
   }
 };

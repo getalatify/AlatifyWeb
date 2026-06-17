@@ -16,10 +16,10 @@ export const id = {
     "intro": "Alat pemrosesan gambar seharusnya menghormati privasi Anda.",
     "why": {
       "p1": "Sebagian besar alat gambar online mengharuskan Anda mengunggah file ke server mereka. Itu berarti gambar Anda — yang mungkin berisi momen pribadi, aset bisnis, atau konten sensitif — melewati infrastruktur orang lain.",
-      "p2": "Alatify berbeda: setiap alat berjalan sepenuhnya di browser Anda, menggunakan sumber daya perangkat Anda sendiri. File Anda tidak pernah meninggalkan perangkat Anda. Kami percaya pada penyediaan utilitas yang cepat, bertenaga, dan benar-benar privat yang menghormati otonomi pengguna."
+      "p2": "Alatify berbeda: setiap alat berjalan sepenuhnya di browser Anda menggunakan WebAssembly. File Anda tidak pernah meninggalkan perangkat Anda. Kami percaya pada penyediaan utilitas yang cepat, bertenaga, dan benar-benar privat yang menghormati otonomi pengguna."
     },
     "offer": {
-      "li1": "Paket browser lengkap — Background Remover, Image Compressor, Format Converter, Resizer, Cropper, EXIF Cleaner, Watermark, QR Toolkit, dan lainnya — semuanya berjalan secara lokal di browser Anda.",
+      "li1": "Sebuah paket browser lengkap yang terdiri dari Image Compressor, Background Remover, Image Resizer, Format Converter, dan Image Cropper.",
       "li2": "Tanpa pendaftaran pengguna, tanpa unggahan di sisi server, dan tanpa cookie analitik.",
       "li3": "Proses file dengan ukuran apa pun tanpa pendaftaran, kartu kredit, atau batasan tersembunyi.",
       "li4": "Eksekusi kode yang transparan dan dapat berfungsi secara offline menggunakan kontainer web standar."
@@ -98,21 +98,21 @@ export const id = {
       "body": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau retensi data di sisi server."
     },
     "related": {
-      "blur": "Kaburkan wajah, pelat nomor, dan informasi secara lokal.",
-      "exif-cleaner-metadata": "Hapus lokasi GPS dan metadata kamera.",
-      "exif-cleaner-gps": "Hapus GPS & metadata sebelum berbagi.",
-      "exif-cleaner-tags": "Hapus metadata dan tag GPS.",
-      "exif-cleaner-info": "Hapus info lokasi dan kamera dari foto secara lokal.",
-      "bg-remover": "Ekstrak subjek secara lokal di browser Anda.",
-      "bg-remover-backdrops": "Ekstrak subjek dan hapus latar secara lokal.",
-      "upscaler": "Perbesar foto 2x & 4x di perangkat.",
-      "compressor-savings": "Kecilkan ukuran file hingga 90% tanpa mengorbankan kualitas.",
-      "compressor-offline": "Kecilkan ukuran file gambar hingga 90% secara offline.",
-      "resizer-dimensions": "Ubah dimensi gambar berdasarkan persentase atau piksel.",
-      "resizer-pixels": "Ubah dimensi berdasarkan piksel, rasio, atau persen.",
-      "converter-formats": "Konversi file antara JPG, PNG, WebP, PDF, dan vektor.",
-      "converter-instantly": "Konversi antara PNG, JPEG, dan WebP secara instan.",
-      "watermark": "Tambahkan watermark teks atau gambar kustom."
+      "blur": "",
+      "exif-cleaner-metadata": "",
+      "exif-cleaner-gps": "",
+      "exif-cleaner-tags": "",
+      "exif-cleaner-info": "",
+      "bg-remover": "",
+      "bg-remover-backdrops": "",
+      "upscaler": "",
+      "compressor-savings": "",
+      "compressor-offline": "",
+      "resizer-dimensions": "",
+      "resizer-pixels": "",
+      "converter-formats": "",
+      "converter-instantly": "",
+      "watermark": ""
     }
   },
   "tools": {
@@ -171,8 +171,8 @@ export const id = {
         "a5": "Foto produk, PNG transparan untuk desain, foto profil, postingan sosial, dan daftar pasar — di mana saja Anda membutuhkan potongan yang bersih."
       },
       "privacyNotice": "Alatify menghapus latar belakang gambar seluruhnya di dalam tab browser Anda menggunakan AI di perangkat yang diakselerasi GPU. Foto Anda tidak pernah diunggah ke server, tidak pernah digunakan untuk melatih model, dan tidak pernah dicatat — membuat alat ini 100% kebal terhadap kebocoran atau retensi data di sisi server. Dapatkan PNG transparan resolusi penuh yang bebas watermark tanpa batas, diproses secara privat di perangkat Anda sendiri.",
-      "onnxNotice": "Ekstraksi latar AI Alatify menjalankan jaringan saraf yang sangat dioptimalkan di sandbox browser Anda menggunakan ONNX runtime WebAssembly.",
-      "modelNotice": "Model GPU lebih cepat di perangkat yang didukung; model Lite (CPU) paling cocok untuk perangkat tanpa akselerasi GPU."
+      "onnxNotice": "",
+      "modelNotice": ""
     },
     "blur": {
       "intro": "Kaburkan wajah, pelat nomor, dan kredensial sensitif secara aman di browser web Anda. Seret kotak persegi panjang atau gambar sapuan kuas bebas untuk menghancurkan data piksel sensitif secara offline sepenuhnya.",
@@ -193,7 +193,7 @@ export const id = {
         "a4": "Tidak. Semua utilitas Alatify beroperasi pada model privasi yang ketat. Rendering gambar, penyusunan kotak, rendering piksel, dan kompilasi file dieksekusi sepenuhnya di sisi klien. File asli tidak pernah meninggalkan mesin Anda."
       },
       "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Kaburkan wajah, pelat nomor, dan kredensial sensitif secara aman dan privat di perangkat Anda sendiri.",
-      "autoDetectHelp": "⚡ Deteksi wajah lokal. Bekerja paling baik pada wajah yang jelas dan menghadap depan. Penyesuaian manual tersedia."
+      "autoDetectHelp": ""
     },
     "converter": {
       "intro": "Konversi gambar di antara sembilan format — termasuk favorit web seperti WebP, format desain seperti SVG dan TIFF, serta format khusus seperti ICO (favicon) dan PDF — sepenuhnya di browser Anda. Seret beberapa file sekaligus, pilih format output, dan konversi dalam satu klik. Tanpa unggah, tanpa pendaftaran, tanpa watermark — file Anda tidak pernah meninggalkan perangkat Anda.",
@@ -223,8 +223,8 @@ export const id = {
         "a5": "Ya. Tambahkan file HEIC Anda dan konversi ke JPG atau PNG secara instan."
       },
       "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Konversi gambar antara format JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, dan GIF secara instan dan privat di perangkat Anda sendiri.",
-      "svgTooLarge": "Gambar terlalu besar untuk tracing SVG (maks. 1000 × 1000 didukung). Ubah ukuran gambar terlebih dahulu dengan alat Resizer kami, atau gunakan PNG/WebP untuk foto.",
-      "alphaBackdropHelp": "Format target yang dipilih tidak sepenuhnya menjamin rendering alpha channel native. Isi piksel transparan:"
+      "svgTooLarge": "",
+      "alphaBackdropHelp": ""
     },
     "cropper": {
       "intro": "Potong ke rasio tetap atau secara bebas dengan pegangan yang dapat diseret, lalu luruskan dengan rotasi presisi — semuanya dengan pratinjau real-time di browser Anda. Tanpa unggah, tanpa pendaftaran — foto Anda tidak pernah meninggalkan perangkat Anda.",
@@ -281,8 +281,8 @@ export const id = {
         "a5": "Tidak. Deteksi dan pembersihan berjalan sepenuhnya di browser Anda. Foto Anda tidak pernah meninggalkan perangkat Anda."
       },
       "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Hapus riwayat lokasi (GPS Latitude/Longitude), penanda perangkat (produsen/model), log riwayat perangkat lunak, dan stempel waktu pengambilan secara instan dan aman sebelum didistribusikan.",
-      "alreadyCleanNotice": "Gambar ini sudah bersih. Tidak ada tag EXIF, GPS, kamera, atau perangkat lunak yang terdeteksi.",
-      "coordinatesNotice": "Gambar ini mengungkap persis di mana foto diambil:"
+      "alreadyCleanNotice": "",
+      "coordinatesNotice": ""
     },
     "id-protector": {
       "intro": "Setiap hari, jutaan foto ID mentah (KTP, SIM, paspor) dibagikan secara online, mengekspos mereka terhadap pencurian identitas dan penipuan. ID Privacy Shield memungkinkan Anda menyensor detail sensitif dengan blok padat yang tidak dapat dibalik dan menerapkan watermark ubin untuk menegakkan konteks penggunaan tertentu. Semuanya berjalan 100% secara lokal di browser Anda: dokumen Anda tidak pernah menyentuh server, dan file yang diunduh secara otomatis menghapus semua metadata tersembunyi.",
@@ -310,7 +310,7 @@ export const id = {
         "a5": "Ya. Mengodekan ulang gambar yang diubah ke PNG secara otomatis menghapus semua metadata EXIF, koordinat GPS, tag perangkat, dan parameter riwayat untuk privasi maksimal."
       },
       "privacyNotice": "Alatify memproses file ID Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah dokumen atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Sensor nomor identitas sensitif, lapisi watermark ubin diagonal, dan hapus metadata EXIF GPS/kamera secara instan dan aman di perangkat Anda sendiri sebelum didistribusikan.",
-      "uploadInstructions": "Seret & lepas KTP, SIM, paspor, atau foto identitas Anda di sini, atau klik untuk menelusuri."
+      "uploadInstructions": ""
     },
     "qr-toolkit": {
       "intro": "Buat QR codes statis sepenuhnya offline yang menjadi milik Anda selamanya tanpa jebakan kedaluwarsa dinamis. Pindai QR codes yang tidak dikenal dan audit titik akhirnya secara aman di dalam tab browser Anda: hapus parameter pelacakan dan analisis URL sebelum membukanya.",
@@ -359,8 +359,8 @@ export const id = {
         "a5": "Alatify menggunakan pencuplikan ulang berkualitas tinggi untuk menjaga hasil tetap setajam mungkin saat melakukan penskalaan."
       },
       "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Ubah ukuran gambar berdasarkan piksel, persentase, atau rasio aspek secara instan dan privat di perangkat Anda sendiri.",
-      "cropBehaviorHelp": "Mengisi ukuran preset sepenuhnya, memangkas dimensi berlebih dari bagian tengah.",
-      "fitBehaviorHelp": "Memuat seluruh gambar di dalam batas preset, menambahkan padding dengan latar transparan atau solid."
+      "cropBehaviorHelp": "",
+      "fitBehaviorHelp": ""
     },
     "steganography": {
       "intro": "Lindungi komunikasi Anda secara offline. Tanamkan teks privat ke dalam gambar melalui steganografi Least Significant Bit (LSB), dengan enkripsi kata sandi AES-GCM opsional. File tetap terlihat identik di mata telanjang. Semuanya berjalan sepenuhnya di dalam sandbox browser Anda: tanpa server, tanpa kebocoran.",
@@ -381,7 +381,7 @@ export const id = {
         "a4": "Tidak pernah. Semua enkripsi (menggunakan Web Crypto API) dan penyesuaian LSB tingkat piksel terjadi di sisi klien di dalam browser. File asli dan kata sandi Anda tidak pernah meninggalkan perangkat Anda."
       },
       "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file, pesan rahasia, atau kata sandi Anda ke cloud eksternal. Penanaman LSB, derivasi kunci PBKDF2, dan enkripsi AES-GCM berjalan sepenuhnya offline, melindungi data Anda dari kebocoran di sisi server.",
-      "passwordHelp": "Mengunci dengan kata sandi menurunkan kunci 256-bit untuk mengenkripsi pesan Anda. Mengekstrak tanpa kata sandi yang benar menghasilkan ciphertext yang tidak terbaca."
+      "passwordHelp": ""
     },
     "upscaler": {
       "intro": "Pertajam dan perbesar foto Anda dengan jaringan saraf Real-ESRGAN yang berjalan sepenuhnya di browser Anda. Berjalan 100% di browser Anda — gambar Anda tidak pernah meninggalkan perangkat Anda.",
@@ -418,13 +418,13 @@ export const id = {
         "a8": "Ya — setelah model disimpan di cache, browser Anda dapat meningkatkan ukuran tanpa koneksi internet."
       },
       "privacyNotice": "Alatify meningkatkan ukuran gambar seluruhnya di dalam tab browser Anda menggunakan AI di perangkat yang diakselerasi GPU. Foto Anda tidak pernah diunggah ke server, tidak pernah digunakan untuk melatih model, dan tidak pernah dicatat — membuat alat ini 100% kebal terhadap kebocoran atau retensi data di sisi server. Dapatkan gambar upscaled resolusi tinggi bebas watermark tanpa batas, diproses secara privat di perangkat Anda sendiri.",
-      "fasterOptionDesc": "Gandakan resolusi · lebih cepat",
-      "sharperOptionDesc": "Empat kali lipat resolusi · lebih lambat",
-      "gpuWarning": "Berjalan 100% di browser Anda — gambar Anda tidak pernah meninggalkan perangkat Anda.",
-      "localWarning": "Pemrosesan terjadi secara lokal dan bisa memakan waktu untuk gambar besar atau perangkat yang lebih lambat — biarkan tab ini tetap terbuka."
+      "fasterOptionDesc": "",
+      "sharperOptionDesc": "",
+      "gpuWarning": "",
+      "localWarning": ""
     },
     "watermark": {
-      "intro": "Lindungi dan beri merek pada gambar Anda dengan watermark teks atau logo — sepenuhnya di browser Anda. Seret watermark tepat ke posisi yang Anda mau, susun diagonal di seluruh gambar, putar, dan atur opasitasnya sesuai tampilan yang diinginkan. Beri watermark pada satu gambar atau seluruh batch sekaligus. Tanpa unggah, tanpa daftar akun — gambar dan logo Anda tidak pernah meninggalkan perangkat Anda.",
+      "intro": "",
       "howItWorks": {
         "step1": "Tambahkan satu atau banyak gambar (hingga 30).",
         "step2": "Pilih watermark teks atau logo dan atur gayanya: ukuran, opasitas, warna, rotasi.",
@@ -452,7 +452,7 @@ export const id = {
         "a6": "Pertahankan format asli, atau ekspor sebagai JPG, PNG, atau WebP."
       },
       "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat watermark privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Amankan merek dan lindungi gambar Anda secara langsung di perangkat Anda sendiri.",
-      "previewResolutionNotice": "Resolusi pratinjau dibatasi hingga 1200px. Watermark diterapkan pada resolusi penuh saat ekspor."
+      "previewResolutionNotice": ""
     },
     "stock-finder": {
       "intro": "Cari di Unsplash, Pexels, dan Pixabay sekaligus — dan tidak seperti kebanyakan pencari stok yang hanya menampilkan foto, Alatify juga menampilkan ilustrasi dan vektor. Temukan gambar yang pas, lalu langsung buka di alat edit Alatify untuk menghapus latarnya, mengompresnya, atau mengonversinya — semuanya gratis, tanpa daftar akun.",
@@ -481,8 +481,5 @@ export const id = {
         "a5": "Tiga pustaka stok gratis terbesar: Unsplash, Pexels, dan Pixabay."
       }
     }
-  },
-  "toolsPage": {
-    "intro": "Koleksi pilihan alat gambar yang mengutamakan privasi dan berjalan sepenuhnya di browser Anda — tanpa unggah, tanpa daftar akun, sepenuhnya privat. Mulai dari Background Remover dan Image Compressor hingga konversi format, pengubahan ukuran, dan lainnya, setiap alat memproses gambar Anda langsung di perangkat."
   }
 };

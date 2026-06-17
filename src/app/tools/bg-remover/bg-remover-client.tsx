@@ -4,26 +4,11 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, LanguageToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
-import { 
-  ArrowLeft, 
-  Scissors, 
-  Loader2, 
-  AlertCircle,
-  RefreshCw,
-  Trash2,
-  Image as ImageIcon,
-  Cpu,
-  Download,
-  CheckCircle2,
-  Sparkles,
-  HelpCircle,
-  EyeOff,
-  Shield
-} from "lucide-react";
+import { Scissors, Loader2, AlertCircle, RefreshCw, Trash2, Image as ImageIcon, Cpu, Download, CheckCircle2, Sparkles, HelpCircle, EyeOff, Shield } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { ProcessingOverlay } from "@/components/processing-overlay";
@@ -655,32 +640,7 @@ export default function BgRemoverClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className={cn(
-              "flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group",
-              isProcessing && "pointer-events-none opacity-50"
-            )}
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className={cn(isProcessing && "pointer-events-none opacity-50")}>
-          <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-        </div>
-      </header>
+      <Header showBackToTools />
 
       {/* Hidden File Input for Replace */}
       <input
@@ -946,7 +906,7 @@ export default function BgRemoverClient() {
 
                 <div className="space-y-4">
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Alatify AI background extraction runs a highly optimized neural network on your browser sandbox using **ONNX runtime WebAssembly**.
+                    {t("tools.bg-remover.onnxNotice")}
                   </p>
                   
                   {/* Model Variant Selector */}
@@ -1026,7 +986,7 @@ export default function BgRemoverClient() {
                       </SelectContent>
                     </Select>
                     <p className="text-[10px] text-muted-foreground leading-normal mt-1">
-                      GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration.
+                      {t("tools.bg-remover.modelNotice")}
                     </p>
                   </div>
 
@@ -1299,7 +1259,7 @@ export default function BgRemoverClient() {
                     Blur &amp; Redact Image
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Obscure faces, plates, and info locally.
+                    {t("shared.related.blur")}
                   </p>
                 </div>
               </div>
@@ -1319,7 +1279,7 @@ export default function BgRemoverClient() {
                     AI Image Upscaler
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Enlarge photos 2x &amp; 4x on-device.
+                    {t("shared.related.upscaler")}
                   </p>
                 </div>
               </div>

@@ -3,29 +3,10 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, PrivacyNotice } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import {
-  ArrowLeft,
-  QrCode,
-  Scan,
-  Download,
-  Copy,
-  Check,
-  AlertTriangle,
-  ExternalLink,
-  Wifi,
-  Type,
-  Link2,
-  CheckCircle2,
-  HelpCircle,
-  Shield,
-  EyeOff,
-  Camera,
-  Upload,
-  Info
-} from "lucide-react";
+import { QrCode, Scan, Download, Copy, Check, AlertTriangle, ExternalLink, Wifi, Type, Link2, CheckCircle2, HelpCircle, Shield, EyeOff, Camera, Upload, Info } from "lucide-react";
 import { toast } from "sonner";
 import QRCode from "qrcode";
 import jsQR from "jsqr";
@@ -424,28 +405,7 @@ export default function QrToolkitClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Panel */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            onClick={stopCamera}
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showBackToTools />
 
       <div className="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10">
         {/* Intro */}
@@ -1289,7 +1249,7 @@ export default function QrToolkitClient() {
                     EXIF Privacy Cleaner
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Strip GPS location and camera metadata.
+                    {t("shared.related.exif-cleaner-metadata")}
                   </p>
                 </div>
               </div>
@@ -1310,7 +1270,7 @@ export default function QrToolkitClient() {
                     Blur & Redact Image
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Obscure faces, plates, and info locally.
+                    {t("shared.related.blur")}
                   </p>
                 </div>
               </div>

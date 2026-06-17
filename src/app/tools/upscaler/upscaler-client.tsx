@@ -4,29 +4,11 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, LanguageToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  Sparkles,
-  Loader2,
-  AlertCircle,
-  RefreshCw,
-  Trash2,
-  Image as ImageIcon,
-  Cpu,
-  Download,
-  CheckCircle2,
-  Wand2,
-  Shield,
-  RotateCcw,
-  HelpCircle,
-  Scissors,
-  Maximize2,
-  Minimize2,
-} from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, RefreshCw, Trash2, Image as ImageIcon, Cpu, Download, CheckCircle2, Wand2, Shield, RotateCcw, HelpCircle, Scissors, Maximize2, Minimize2, ArrowLeft } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { ProcessingOverlay } from "@/components/processing-overlay";
@@ -506,30 +488,7 @@ export default function UpscalerClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">Alatify</span>
-          </div>
-          <Link
-            href="/tools"
-            className={cn(
-              "flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group",
-              isProcessing && "pointer-events-none opacity-50",
-            )}
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className={cn(isProcessing && "pointer-events-none opacity-50")}>
-          <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-        </div>
-      </header>
+      <Header showBackToTools />
 
       <input
         type="file"
@@ -744,7 +703,7 @@ export default function UpscalerClient() {
                             </span>
                           </div>
                           <div className="text-[10px] text-muted-foreground mt-0.5">
-                            Double the resolution · quicker
+                            {t("tools.upscaler.fasterOptionDesc")}
                           </div>
                         </div>
                       </SelectItem>
@@ -757,7 +716,7 @@ export default function UpscalerClient() {
                             </span>
                           </div>
                           <div className="text-[10px] text-muted-foreground mt-0.5">
-                            Quadruple the resolution · slower
+                            {t("tools.upscaler.sharperOptionDesc")}
                           </div>
                         </div>
                       </SelectItem>
@@ -818,7 +777,7 @@ export default function UpscalerClient() {
                 <div className="space-y-2 text-[10px] text-muted-foreground leading-relaxed pt-1">
                   <div className="flex gap-2">
                     <Shield className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
-                    <span>Runs 100% in your browser — your image never leaves your device.</span>
+                    <span>{t("tools.upscaler.gpuWarning")}</span>
                   </div>
                   <div className="flex gap-2">
                     <Download className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
@@ -829,8 +788,7 @@ export default function UpscalerClient() {
                   <div className="flex gap-2">
                     <Cpu className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
                     <span>
-                      Processing happens locally and can take a while for large images or slower
-                      devices — keep this tab open.
+                      {t("tools.upscaler.localWarning")}
                     </span>
                   </div>
                 </div>
@@ -1022,7 +980,7 @@ export default function UpscalerClient() {
                     Background Remover
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Extract subjects and remove backdrops locally.
+                    {t("shared.related.bg-remover-backdrops")}
                   </p>
                 </div>
               </div>
@@ -1041,7 +999,7 @@ export default function UpscalerClient() {
                     Image Resizer
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Resize dimensions by pixels, ratio, or percent.
+                    {t("shared.related.resizer-pixels")}
                   </p>
                 </div>
               </div>
@@ -1060,7 +1018,7 @@ export default function UpscalerClient() {
                     Image Compressor
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Reduce image file sizes by up to 90% offline.
+                    {t("shared.related.compressor-offline")}
                   </p>
                 </div>
               </div>
@@ -1079,7 +1037,7 @@ export default function UpscalerClient() {
                     Format Converter
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Convert between PNG, JPEG, and WebP instantly.
+                    {t("shared.related.converter-instantly")}
                   </p>
                 </div>
               </div>

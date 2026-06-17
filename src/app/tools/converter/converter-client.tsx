@@ -4,33 +4,12 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, LanguageToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import { usePendingImage } from "@/hooks/use-pending-image";
-import { 
-  ArrowLeft, 
-  RefreshCw, 
-  Trash2, 
-  Image as ImageIcon,
-  Settings,
-  Loader2,
-  CheckCircle2,
-  Sparkles,
-  Palette,
-  Sliders,
-  AlertCircle,
-  FileText,
-  AlertTriangle,
-  ArrowUp,
-  ArrowDown,
-  X,
-  Plus,
-  HelpCircle,
-  Minimize2,
-  Maximize2
-} from "lucide-react";
+import { RefreshCw, Trash2, Image as ImageIcon, Settings, Loader2, CheckCircle2, Sparkles, Palette, Sliders, AlertCircle, FileText, AlertTriangle, ArrowUp, ArrowDown, X, Plus, HelpCircle, Minimize2, Maximize2 } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { toast } from "sonner";
 
@@ -1207,27 +1186,7 @@ export default function FormatConverterPage() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showBackToTools />
 
       {/* Hidden File Input for Replace */}
       <input
@@ -1402,7 +1361,7 @@ export default function FormatConverterPage() {
                         <div className="space-y-1">
                           <span className="text-xs font-extrabold text-destructive block">Image Too Large</span>
                           <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
-                            Image too large for SVG tracing (max 1000 × 1000 supported). Resize image first using our Resizer tool, or use PNG/WebP for photos.
+                            {t("tools.converter.svgTooLarge")}
                           </p>
                         </div>
                         <Link href="/tools/resizer" className="w-full">
@@ -1664,7 +1623,7 @@ export default function FormatConverterPage() {
                         Transparency Backdrop
                       </span>
                       <p className="text-[10px] text-muted-foreground leading-relaxed">
-                        Selected target format does not fully guarantee native alpha channel rendering. Fill transparent pixels:
+                        {t("tools.converter.alphaBackdropHelp")}
                       </p>
                     </div>
 
@@ -2073,7 +2032,7 @@ export default function FormatConverterPage() {
                         Transparency Backdrop
                       </span>
                       <p className="text-[10px] text-muted-foreground leading-relaxed">
-                        Selected target format does not fully guarantee native alpha channel rendering. Fill transparent pixels:
+                        {t("tools.converter.alphaBackdropHelp")}
                       </p>
                     </div>
 
@@ -2339,7 +2298,7 @@ export default function FormatConverterPage() {
                     Image Compressor
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Reduce file sizes by up to 90% while keeping quality.
+                    {t("shared.related.compressor-savings")}
                   </p>
                 </div>
               </div>
@@ -2359,7 +2318,7 @@ export default function FormatConverterPage() {
                     Image Resizer
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Resize image dimensions by percentage or pixels.
+                    {t("shared.related.resizer-dimensions")}
                   </p>
                 </div>
               </div>

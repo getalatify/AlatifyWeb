@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo, LanguageToggle } from "@/components/shared";
+import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Lock } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
@@ -23,30 +23,7 @@ export default function Home() {
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 text-foreground select-none overflow-x-clip">
       {/* Top Header Bar — mark + wordmark lockup */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-6 max-w-7xl mx-auto w-full z-10 shrink-0">
-        <div className="flex items-center gap-3 pl-2 text-foreground">
-          <Logo className="w-10 h-10" />
-          <span className="font-extrabold text-2xl tracking-tight">
-            Alatify
-          </span>
-        </div>
-        <div className="flex items-center gap-4 sm:gap-6">
-          <Link
-            href="/tools"
-            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Tools
-          </Link>
-          <Link
-            href="/support"
-            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Support Us
-          </Link>
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showToolsLink showSupportLink />
 
       {/* Hero Section */}
       <div className="max-w-2xl text-center space-y-6 pt-16 md:pt-24 z-10 flex flex-col items-center shrink-0">

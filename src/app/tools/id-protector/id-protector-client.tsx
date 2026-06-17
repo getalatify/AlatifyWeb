@@ -5,26 +5,12 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, PrivacyNotice } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import {
-  ArrowLeft,
-  Upload,
-  Download,
-  Trash2,
-  Undo2,
-  Redo2,
-  RefreshCw,
-  Shield,
-  EyeOff,
-  Type,
-  Lock,
-  HelpCircle,
-  CheckCircle2
-} from "lucide-react";
+import { Upload, Download, Trash2, Undo2, Redo2, RefreshCw, Shield, EyeOff, Type, Lock, HelpCircle, CheckCircle2 } from "lucide-react";
 import { Redaction, WatermarkConfig, renderToCanvas, exportPng, RedactionMode } from "@/lib/id-protector/engine";
 
 export default function IdProtectorClient() {
@@ -393,29 +379,7 @@ export default function IdProtectorClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-        </div>
-      </header>
+      <Header showBackToTools />
 
       <div className="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10">
         {/* Intro Header */}
@@ -450,7 +414,7 @@ export default function IdProtectorClient() {
                 </div>
                 <h3 className="text-lg font-extrabold text-foreground mb-2">Upload your ID Image</h3>
                 <p className="text-xs text-muted-foreground max-w-sm leading-relaxed">
-                  Drag & drop your KTP, SIM, passport, or ID photo here, or click to browse.
+                  {t("tools.id-protector.uploadInstructions")}
                 </p>
                 <div className="mt-6 flex items-center gap-1.5 text-[10px] text-muted-foreground/75 font-semibold uppercase tracking-wider bg-secondary/30 px-3 py-1 rounded-full border border-border/20">
                   <Lock className="w-3 h-3 text-primary" />
@@ -846,7 +810,7 @@ export default function IdProtectorClient() {
                     Blur & Redact Image
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Obscure faces, plates, and info locally.
+                    {t("shared.related.blur")}
                   </p>
                 </div>
               </div>
@@ -866,7 +830,7 @@ export default function IdProtectorClient() {
                     Watermark Image
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Add custom text or image watermarks.
+                    {t("shared.related.watermark")}
                   </p>
                 </div>
               </div>
@@ -886,7 +850,7 @@ export default function IdProtectorClient() {
                     EXIF Privacy Cleaner
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Strip metadata and GPS tags.
+                    {t("shared.related.exif-cleaner-tags")}
                   </p>
                 </div>
               </div>

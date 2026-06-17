@@ -6,28 +6,12 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { ThemeToggle, LanguageToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import { usePendingImage } from "@/hooks/use-pending-image";
-import { 
-  ArrowLeft, 
-  Crop as CropIcon, 
-  Loader2, 
-  RefreshCw, 
-  Trash2, 
-  Image as ImageIcon,
-  RotateCcw,
-  RotateCw,
-  Sliders,
-  Maximize2,
-  CheckCircle2,
-  Settings,
-  Scale,
-  AlertCircle,
-  HelpCircle
-} from "lucide-react";
+import { Crop as CropIcon, Loader2, RefreshCw, Trash2, Image as ImageIcon, RotateCcw, RotateCw, Sliders, Maximize2, CheckCircle2, Settings, Scale, AlertCircle, HelpCircle } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 
 // Helper function to calculate rotated size
@@ -497,27 +481,7 @@ export default function CropperClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showBackToTools />
 
       {/* Hidden File Input for Replace */}
       <input
@@ -1046,7 +1010,7 @@ export default function CropperClient() {
                     Image Resizer
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Resize image dimensions by percentage or pixels.
+                    {t("shared.related.resizer-dimensions")}
                   </p>
                 </div>
               </div>
@@ -1066,7 +1030,7 @@ export default function CropperClient() {
                     Format Converter
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Convert files between JPG, PNG, WebP, PDF, and vectors.
+                    {t("shared.related.converter-formats")}
                   </p>
                 </div>
               </div>

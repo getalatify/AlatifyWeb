@@ -4,28 +4,9 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, PrivacyNotice } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  Binary,
-  Download,
-  Copy,
-  Check,
-  AlertTriangle,
-  Lock,
-  Unlock,
-  CheckCircle2,
-  HelpCircle,
-  Shield,
-  EyeOff,
-  Upload,
-  Info,
-  Eye,
-  FileText,
-  AlertCircle,
-  Trash2
-} from "lucide-react";
+import { Binary, Download, Copy, Check, AlertTriangle, Lock, Unlock, CheckCircle2, HelpCircle, Shield, EyeOff, Upload, Info, Eye, FileText, AlertCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 
@@ -558,27 +539,7 @@ export default function SteganographyClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Panel */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showBackToTools />
 
       <div className="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10">
         {/* Intro Section */}
@@ -717,7 +678,7 @@ export default function SteganographyClient() {
                   </button>
                 </div>
                 <p className="text-[10px] text-muted-foreground leading-normal">
-                  Locking with a password derivates a 256-bit key to encrypt your message. Extracting without the correct password yields unreadable ciphertext.
+                  {t("tools.steganography.passwordHelp")}
                 </p>
               </div>
 
@@ -1116,7 +1077,7 @@ export default function SteganographyClient() {
                     EXIF Privacy Cleaner
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Strip GPS location and camera metadata.
+                    {t("shared.related.exif-cleaner-metadata")}
                   </p>
                 </div>
               </div>
@@ -1136,7 +1097,7 @@ export default function SteganographyClient() {
                     Blur & Redact Image
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Obscure faces, plates, and info locally.
+                    {t("shared.related.blur")}
                   </p>
                 </div>
               </div>

@@ -4,7 +4,7 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, LanguageToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -15,23 +15,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  EyeOff,
-  Trash2,
-  Undo,
-  Sliders,
-  Image as ImageIcon,
-  HelpCircle,
-  Shield,
-  Brush,
-  Box,
-  CheckCircle2,
-  Info,
-  Download,
-  AlertTriangle,
-  Scissors
-} from "lucide-react";
+import { EyeOff, Trash2, Undo, Sliders, Image as ImageIcon, HelpCircle, Shield, Brush, Box, CheckCircle2, Info, Download, AlertTriangle, Scissors } from "lucide-react";
 import { formatBytes } from "@/lib/utils/format";
 import { FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision";
 
@@ -944,27 +928,7 @@ export default function BlurClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showBackToTools />
 
       {/* Hidden upload reference */}
       <input
@@ -1119,7 +1083,7 @@ export default function BlurClient() {
                     )}
                   </Button>
                   <p className="text-[10px] text-muted-foreground leading-relaxed mt-1">
-                    ⚡ Local face detection. Works best on clear, front-facing faces. Manual touch-up is available.
+                    {t("tools.blur.autoDetectHelp")}
                   </p>
                 </div>
 
@@ -1271,6 +1235,7 @@ export default function BlurClient() {
                     disabled={regions.length === 0}
                     className="text-[10px] font-bold h-9 rounded-xl flex-1 gap-1 text-destructive hover:bg-destructive/5 border-destructive/20 hover:text-destructive"
                   >
+                    <Trash2 className="w-3.5 h-3.5" />
                     Clear All
                   </Button>
                 </div>
@@ -1437,7 +1402,7 @@ export default function BlurClient() {
                     EXIF Privacy Cleaner
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Strip GPS location and camera metadata.
+                    {t("shared.related.exif-cleaner-metadata")}
                   </p>
                 </div>
               </div>
@@ -1457,7 +1422,7 @@ export default function BlurClient() {
                     AI Background Remover
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Extract subjects locally in your browser.
+                    {t("shared.related.bg-remover")}
                   </p>
                 </div>
               </div>
