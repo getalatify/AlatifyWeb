@@ -2,9 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo } from "@/components/shared";
+import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Lock } from "lucide-react";
+import { useT } from "@/lib/i18n/useT";
 
 /**
  * HOMEPAGE — monochrome. The animated background is the single global
@@ -12,6 +13,8 @@ import { ArrowRight, Zap, Lock } from "lucide-react";
  * and uses the global neutral tokens for all surfaces and text.
  */
 export default function Home() {
+  const t = useT();
+
   const handleScrollToFeatures = () => {
     const section = document.getElementById("features-section");
     section?.scrollIntoView({ behavior: "smooth" });
@@ -20,29 +23,7 @@ export default function Home() {
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 text-foreground select-none overflow-x-clip">
       {/* Top Header Bar — mark + wordmark lockup */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-6 max-w-7xl mx-auto w-full z-10 shrink-0">
-        <div className="flex items-center gap-3 pl-2 text-foreground">
-          <Logo className="w-10 h-10" />
-          <span className="font-extrabold text-2xl tracking-tight">
-            Alatify
-          </span>
-        </div>
-        <div className="flex items-center gap-4 sm:gap-6">
-          <Link
-            href="/tools"
-            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Tools
-          </Link>
-          <Link
-            href="/support"
-            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Support Us
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showToolsLink showSupportLink />
 
       {/* Hero Section */}
       <div className="max-w-2xl text-center space-y-6 pt-16 md:pt-24 z-10 flex flex-col items-center shrink-0">
@@ -62,7 +43,7 @@ export default function Home() {
 
         {/* Tagline */}
         <p className="text-lg text-muted-foreground font-medium sm:text-xl max-w-lg mx-auto leading-relaxed">
-          Privacy-first image tools that run entirely in your browser
+          {t("home.hero.tagline")}
         </p>
 
         {/* CTA Buttons — contrast-based */}
@@ -95,7 +76,7 @@ export default function Home() {
           </div>
           <h3 className="text-lg font-bold text-foreground">Zero Uploads</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            All algorithms execute locally inside your sandboxed browser tab. No server holds your files.
+            {t("home.features.card1.text")}
           </p>
         </div>
 
@@ -106,7 +87,7 @@ export default function Home() {
           </div>
           <h3 className="text-lg font-bold text-foreground">Near-Instant Speed</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Bypass upload latencies entirely. Process megapixel images instantaneously utilizing client WebAssembly.
+            {t("home.features.card2.text")}
           </p>
         </div>
       </div>

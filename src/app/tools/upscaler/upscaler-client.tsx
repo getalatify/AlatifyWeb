@@ -1,31 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  Sparkles,
-  Loader2,
-  AlertCircle,
-  RefreshCw,
-  Trash2,
-  Image as ImageIcon,
-  Cpu,
-  Download,
-  CheckCircle2,
-  Wand2,
-  Shield,
-  RotateCcw,
-  HelpCircle,
-  Scissors,
-  Maximize2,
-  Minimize2,
-} from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, RefreshCw, Trash2, Image as ImageIcon, Cpu, Download, CheckCircle2, Wand2, Shield, RotateCcw, HelpCircle, Scissors, Maximize2, Minimize2, ArrowLeft } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { ProcessingOverlay } from "@/components/processing-overlay";
@@ -107,6 +90,7 @@ async function prepareInput(file: File): Promise<PreparedInput> {
 }
 
 export default function UpscalerClient() {
+  const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -504,27 +488,7 @@ export default function UpscalerClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">Alatify</span>
-          </div>
-          <Link
-            href="/tools"
-            className={cn(
-              "flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group",
-              isProcessing && "pointer-events-none opacity-50",
-            )}
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className={cn(isProcessing && "pointer-events-none opacity-50")}>
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showBackToTools />
 
       <input
         type="file"
@@ -546,9 +510,7 @@ export default function UpscalerClient() {
             Upscale Images 2x &amp; 4x — Private, On-Device AI
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Sharpen and enlarge your photos with a Real-ESRGAN neural network that runs
-            entirely in your browser. Runs 100% in your browser — your image never
-            leaves your device.
+            {t("tools.upscaler.intro")}
           </p>
         </section>
 
@@ -741,7 +703,7 @@ export default function UpscalerClient() {
                             </span>
                           </div>
                           <div className="text-[10px] text-muted-foreground mt-0.5">
-                            Double the resolution · quicker
+                            {t("tools.upscaler.fasterOptionDesc")}
                           </div>
                         </div>
                       </SelectItem>
@@ -754,7 +716,7 @@ export default function UpscalerClient() {
                             </span>
                           </div>
                           <div className="text-[10px] text-muted-foreground mt-0.5">
-                            Quadruple the resolution · slower
+                            {t("tools.upscaler.sharperOptionDesc")}
                           </div>
                         </div>
                       </SelectItem>
@@ -815,7 +777,7 @@ export default function UpscalerClient() {
                 <div className="space-y-2 text-[10px] text-muted-foreground leading-relaxed pt-1">
                   <div className="flex gap-2">
                     <Shield className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
-                    <span>Runs 100% in your browser — your image never leaves your device.</span>
+                    <span>{t("tools.upscaler.gpuWarning")}</span>
                   </div>
                   <div className="flex gap-2">
                     <Download className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
@@ -826,8 +788,7 @@ export default function UpscalerClient() {
                   <div className="flex gap-2">
                     <Cpu className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
                     <span>
-                      Processing happens locally and can take a while for large images or slower
-                      devices — keep this tab open.
+                      {t("tools.upscaler.localWarning")}
                     </span>
                   </div>
                 </div>
@@ -877,10 +838,10 @@ export default function UpscalerClient() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
-              { step: "01", title: "Upload", text: "Drop your image. It stays on your device." },
-              { step: "02", title: "Choose scale", text: "Pick 2x for speed or 4x for maximum detail." },
-              { step: "03", title: "Upscale", text: "On-device AI enhances the image tile by tile, GPU-accelerated where supported." },
-              { step: "04", title: "Download", text: "Save your sharper, higher-resolution PNG." },
+              { step: "01", title: "Upload", text: t("tools.upscaler.howItWorks.step1") },
+              { step: "02", title: "Choose scale", text: t("tools.upscaler.howItWorks.step2") },
+              { step: "03", title: "Upscale", text: t("tools.upscaler.howItWorks.step3") },
+              { step: "04", title: "Download", text: t("tools.upscaler.howItWorks.step4") },
             ].map((item, idx) => (
               <div key={idx} className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5">
                 <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 font-mono">{item.step}</span>
@@ -905,27 +866,27 @@ export default function UpscalerClient() {
             {[
               {
                 title: "Old & low-res photos",
-                text: "Enlarge old or low-resolution photos without losing sharpness or detail.",
+                text: t("tools.upscaler.useCases.case1"),
               },
               {
                 title: "Product photos & e-commerce",
-                text: "Sharpen and upscale product images for clean Amazon, Shopify, or Etsy listings.",
+                text: t("tools.upscaler.useCases.case2"),
               },
               {
                 title: "Large-format print prep",
-                text: "Prepare images for large-format physical printing or high-DPI displays.",
+                text: t("tools.upscaler.useCases.case3"),
               },
               {
                 title: "Restore compressed images",
-                text: "Restore detail and fix artifacts in heavily compressed or downscaled graphics.",
+                text: t("tools.upscaler.useCases.case4"),
               },
               {
                 title: "AI-generated artwork",
-                text: "Upscale Midjourney, DALL-E, or Stable Diffusion outputs for high-res downloads.",
+                text: t("tools.upscaler.useCases.case5"),
               },
               {
                 title: "Screenshots & slides",
-                text: "Enhance screen captures and graphics for presentations and slide decks.",
+                text: t("tools.upscaler.useCases.case6"),
               },
             ].map((useCase, idx) => (
               <div
@@ -954,36 +915,36 @@ export default function UpscalerClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Are my images uploaded to a server?",
-                a: "No. All processing happens locally in your browser — your images never leave your device.",
+                q: t("tools.upscaler.faq.q1"),
+                a: t("tools.upscaler.faq.a1"),
               },
               {
-                q: "How does the AI upscaler work?",
-                a: "It uses a Real-ESRGAN neural network that reconstructs detail and sharpens edges, running on your device's GPU via WebGPU (with a CPU fallback).",
+                q: t("tools.upscaler.faq.q2"),
+                a: t("tools.upscaler.faq.a2"),
               },
               {
-                q: "What's the difference between 2x and 4x?",
-                a: "2x is faster and good for moderate enlargement; 4x produces a larger, sharper result but takes longer.",
+                q: t("tools.upscaler.faq.q3"),
+                a: t("tools.upscaler.faq.a3"),
               },
               {
-                q: "Is it free?",
-                a: "Yes — completely free, no account or sign-up.",
+                q: t("tools.upscaler.faq.q4"),
+                a: t("tools.upscaler.faq.a4"),
               },
               {
-                q: "Which formats are supported?",
-                a: "JPG, PNG, and WebP; output is a lossless PNG.",
+                q: t("tools.upscaler.faq.q5"),
+                a: t("tools.upscaler.faq.a5"),
               },
               {
-                q: "Why does the first run take a moment?",
-                a: "The first use downloads a ~33MB AI model once. It's cached afterward, so later runs are instant and even work offline.",
+                q: t("tools.upscaler.faq.q6"),
+                a: t("tools.upscaler.faq.a6"),
               },
               {
-                q: "Is there a size limit?",
-                a: "Very large images are scaled down before upscaling to stay reliable on phones and mid-range devices.",
+                q: t("tools.upscaler.faq.q7"),
+                a: t("tools.upscaler.faq.a7"),
               },
               {
-                q: "Does it work offline?",
-                a: "Yes — once the model is cached, your browser can upscale with no internet connection.",
+                q: t("tools.upscaler.faq.q8"),
+                a: t("tools.upscaler.faq.a8"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -1019,7 +980,7 @@ export default function UpscalerClient() {
                     Background Remover
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Extract subjects and remove backdrops locally.
+                    {t("shared.related.bg-remover-backdrops")}
                   </p>
                 </div>
               </div>
@@ -1038,7 +999,7 @@ export default function UpscalerClient() {
                     Image Resizer
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Resize dimensions by pixels, ratio, or percent.
+                    {t("shared.related.resizer-pixels")}
                   </p>
                 </div>
               </div>
@@ -1057,7 +1018,7 @@ export default function UpscalerClient() {
                     Image Compressor
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Reduce image file sizes by up to 90% offline.
+                    {t("shared.related.compressor-offline")}
                   </p>
                 </div>
               </div>
@@ -1076,7 +1037,7 @@ export default function UpscalerClient() {
                     Format Converter
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Convert between PNG, JPEG, and WebP instantly.
+                    {t("shared.related.converter-instantly")}
                   </p>
                 </div>
               </div>
@@ -1087,7 +1048,7 @@ export default function UpscalerClient() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify upscales images entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, high-resolution, watermark-free upscaled images, processed privately on your own device.
+            {t("tools.upscaler.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

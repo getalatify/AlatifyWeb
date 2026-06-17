@@ -1,30 +1,12 @@
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, PrivacyNotice } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import {
-  ArrowLeft,
-  QrCode,
-  Scan,
-  Download,
-  Copy,
-  Check,
-  AlertTriangle,
-  ExternalLink,
-  Wifi,
-  Type,
-  Link2,
-  CheckCircle2,
-  HelpCircle,
-  Shield,
-  EyeOff,
-  Camera,
-  Upload,
-  Info
-} from "lucide-react";
+import { QrCode, Scan, Download, Copy, Check, AlertTriangle, ExternalLink, Wifi, Type, Link2, CheckCircle2, HelpCircle, Shield, EyeOff, Camera, Upload, Info } from "lucide-react";
 import { toast } from "sonner";
 import QRCode from "qrcode";
 import jsQR from "jsqr";
@@ -39,6 +21,7 @@ interface CleanedUrlInfo {
 }
 
 export default function QrToolkitClient() {
+  const t = useT();
   const [activeTab, setActiveTab] = useState<"generate" | "scan">("generate");
 
   // =========================================================================
@@ -422,25 +405,7 @@ export default function QrToolkitClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Panel */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            onClick={stopCamera}
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <ThemeToggle />
-      </header>
+      <Header showBackToTools />
 
       <div className="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10">
         {/* Intro */}
@@ -453,7 +418,7 @@ export default function QrToolkitClient() {
             Generate clean, tracker-free QR codes and scan unknown ones safely.
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Create completely offline, static QR codes that belong to you forever without dynamic expiration traps. Scan unknown QR codes and audit their endpoints safely inside your browser tab: strip tracking parameters and analyze URLs before opening them.
+            {t("tools.qr-toolkit.intro")}
           </p>
         </section>
 
@@ -1187,22 +1152,22 @@ export default function QrToolkitClient() {
               {
                 step: "01",
                 title: "Generate / Input",
-                text: "Select URL, Text, or Wi-Fi mode. Type the details. QR renders immediately offline.",
+                text: t("tools.qr-toolkit.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Customize & Save",
-                text: "Tune sizes, margins, custom colors, and error correction before downloading PNG/SVG.",
+                text: t("tools.qr-toolkit.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Scan Safely",
-                text: "Point your camera or drop an image. Decodes are executed locally inside your browser.",
+                text: t("tools.qr-toolkit.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Audit Preview",
-                text: "Verify domain targets, scrub tracking params, and review warnings on shortened paths.",
+                text: t("tools.qr-toolkit.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -1234,20 +1199,20 @@ export default function QrToolkitClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "What is a tracker-free QR code?",
-                a: "Many QR generator services force you to use dynamic links pointing to redirect proxies. This tracks your location, device, and frequency. Alatify generates static QR codes encoding raw text directly: zero tracking, zero expiry, completely yours.",
+                q: t("tools.qr-toolkit.faq.q1"),
+                a: t("tools.qr-toolkit.faq.a1"),
               },
               {
-                q: "Why does the Safe Scanner strip URL tracking parameters?",
-                a: "QR codes are increasingly used for marketing tracking or phishing (quishing). When you scan a URL, we detect parameters like UTMs and client IDs, strip them, and reveal the direct domain so you know exactly where you are landing.",
+                q: t("tools.qr-toolkit.faq.q2"),
+                a: t("tools.qr-toolkit.faq.a2"),
               },
               {
-                q: "Can the scanner follow shortener links to inspect the destination?",
-                a: "No. Resolving redirects from shorteners like bit.ly or tinyurl requires sending requests to external servers, which leaks your IP and metadata. To remain 100% private, we flag shortened URLs with a safety notice so you can proceed with caution.",
+                q: t("tools.qr-toolkit.faq.q3"),
+                a: t("tools.qr-toolkit.faq.a3"),
               },
               {
-                q: "Are my scanned camera feeds or uploaded images sent to any server?",
-                a: "Never. All decoders and generators operate locally on your client machine using JS execution sandboxes. There are no API endpoints, analytics trackers, or network fetches used during operation.",
+                q: t("tools.qr-toolkit.faq.q4"),
+                a: t("tools.qr-toolkit.faq.a4"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -1284,7 +1249,7 @@ export default function QrToolkitClient() {
                     EXIF Privacy Cleaner
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Strip GPS location and camera metadata.
+                    {t("shared.related.exif-cleaner-metadata")}
                   </p>
                 </div>
               </div>
@@ -1305,7 +1270,7 @@ export default function QrToolkitClient() {
                     Blur & Redact Image
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Obscure faces, plates, and info locally.
+                    {t("shared.related.blur")}
                   </p>
                 </div>
               </div>
@@ -1317,7 +1282,7 @@ export default function QrToolkitClient() {
         {/* Offline Privacy Notice */}
         <PrivacyNotice>
           <p>
-            Alatify processes your QR codes completely locally using sandboxed client APIs inside your browser tab. We never upload any of your URLs, plain text contents, camera feeds, or uploaded graphics files. The tool is 100% offline and telemetry-free, keeping all scanned destinations and generated payloads fully private to your device.
+            {t("tools.qr-toolkit.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

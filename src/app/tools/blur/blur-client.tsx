@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -14,23 +15,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  EyeOff,
-  Trash2,
-  Undo,
-  Sliders,
-  Image as ImageIcon,
-  HelpCircle,
-  Shield,
-  Brush,
-  Box,
-  CheckCircle2,
-  Info,
-  Download,
-  AlertTriangle,
-  Scissors
-} from "lucide-react";
+import { EyeOff, Trash2, Undo, Sliders, Image as ImageIcon, HelpCircle, Shield, Brush, Box, CheckCircle2, Info, Download, AlertTriangle, Scissors } from "lucide-react";
 import { formatBytes } from "@/lib/utils/format";
 import { FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision";
 
@@ -49,6 +34,7 @@ interface Region {
 }
 
 export default function BlurClient() {
+  const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const [originalDimensions, setOriginalDimensions] = useState<{ width: number; height: number } | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
@@ -942,24 +928,7 @@ export default function BlurClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <ThemeToggle />
-      </header>
+      <Header showBackToTools />
 
       {/* Hidden upload reference */}
       <input
@@ -981,7 +950,7 @@ export default function BlurClient() {
             Blur & Redact
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Obscure faces, license plates, and sensitive credentials securely in your web browser. Drag rectangular boxes or draw freeform brush strokes to completely destroy sensitive pixel data offline.
+            {t("tools.blur.intro")}
           </p>
         </section>
 
@@ -1114,7 +1083,7 @@ export default function BlurClient() {
                     )}
                   </Button>
                   <p className="text-[10px] text-muted-foreground leading-relaxed mt-1">
-                    ⚡ Local face detection. Works best on clear, front-facing faces. Manual touch-up is available.
+                    {t("tools.blur.autoDetectHelp")}
                   </p>
                 </div>
 
@@ -1266,6 +1235,7 @@ export default function BlurClient() {
                     disabled={regions.length === 0}
                     className="text-[10px] font-bold h-9 rounded-xl flex-1 gap-1 text-destructive hover:bg-destructive/5 border-destructive/20 hover:text-destructive"
                   >
+                    <Trash2 className="w-3.5 h-3.5" />
                     Clear All
                   </Button>
                 </div>
@@ -1336,22 +1306,22 @@ export default function BlurClient() {
               {
                 step: "01",
                 title: "Upload File",
-                text: "Upload your image via drag-drop, file dialogue, or download from a secure URL.",
+                text: t("tools.blur.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Choose Settings",
-                text: "Select Box mode for plates/text, or Brush mode for organic targets like faces.",
+                text: t("tools.blur.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Obscure Regions",
-                text: "Draw rectangles or paint paths. Tweak sizes and blur intensities dynamically.",
+                text: t("tools.blur.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Scrub & Save",
-                text: "Click Download. Alatify destroys the underlying pixel data and strips EXIF metadata.",
+                text: t("tools.blur.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -1383,20 +1353,20 @@ export default function BlurClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "How do I blur a license plate before selling a car online?",
-                a: "Upload the photo, toggle to Box Mode or Brush Mode, cover the license plate area, and apply the pixelate or blur effect. This prevents auto-scrapers and data aggregators from linking your vehicle to your personal license registration.",
+                q: t("tools.blur.faq.q1"),
+                a: t("tools.blur.faq.a1"),
               },
               {
-                q: "Can I redact sensitive passwords or credentials from screenshots?",
-                a: "Yes. For highly sensitive passwords, financial numbers, or keys, we strongly recommend using the Solid Fill effect. Unlike blur or pixelation which might be partially reversed by AI, Solid Fill replaces the target area with complete black pixels.",
+                q: t("tools.blur.faq.q2"),
+                a: t("tools.blur.faq.a2"),
               },
               {
-                q: "Is it safe to blur children or faces before posting online?",
-                a: "Absolutely. Choose Brush Mode to paint over faces with customizable brush sizing. Since everything runs locally inside your sandboxed web browser, the unredacted original photo is never transmitted over the internet.",
+                q: t("tools.blur.faq.q3"),
+                a: t("tools.blur.faq.a3"),
               },
               {
-                q: "Does this page upload my image to a server?",
-                a: "No. All Alatify utilities operate on a strict privacy model. Image rendering, box drafting, pixel rendering, and file compilation are executed entirely client-side. The original file never leaves your machine.",
+                q: t("tools.blur.faq.q4"),
+                a: t("tools.blur.faq.a4"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -1432,7 +1402,7 @@ export default function BlurClient() {
                     EXIF Privacy Cleaner
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Strip GPS location and camera metadata.
+                    {t("shared.related.exif-cleaner-metadata")}
                   </p>
                 </div>
               </div>
@@ -1452,7 +1422,7 @@ export default function BlurClient() {
                     AI Background Remover
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Extract subjects locally in your browser.
+                    {t("shared.related.bg-remover")}
                   </p>
                 </div>
               </div>
@@ -1464,7 +1434,7 @@ export default function BlurClient() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Obscure faces, license plates, and sensitive credentials securely and privately on your own device.
+            {t("tools.blur.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

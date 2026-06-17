@@ -4,30 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
-import { ThemeToggle, Logo } from '@/components/shared';
+import { Header } from "@/components/shared";
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import {
-  ArrowLeft,
-  Search,
-  Download,
-  ChevronDown,
-  Sparkles,
-  Scissors,
-  Minimize2,
-  Maximize2,
-  RefreshCw,
-  Crop,
-  AlertCircle,
-  Loader2,
-  ExternalLink,
-  Image as ImageIcon,
-  CheckCircle2,
-  HelpCircle
-} from 'lucide-react';
+import { Search, Download, ChevronDown, Sparkles, Scissors, Minimize2, Maximize2, RefreshCw, Crop, AlertCircle, Loader2, ExternalLink, Image as ImageIcon, CheckCircle2, HelpCircle } from "lucide-react";
 import { StockImage } from '@/app/api/stock-search/route';
+import { useT } from "@/lib/i18n/useT";
 
 export default function StockFinderClient() {
+  const t = useT();
   const router = useRouter();
 
   // Search state
@@ -204,24 +189,7 @@ export default function StockFinderClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <ThemeToggle />
-      </header>
+      <Header showBackToTools />
 
       <div className="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10">
         {/* Intro Header */}
@@ -234,7 +202,7 @@ export default function StockFinderClient() {
             Free Stock Photos, Illustrations & Vectors
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Search across Unsplash, Pexels, and Pixabay at once — and unlike most stock finders that only show photos, Alatify also surfaces illustrations and vectors. Find the perfect image, then jump straight into Alatify&apos;s editing tools to remove its background, compress it, or convert it — all free, no sign-up.
+            {t("tools.stock-finder.intro")}
           </p>
         </section>
 
@@ -624,22 +592,22 @@ export default function StockFinderClient() {
               {
                 step: "01",
                 title: "Search",
-                text: "Type a keyword to search free stock across Unsplash, Pexels, and Pixabay at once.",
+                text: t("tools.stock-finder.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Filter",
-                text: "Narrow by content type (photos, illustrations, or vectors), source, and orientation.",
+                text: t("tools.stock-finder.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Pick",
-                text: "Choose the image you want.",
+                text: t("tools.stock-finder.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Edit or download",
-                text: "Open it in one click in Alatify's tools, or download it directly.",
+                text: t("tools.stock-finder.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -674,19 +642,19 @@ export default function StockFinderClient() {
             {[
               {
                 title: "Photos",
-                text: "High-quality, royalty-free photography for blogs, articles, and social posts.",
+                text: t("tools.stock-finder.useCases.case1"),
               },
               {
                 title: "Illustrations & vectors",
-                text: "Scalable graphics for presentations, designs, and thumbnails — not just photos.",
+                text: t("tools.stock-finder.useCases.case2"),
               },
               {
                 title: "Hero & banner images",
-                text: "Wide, high-resolution shots for websites and headers.",
+                text: t("tools.stock-finder.useCases.case3"),
               },
               {
                 title: "Edit-ready",
-                text: "Send any result straight into Alatify to cut out the background, compress, or convert.",
+                text: t("tools.stock-finder.useCases.case4"),
               },
             ].map((useCase, idx) => (
               <div
@@ -715,24 +683,24 @@ export default function StockFinderClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Are the images free to use?",
-                a: "Yes — results come from Unsplash, Pexels, and Pixabay, which offer free-to-use images. Some sources ask for attribution to the photographer, shown alongside each image.",
+                q: t("tools.stock-finder.faq.q1"),
+                a: t("tools.stock-finder.faq.a1"),
               },
               {
-                q: "Can I find illustrations and vectors, not just photos?",
-                a: "Yes. Most stock finders only show photos — Alatify also surfaces illustrations and vectors, so you can search by content type.",
+                q: t("tools.stock-finder.faq.q2"),
+                a: t("tools.stock-finder.faq.a2"),
               },
               {
-                q: "Can I edit an image right after finding it?",
-                a: "Yes — open any result in one click in Alatify's browser tools to remove its background, compress it, convert it, and more.",
+                q: t("tools.stock-finder.faq.q3"),
+                a: t("tools.stock-finder.faq.a3"),
               },
               {
-                q: "Do I need to sign up?",
-                a: "No. Search and edit freely, no account required.",
+                q: t("tools.stock-finder.faq.q4"),
+                a: t("tools.stock-finder.faq.a4"),
               },
               {
-                q: "Where do the images come from?",
-                a: "Three of the largest free stock libraries: Unsplash, Pexels, and Pixabay.",
+                q: t("tools.stock-finder.faq.q5"),
+                a: t("tools.stock-finder.faq.a5"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -768,7 +736,7 @@ export default function StockFinderClient() {
                     Background Remover
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Extract subjects locally in your browser.
+                    {t("shared.related.bg-remover")}
                   </p>
                 </div>
               </div>
@@ -788,7 +756,7 @@ export default function StockFinderClient() {
                     Image Compressor
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Reduce file sizes by up to 90% while keeping quality.
+                    {t("shared.related.compressor-savings")}
                   </p>
                 </div>
               </div>

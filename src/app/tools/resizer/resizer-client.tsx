@@ -1,30 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import { usePendingImage } from "@/hooks/use-pending-image";
-import { 
-  ArrowLeft, 
-  Maximize2, 
-  Loader2, 
-  AlertCircle,
-  Settings,
-  Image as ImageIcon,
-  RefreshCw,
-  Trash2,
-  Lock,
-  Unlock,
-  AlertTriangle,
-  CheckCircle2,
-  HelpCircle,
-  Minimize2,
-  Sparkles
-} from "lucide-react";
+import { Maximize2, Loader2, AlertCircle, Settings, Image as ImageIcon, RefreshCw, Trash2, Lock, Unlock, AlertTriangle, CheckCircle2, HelpCircle, Minimize2, Sparkles } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 
 const socialPresets = [
@@ -42,6 +27,7 @@ const socialPresets = [
 ];
 
 export default function ImageResizerPage() {
+  const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
@@ -339,24 +325,7 @@ export default function ImageResizerPage() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <ThemeToggle />
-      </header>
+      <Header showBackToTools />
 
       {/* Hidden File Input for Replaces */}
       <input
@@ -378,7 +347,7 @@ export default function ImageResizerPage() {
             Resize Images to Any Dimension
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Resize images by exact pixels, by percentage, or with a locked aspect ratio — all in your browser. High-quality resampling keeps edges crisp, and you can resize a whole batch at once. No upload, no sign-up — your images never leave your device.
+            {t("tools.resizer.intro")}
           </p>
         </section>
 
@@ -718,8 +687,8 @@ export default function ImageResizerPage() {
                       </div>
                       <p className="text-[10px] text-muted-foreground leading-relaxed pt-1 pl-1">
                         {resizeBehavior === "crop" 
-                          ? "Fills preset size entirely, trimming excess dimensions from the center aspect."
-                          : "Contains full image inside preset boundaries, padding with transparent or solid background."}
+                          ? t("tools.resizer.cropBehaviorHelp")
+                          : t("tools.resizer.fitBehaviorHelp")}
                       </p>
                     </div>
                   </div>
@@ -801,22 +770,22 @@ export default function ImageResizerPage() {
               {
                 step: "01",
                 title: "Upload",
-                text: "Add one or many images.",
+                text: t("tools.resizer.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Set size",
-                text: "Enter exact pixels, scale by percentage, or lock the aspect ratio.",
+                text: t("tools.resizer.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Resize",
-                text: "Apply to all images at once with high-quality resampling.",
+                text: t("tools.resizer.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Download",
-                text: "Save individually or as a ZIP.",
+                text: t("tools.resizer.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -851,19 +820,19 @@ export default function ImageResizerPage() {
             {[
               {
                 title: "Social media",
-                text: "Resize to the exact dimensions platforms expect — square posts, stories, banners, and profile pictures.",
+                text: t("tools.resizer.useCases.case1"),
               },
               {
                 title: "Web & email",
-                text: "Shrink oversized photos to load faster and fit upload limits.",
+                text: t("tools.resizer.useCases.case2"),
               },
               {
                 title: "Bulk resizing",
-                text: "Resize an entire folder of images to the same dimensions in one go.",
+                text: t("tools.resizer.useCases.case3"),
               },
               {
                 title: "Print & documents",
-                text: "Hit precise pixel dimensions for layouts and templates.",
+                text: t("tools.resizer.useCases.case4"),
               },
             ].map((useCase, idx) => (
               <div
@@ -892,24 +861,24 @@ export default function ImageResizerPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Can I resize to exact pixel dimensions?",
-                a: "Yes — enter exact width and height in pixels, scale by percentage, or lock the aspect ratio to avoid stretching.",
+                q: t("tools.resizer.faq.q1"),
+                a: t("tools.resizer.faq.a1"),
               },
               {
-                q: "Does it upload my images to a server?",
-                a: "No. Resizing runs entirely in your browser; your files never leave your device.",
+                q: t("tools.resizer.faq.q2"),
+                a: t("tools.resizer.faq.a2"),
               },
               {
-                q: "Will resizing stretch or distort my image?",
-                a: "Not if you keep the aspect ratio locked — it scales proportionally. You can also unlock it for a free resize.",
+                q: t("tools.resizer.faq.q3"),
+                a: t("tools.resizer.faq.a3"),
               },
               {
-                q: "Can I resize many images at once?",
-                a: "Yes — batch-resize them all to the same dimensions and download as a ZIP.",
+                q: t("tools.resizer.faq.q4"),
+                a: t("tools.resizer.faq.a4"),
               },
               {
-                q: "Will resizing reduce quality?",
-                a: "Alatify uses high-quality resampling to keep results as crisp as possible when scaling.",
+                q: t("tools.resizer.faq.q5"),
+                a: t("tools.resizer.faq.a5"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -945,7 +914,7 @@ export default function ImageResizerPage() {
                     Image Compressor
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Reduce file sizes by up to 90% while keeping quality.
+                    {t("shared.related.compressor-savings")}
                   </p>
                 </div>
               </div>
@@ -965,7 +934,7 @@ export default function ImageResizerPage() {
                     AI Image Upscaler
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Enlarge photos 2x &amp; 4x on-device.
+                    {t("shared.related.upscaler")}
                   </p>
                 </div>
               </div>
@@ -985,7 +954,7 @@ export default function ImageResizerPage() {
                     Format Converter
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Convert files between JPG, PNG, WebP, PDF, and vectors.
+                    {t("shared.related.converter-formats")}
                   </p>
                 </div>
               </div>
@@ -997,7 +966,7 @@ export default function ImageResizerPage() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Resize images by exact pixels, percentage, or aspect ratio instantly and privately on your own device.
+            {t("tools.resizer.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

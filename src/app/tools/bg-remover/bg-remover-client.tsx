@@ -1,28 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { ThemeToggle, DownloadButton, Logo, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
-import { 
-  ArrowLeft, 
-  Scissors, 
-  Loader2, 
-  AlertCircle,
-  RefreshCw,
-  Trash2,
-  Image as ImageIcon,
-  Cpu,
-  Download,
-  CheckCircle2,
-  Sparkles,
-  HelpCircle,
-  EyeOff,
-  Shield
-} from "lucide-react";
+import { Scissors, Loader2, AlertCircle, RefreshCw, Trash2, Image as ImageIcon, Cpu, Download, CheckCircle2, Sparkles, HelpCircle, EyeOff, Shield } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { ProcessingOverlay } from "@/components/processing-overlay";
@@ -51,6 +37,7 @@ async function verifyWebGPUSupport(): Promise<boolean> {
 }
 
 export default function BgRemoverClient() {
+  const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
@@ -653,29 +640,7 @@ export default function BgRemoverClient() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0 border-b border-border/40">
-        <div className="flex flex-col gap-1 items-start">
-          <div className="flex items-center gap-2">
-            <Logo className="w-8 h-8" />
-            <span className="font-extrabold text-xl tracking-tight text-foreground">
-              Alatify
-            </span>
-          </div>
-          <Link
-            href="/tools"
-            className={cn(
-              "flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group",
-              isProcessing && "pointer-events-none opacity-50"
-            )}
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            Back to tools
-          </Link>
-        </div>
-        <div className={cn(isProcessing && "pointer-events-none opacity-50")}>
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showBackToTools />
 
       {/* Hidden File Input for Replace */}
       <input
@@ -698,7 +663,7 @@ export default function BgRemoverClient() {
             Remove Image Backgrounds — Free, Unlimited &amp; Private
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            Most free background removers upload your image to their servers — and many quietly use it to train their AI or cap free downloads at low resolution. Alatify&apos;s runs entirely in your browser using GPU-accelerated on-device AI. Your photo never leaves your device. No sign-up, no watermark, no resolution limit, and no cap on how many you process — full quality, fully private, unlimited.
+            {t("tools.bg-remover.intro")}
           </p>
         </section>
 
@@ -941,7 +906,7 @@ export default function BgRemoverClient() {
 
                 <div className="space-y-4">
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Alatify AI background extraction runs a highly optimized neural network on your browser sandbox using **ONNX runtime WebAssembly**.
+                    {t("tools.bg-remover.onnxNotice")}
                   </p>
                   
                   {/* Model Variant Selector */}
@@ -1021,7 +986,7 @@ export default function BgRemoverClient() {
                       </SelectContent>
                     </Select>
                     <p className="text-[10px] text-muted-foreground leading-normal mt-1">
-                      GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration.
+                      {t("tools.bg-remover.modelNotice")}
                     </p>
                   </div>
 
@@ -1150,22 +1115,22 @@ export default function BgRemoverClient() {
               {
                 step: "01",
                 title: "Upload",
-                text: "Drop your image. It stays on your device.",
+                text: t("tools.bg-remover.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Process",
-                text: "On-device AI detects the subject and removes the background, GPU-accelerated, in seconds.",
+                text: t("tools.bg-remover.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Review",
-                text: "Get a clean cutout with a transparent background, at full resolution.",
+                text: t("tools.bg-remover.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Download",
-                text: "Save your transparent PNG. No watermark, no limits.",
+                text: t("tools.bg-remover.howItWorks.step4"),
               },
             ].map((item, idx) => (
               <div
@@ -1200,19 +1165,19 @@ export default function BgRemoverClient() {
             {[
               {
                 title: "Product photos & e-commerce",
-                text: "Clean transparent or white-background product shots for Amazon, Etsy, Shopify, and eBay listings.",
+                text: t("tools.bg-remover.useCases.case1"),
               },
               {
                 title: "Profile pictures & headshots",
-                text: "Isolate yourself for a clean professional or LinkedIn photo.",
+                text: t("tools.bg-remover.useCases.case2"),
               },
               {
                 title: "Transparent PNGs for design",
-                text: "Cut out logos, objects, or people to drop into designs, slides, and thumbnails.",
+                text: t("tools.bg-remover.useCases.case3"),
               },
               {
                 title: "Social media",
-                text: "Place your subject on any background for posts, stories, and graphics.",
+                text: t("tools.bg-remover.useCases.case4"),
               },
             ].map((useCase, idx) => (
               <div
@@ -1241,24 +1206,24 @@ export default function BgRemoverClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Is it really free and unlimited?",
-                a: "Yes — no sign-up, no watermark, no daily limit, and no resolution cap. It runs on your own device, so there's nothing for us to meter.",
+                q: t("tools.bg-remover.faq.q1"),
+                a: t("tools.bg-remover.faq.a1"),
               },
               {
-                q: "Does it upload my image to a server?",
-                a: "No. Unlike most free removers that process server-side — and some that use your uploads to train their AI — Alatify runs the AI entirely in your browser. Your image never leaves your device.",
+                q: t("tools.bg-remover.faq.q2"),
+                a: t("tools.bg-remover.faq.a2"),
               },
               {
-                q: "Do I get the full resolution?",
-                a: "Yes. Many free tools cap downloads at low resolution and charge for HD. Alatify gives you the full-resolution cutout for free.",
+                q: t("tools.bg-remover.faq.q3"),
+                a: t("tools.bg-remover.faq.a3"),
               },
               {
-                q: "How does it work without uploading?",
-                a: "It uses on-device AI (via WebGPU/WebAssembly) that runs locally in your browser — your own device does the processing.",
+                q: t("tools.bg-remover.faq.q4"),
+                a: t("tools.bg-remover.faq.a4"),
               },
               {
-                q: "What can I use the result for?",
-                a: "Product photos, transparent PNGs for design, profile pictures, social posts, and marketplace listings — anywhere you need a clean cutout.",
+                q: t("tools.bg-remover.faq.q5"),
+                a: t("tools.bg-remover.faq.a5"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">
@@ -1294,7 +1259,7 @@ export default function BgRemoverClient() {
                     Blur &amp; Redact Image
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Obscure faces, plates, and info locally.
+                    {t("shared.related.blur")}
                   </p>
                 </div>
               </div>
@@ -1314,7 +1279,7 @@ export default function BgRemoverClient() {
                     AI Image Upscaler
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
-                    Enlarge photos 2x &amp; 4x on-device.
+                    {t("shared.related.upscaler")}
                   </p>
                 </div>
               </div>
@@ -1346,7 +1311,7 @@ export default function BgRemoverClient() {
         {/* Info panel highlighting offline privacy */}
         <PrivacyNotice>
           <p>
-            Alatify removes image backgrounds entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, full-resolution, watermark-free transparent PNGs, processed privately on your own device.
+            {t("tools.bg-remover.privacyNotice")}
           </p>
         </PrivacyNotice>
       </div>

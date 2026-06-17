@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
+import { useT } from "@/lib/i18n/useT";
 import Link from "next/link";
-import { ThemeToggle, Logo } from "@/components/shared";
+import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { 
@@ -124,6 +125,7 @@ const pipelineTools = [
 ];
 
 export default function ToolsHubPage() {
+  const t = useT();
   const handleScrollToPipeline = () => {
     const section = document.getElementById("pipeline-section");
     section?.scrollIntoView({ behavior: "smooth" });
@@ -136,23 +138,7 @@ export default function ToolsHubPage() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 max-w-7xl mx-auto w-full z-10 shrink-0">
-        <div className="flex items-center gap-3 pl-2">
-          <Logo className="w-10 h-10" />
-          <span className="font-extrabold text-2xl tracking-tight text-foreground">
-            Alatify
-          </span>
-        </div>
-        <div className="flex items-center gap-4 sm:gap-6">
-          <Link
-            href="/support"
-            className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Support Us
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      <Header showSupportLink />
 
       {/* Back to home — placed BELOW the header box, aligned with the logo */}
       <div className="max-w-7xl mx-auto w-full px-6 mt-3 z-10 shrink-0">
@@ -171,7 +157,7 @@ export default function ToolsHubPage() {
           {/* Top Announcement Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
             <Sparkles className="w-3.5 h-3.5" />
-            Upcoming Features
+            All Tools
           </div>
 
           {/* Heading */}
@@ -181,7 +167,7 @@ export default function ToolsHubPage() {
 
           {/* Subtext - Blending the empty-state copy elegantly */}
           <p className="text-base sm:text-lg text-muted-foreground font-medium leading-relaxed max-w-2xl">
-            A curated collection of privacy-first image tools that run entirely in your web browser. Zero server uploads, zero latencies, and absolute confidentiality. Our suite is launching in a matter of days, starting with our lightning-fast <strong className="text-foreground font-bold">Image Compressor</strong>, with the robust AI-powered <strong className="text-foreground font-bold">Background Remover</strong> and other key utilities following closely.
+            {t("toolsPage.intro")}
           </p>
         </div>
 
@@ -191,7 +177,7 @@ export default function ToolsHubPage() {
           className="absolute bottom-16 flex flex-col items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity animate-fade-in group"
         >
           <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest transition-colors group-hover:text-primary">
-            Scroll to see what&apos;s coming
+            Scroll to explore
           </span>
           <ArrowDown className="w-4 h-4 text-primary animate-bounce" />
         </div>
