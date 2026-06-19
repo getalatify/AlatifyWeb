@@ -3,8 +3,7 @@ import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { cn } from "@/lib/utils";
-import { ThemeProvider, Footer } from "@/components/shared";
-import { AppBackground } from "@/components/shared/app-background";
+import { ThemeProvider } from "@/components/shared";
 import { Toaster } from "sonner";
 import { JsonLd } from "@/components/json-ld";
 
@@ -114,14 +113,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            {/* Single site-wide animated background layer (fixed, z-index -1) */}
-            <AppBackground />
-            <div className="flex flex-col min-h-screen">
-              <div className="flex-1">
-                {children}
-              </div>
-              <Footer />
-            </div>
+            {children}
             <Toaster richColors position="top-right" />
           </LanguageProvider>
         </ThemeProvider>
