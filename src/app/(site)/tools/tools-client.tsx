@@ -21,7 +21,8 @@ import {
   EyeOff,
   Type,
   Binary,
-  QrCode
+  QrCode,
+  FileText
 } from "lucide-react";
 
 const pipelineTools = [
@@ -121,6 +122,14 @@ const pipelineTools = [
     statusColor: "bg-success/10 text-success border-success/20",
     icon: QrCode,
     href: "/tools/qr-toolkit",
+  },
+  {
+    name: "Markdown to PDF",
+    description: "Convert Markdown syntax or raw text to clean, printable PDF documents 100% locally in your browser.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: FileText,
+    href: "/tools/markdown-to-pdf",
   },
 ];
 

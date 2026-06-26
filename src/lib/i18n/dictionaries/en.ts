@@ -480,6 +480,34 @@ export const en = {
         "q5": "Where do the images come from?",
         "a5": "Three of the largest free stock libraries: Unsplash, Pexels, and Pixabay."
       }
+    },
+    "markdown-to-pdf": {
+      "intro": "Convert Markdown files or raw text into beautifully formatted PDF documents completely locally. No server uploads, no configuration, and zero registration required. Your private notes and documentation never leave your device.",
+      "howItWorks": {
+        "step1": "Paste or type your Markdown into the editor, or upload a local .md file.",
+        "step2": "Preview the rendered layout live in the side panel with automatic formatting.",
+        "step3": "Generate the PDF client-side using vector rendering for crisp, selectable text.",
+        "step4": "Download the completed document instantly. Completely private."
+      },
+      "useCases": {
+        "case1": "Quickly save markdown readme files, project guides, or software notes as readable PDFs.",
+        "case2": "Generate readable handouts, notes, and study guides from text files.",
+        "case3": "Print clean, outline-formatted reports and logs offline without server dependency.",
+        "case4": "Save personal journaling, wikis, or internal guides privately without leakage risk."
+      },
+      "faq": {
+        "q1": "Is my document uploaded to a server?",
+        "a1": "No. Everything runs inside your browser sandbox. The markdown is parsed and the PDF is generated using client-side JavaScript, ensuring 100% offline security.",
+        "q2": "Will the PDF text be selectable?",
+        "a2": "Yes. Unlike tools that render pages as blurry images, this tool produces genuine vector PDFs. All text remains sharp, copyable, and searchable.",
+        "q3": "Can I upload images?",
+        "a3": "Data URLs (base64) embedded in your markdown are fully supported. For remote images, the browser will attempt a direct load; if it fails due to CORS, the PDF is generated safely by skipping them.",
+        "q4": "What markdown features are supported?",
+        "a4": "Headings, paragraphs, bold/italic/strikethrough styles, bullet/numbered/task lists, quotes, tables, code blocks, and horizontal lines are all parsed and formatted.",
+        "q5": "Do I need to pay or create an account?",
+        "a5": "No. Like all tools on Alatify, this converter is completely free, has no caps or limits, and requires no registration."
+      },
+      "privacyNotice": "Alatify processes your document files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Securely format and compile Markdown to PDF directly on your own device."
     }
   },
   "toolsPage": {
