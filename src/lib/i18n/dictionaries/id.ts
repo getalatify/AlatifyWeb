@@ -480,6 +480,34 @@ export const id = {
         "q5": "Dari mana gambar-gambar ini berasal?",
         "a5": "Tiga pustaka stok gratis terbesar: Unsplash, Pexels, dan Pixabay."
       }
+    },
+    "markdown-to-pdf": {
+      "intro": "Konversi file Markdown atau teks biasa menjadi dokumen PDF dengan format indah yang diproses sepenuhnya secara lokal. Tanpa unggah server, tanpa konfigurasi, dan tanpa registrasi. Catatan dan dokumentasi pribadi Anda tidak pernah meninggalkan perangkat Anda.",
+      "howItWorks": {
+        "step1": "Tempel atau ketik Markdown Anda ke dalam editor, atau unggah file .md lokal.",
+        "step2": "Pratinjau tata letak yang dirender secara langsung di panel samping dengan pemformatan otomatis.",
+        "step3": "Buat PDF di sisi klien menggunakan rendering vektor untuk teks yang tajam dan dapat dipilih.",
+        "step4": "Unduh dokumen yang telah selesai secara instan. Sepenuhnya privat."
+      },
+      "useCases": {
+        "case1": "Simpan file readme markdown, panduan proyek, atau catatan perangkat lunak dengan cepat sebagai PDF yang mudah dibaca.",
+        "case2": "Buat selebaran, catatan, dan panduan belajar yang mudah dibaca dari file teks.",
+        "case3": "Cetak laporan dan log berformat bersih secara offline tanpa ketergantungan server.",
+        "case4": "Simpan catatan harian pribadi, wiki, atau panduan internal secara privat tanpa risiko kebocoran data."
+      },
+      "faq": {
+        "q1": "Apakah dokumen saya diunggah ke server?",
+        "a1": "Tidak. Semuanya berjalan di dalam sandbox browser Anda. Markdown diurai dan PDF dibuat menggunakan JavaScript sisi klien, menjamin keamanan offline 100%.",
+        "q2": "Apakah teks PDF dapat dipilih?",
+        "a2": "Ya. Tidak seperti alat yang merender halaman sebagai gambar buram, alat ini menghasilkan PDF vektor asli. Semua teks tetap tajam, dapat disalin, dan dapat dicari.",
+        "q3": "Apakah saya bisa mengunggah gambar?",
+        "a3": "Data URL (base64) yang disematkan dalam markdown didukung penuh. Untuk gambar jarak jauh, browser akan mencoba memuat langsung; jika gagal karena CORS, PDF akan dibuat dengan aman dengan melewatkannya.",
+        "q4": "Fitur markdown apa saja yang didukung?",
+        "a4": "Judul, paragraf, gaya tebal/miring/coret, daftar bullet/bernomor/tugas, kutipan, tabel, blok kode, dan garis horizontal semuanya diurai dan diformat.",
+        "q5": "Apakah saya harus membayar atau membuat akun?",
+        "a5": "Tidak. Seperti semua alat di Alatify, konverter ini sepenuhnya gratis, tanpa batas pemakaian, dan tidak memerlukan pendaftaran."
+      },
+      "privacyNotice": "Alatify memproses file dokumen Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Format dan kompilasi Markdown ke PDF secara aman langsung di perangkat Anda sendiri."
     }
   },
   "toolsPage": {
