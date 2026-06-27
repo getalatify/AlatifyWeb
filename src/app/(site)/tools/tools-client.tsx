@@ -131,6 +131,22 @@ const pipelineTools = [
     icon: FileText,
     href: "/tools/markdown-to-pdf",
   },
+  {
+    name: "PDF to Markdown",
+    description: "Extract text from a PDF into clean Markdown, on-device.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: FileText,
+    href: "/tools/pdf-to-markdown",
+  },
+  {
+    name: "PDF Page Tools",
+    description: "Merge, split, reorder, rotate, and delete PDF pages on-device.",
+    status: "Available",
+    statusColor: "bg-success/10 text-success border-success/20",
+    icon: FileText,
+    href: "/tools/pdf-pages",
+  },
 ];
 
 export default function ToolsHubPage() {
