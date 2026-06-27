@@ -32,9 +32,9 @@ interface ProcessingOverlayProps {
 }
 
 const modelSizes = {
-  isnet_quint8: "~10MB",
-  isnet_fp16: "~22MB",
-  isnet: "~40MB",
+  isnet_quint8: "~45 MB",
+  isnet_fp16: "~85 MB",
+  isnet: "~170 MB",
 };
 
 export function ProcessingOverlay({
@@ -90,7 +90,7 @@ export function ProcessingOverlay({
 
   if (!isProcessing || !mounted) return null;
 
-  const modelSize = modelSizeLabel || modelSizes[modelType] || "~22MB";
+  const modelSize = modelSizeLabel || modelSizes[modelType] || "~85 MB";
   const tileMode =
     stage === "processing" &&
     typeof tileDone === "number" &&

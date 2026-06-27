@@ -145,6 +145,11 @@ export const en = {
       "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Compress JPG, PNG, and WebP images instantly and privately on your own device."
     },
     "bg-remover": {
+      "sizes": {
+        "isnet_quint8": "~45 MB",
+        "isnet_fp16": "~85 MB",
+        "isnet": "~170 MB"
+      },
       "intro": "Most free background removers upload your image to their servers — and many quietly use it to train their AI or cap free downloads at low resolution. Alatify's runs entirely in your browser using GPU-accelerated on-device AI. Your photo never leaves your device. No sign-up, no watermark, no resolution limit, and no cap on how many you process — full quality, fully private, unlimited.",
       "howItWorks": {
         "step1": "Drop your image. It stays on your device.",
@@ -172,7 +177,8 @@ export const en = {
       },
       "privacyNotice": "Alatify removes image backgrounds entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, full-resolution, watermark-free transparent PNGs, processed privately on your own device.",
       "onnxNotice": "Alatify AI background extraction runs a highly optimized neural network on your browser sandbox using ONNX runtime WebAssembly.",
-      "modelNotice": "GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration."
+      "modelNotice": "GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration.",
+      "runtimeNotice": "First use also downloads the AI runtime (~33 MB) once. Everything is then cached offline — later uses load instantly."
     },
     "blur": {
       "intro": "Obscure faces, license plates, and sensitive credentials securely in your web browser. Drag rectangular boxes or draw freeform brush strokes to completely destroy sensitive pixel data offline.",

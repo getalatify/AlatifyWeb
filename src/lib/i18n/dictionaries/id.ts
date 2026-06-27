@@ -145,6 +145,11 @@ export const id = {
       "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Kompres gambar JPG, PNG, dan WebP secara instan dan privat di perangkat Anda sendiri."
     },
     "bg-remover": {
+      "sizes": {
+        "isnet_quint8": "~45 MB",
+        "isnet_fp16": "~85 MB",
+        "isnet": "~170 MB"
+      },
       "intro": "Sebagian besar penghapus latar belakang gratis mengunggah gambar Anda ke server mereka — dan banyak yang diam-diam menggunakannya untuk melatih AI mereka atau membatasi unduhan gratis pada resolusi rendah. Alatify berjalan sepenuhnya di browser Anda menggunakan AI di perangkat yang diakselerasi GPU. Foto Anda tidak pernah meninggalkan perangkat Anda. Tanpa pendaftaran, tanpa watermark, tanpa batas resolusi, dan tanpa batasan jumlah yang Anda proses — kualitas penuh, sepenuhnya privat, tanpa batas.",
       "howItWorks": {
         "step1": "Letakkan gambar Anda. Gambar tetap berada di perangkat Anda.",
@@ -172,7 +177,8 @@ export const id = {
       },
       "privacyNotice": "Alatify menghapus latar belakang gambar seluruhnya di dalam tab browser Anda menggunakan AI di perangkat yang diakselerasi GPU. Foto Anda tidak pernah diunggah ke server, tidak pernah digunakan untuk melatih model, dan tidak pernah dicatat — membuat alat ini 100% kebal terhadap kebocoran atau retensi data di sisi server. Dapatkan PNG transparan resolusi penuh yang bebas watermark tanpa batas, diproses secara privat di perangkat Anda sendiri.",
       "onnxNotice": "Ekstraksi latar AI Alatify menjalankan jaringan saraf yang sangat dioptimalkan di sandbox browser Anda menggunakan ONNX runtime WebAssembly.",
-      "modelNotice": "Model GPU lebih cepat di perangkat yang didukung; model Lite (CPU) paling cocok untuk perangkat tanpa akselerasi GPU."
+      "modelNotice": "Model GPU lebih cepat di perangkat yang didukung; model Lite (CPU) paling cocok untuk perangkat tanpa akselerasi GPU.",
+      "runtimeNotice": "Penggunaan pertama juga akan mengunduh runtime AI (~33 MB) sekali. Setelah itu semuanya disimpan di cache offline — penggunaan berikutnya akan dimuat secara instan."
     },
     "blur": {
       "intro": "Kaburkan wajah, pelat nomor, dan kredensial sensitif secara aman di browser web Anda. Seret kotak persegi panjang atau gambar sapuan kuas bebas untuk menghancurkan data piksel sensitif secara offline sepenuhnya.",
