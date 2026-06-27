@@ -19,8 +19,10 @@ import {
   AlertTriangle,
   Trash2,
 } from "lucide-react";
+import { useT } from "@/lib/i18n/useT";
 
 export default function PdfToMarkdownClient() {
+  const t = useT();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
@@ -435,7 +437,7 @@ export default function PdfToMarkdownClient() {
             PDF to Markdown
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-3xl leading-relaxed">
-            Extract text layers from PDF documents and format them into readable Markdown. Runs completely in your browser offline. Your data is 100% secure.
+            {t("tools.pdf-to-markdown.intro")}
           </p>
         </section>
 
@@ -497,6 +499,8 @@ export default function PdfToMarkdownClient() {
                     onClick={handleRemoveFile}
                     disabled={isConverting}
                     className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg border-border/50 shrink-0"
+                    title="Remove file"
+                    aria-label="Remove file"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -530,13 +534,13 @@ export default function PdfToMarkdownClient() {
               </p>
               <ul className="list-disc pl-4 space-y-1.5 font-medium">
                 <li>
-                  <strong>Tables:</strong> PDFs contain no tabular semantics. Grid coordinates are flat and output is linear.
+                  <strong>Tables:</strong> {t("tools.pdf-to-markdown.limitations.tables")}
                 </li>
                 <li>
-                  <strong>Multi-column layouts:</strong> Text runs are processed sequentially, reading order may interleave.
+                  <strong>Multi-column layouts:</strong> {t("tools.pdf-to-markdown.limitations.columns")}
                 </li>
                 <li>
-                  <strong>Image-only scans:</strong> No offline OCR is performed. Scanned pages will trigger a warning banner.
+                  <strong>Image-only scans:</strong> {t("tools.pdf-to-markdown.limitations.scanned")}
                 </li>
               </ul>
             </div>
@@ -551,7 +555,7 @@ export default function PdfToMarkdownClient() {
                   Markdown Output Panel
                 </p>
                 <p className="text-[11px] text-muted-foreground max-w-xs mt-1 leading-normal">
-                  Upload a document and select &quot;Convert to Markdown&quot; to see the formatted output here.
+                  {t("tools.pdf-to-markdown.placeholder")}
                 </p>
               </div>
             ) : (
@@ -602,7 +606,7 @@ export default function PdfToMarkdownClient() {
                     <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                     <div>
                       <span className="font-extrabold block">Potential Scanned PDF Warning</span>
-                      We detected little to no selectable text in this document. It is highly likely this is a scanned/image-only PDF with no embedded text layers. Offline OCR is not supported.
+                      {t("tools.pdf-to-markdown.warningScanned")}
                     </div>
                   </div>
                 )}
@@ -614,7 +618,7 @@ export default function PdfToMarkdownClient() {
         {/* Natively Private explanation block */}
         <PrivacyNotice>
           <p>
-            All PDF text extraction and document compiling is done entirely inside your local browser sandbox. No file is ever sent to a server or external cloud provider, preserving absolute confidentiality and privacy.
+            {t("tools.pdf-to-markdown.privacyNotice")}
           </p>
         </PrivacyNotice>
 
@@ -627,10 +631,10 @@ export default function PdfToMarkdownClient() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
-              { step: "01", title: "Select PDF", text: "Choose or drag in a standard PDF document containing selectable text layers." },
-              { step: "02", title: "Extract Locally", text: "Click convert to analyze text strings, layout structures, and lines fully offline." },
-              { step: "03", title: "Apply Heuristics", text: "Compute dominant font sizes to map heading tiers and lists automatically." },
-              { step: "04", title: "Export Markdown", text: "Review the formatted Markdown results, then copy the text or download the .md file." },
+              { step: "01", title: "Select PDF", text: t("tools.pdf-to-markdown.howItWorks.step1") },
+              { step: "02", title: "Extract Locally", text: t("tools.pdf-to-markdown.howItWorks.step2") },
+              { step: "03", title: "Apply Heuristics", text: t("tools.pdf-to-markdown.howItWorks.step3") },
+              { step: "04", title: "Export Markdown", text: t("tools.pdf-to-markdown.howItWorks.step4") },
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -657,26 +661,26 @@ export default function PdfToMarkdownClient() {
               Common Use Cases
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground font-medium">
-              Convert reading material, papers, and transcripts back to clean markup formats.
+              {t("tools.pdf-to-markdown.useCases.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               {
                 title: "Research Papers & Essays",
-                text: "Recover plain text from scholastic publications or journals and format them into Markdown for note-taking tools.",
+                text: t("tools.pdf-to-markdown.useCases.case1"),
               },
               {
                 title: "Documentation & Ebooks",
-                text: "Convert text-heavy guides, technical papers, or open-licensed ebooks into Markdown drafts for editing.",
+                text: t("tools.pdf-to-markdown.useCases.case2"),
               },
               {
                 title: "Legal or Financial Documents",
-                text: "Process sensitive invoices, contracts, or records locally and confidentially, keeping text off third-party servers.",
+                text: t("tools.pdf-to-markdown.useCases.case3"),
               },
               {
                 title: "Wiki & Study Handouts",
-                text: "Instantly convert study guides, outline reports, and reference documents into tidy formatted wiki notes.",
+                text: t("tools.pdf-to-markdown.useCases.case4"),
               },
             ].map((useCase, idx) => (
               <div
@@ -705,20 +709,20 @@ export default function PdfToMarkdownClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Is my document uploaded to a server?",
-                a: "No. All file processing, parsing, and text extraction is completed 100% on the client side inside your web browser. Nothing is uploaded to any backend.",
+                q: t("tools.pdf-to-markdown.faq.q1"),
+                a: t("tools.pdf-to-markdown.faq.a1"),
               },
               {
-                q: "Can it extract text from scanned or picture-only PDFs?",
-                a: "No. Scanned PDFs are image files compiled into PDF envelopes and do not contain text metadata. Since we run entirely offline, OCR is out of scope. If scanned sheets are detected, a warning banner will appear.",
+                q: t("tools.pdf-to-markdown.faq.q2"),
+                a: t("tools.pdf-to-markdown.faq.a2"),
               },
               {
-                q: "How does it detect headings and lists?",
-                a: "It scans the page's character sizes to compute the dominant body font height. It then classifies larger lines into H1, H2, or H3 depending on size ratios. Lists are parsed by identifying leading markers like dots or numbers.",
+                q: t("tools.pdf-to-markdown.faq.q3"),
+                a: t("tools.pdf-to-markdown.faq.a3"),
               },
               {
-                q: "What are the limitations of this tool?",
-                a: "This converter extracts plain layout structures. PDF doesn't have native column or grid definitions, meaning tables will convert into flat linear rows, and reading order in multi-column sheets might wrap awkwardly.",
+                q: t("tools.pdf-to-markdown.faq.q4"),
+                a: t("tools.pdf-to-markdown.faq.a4"),
               },
             ].map((faq, idx) => (
               <div key={idx} className="space-y-1.5 p-1">

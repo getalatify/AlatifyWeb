@@ -21,6 +21,7 @@ import {
   Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/useT";
 import { PageActionTooltip } from "./page-action-tooltip";
 import {
   createWorkingPages,
@@ -32,6 +33,7 @@ import {
 import type { PdfSource, WorkingPage } from "./types";
 
 export default function PdfPagesClient() {
+  const t = useT();
   const [sources, setSources] = useState<Record<string, PdfSource>>({});
   const [pages, setPages] = useState<WorkingPage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -205,10 +207,7 @@ export default function PdfPagesClient() {
             PDF Page Tools
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-3xl leading-relaxed">
-            Load one or more PDFs, rearrange pages with drag-and-drop, rotate or
-            remove individual pages, and export a new PDF — entirely in your
-            browser. Loading multiple files merges them in order. Select pages to
-            extract a subset. No upload, no account, no data leaves your device.
+            {t("tools.pdf-pages.intro")}
           </p>
         </section>
 
@@ -444,7 +443,7 @@ export default function PdfPagesClient() {
                     )}
                   </Button>
                   <p className="text-[10px] text-muted-foreground leading-snug min-h-[2rem] max-w-[220px]">
-                    Export all pages as one PDF, in the order shown above.
+                    {t("tools.pdf-pages.exportAllExplanation")}
                   </p>
                 </div>
                 <div className="flex flex-col items-start gap-1.5">
@@ -460,8 +459,8 @@ export default function PdfPagesClient() {
                   </Button>
                   <p className="text-[10px] text-muted-foreground leading-snug min-h-[2rem] max-w-[220px]">
                     {selectedCount === 0
-                      ? "Select pages first."
-                      : "Only checked pages are exported."}
+                      ? t("tools.pdf-pages.exportSelectedPlaceholder")
+                      : t("tools.pdf-pages.exportSelectedExplanation")}
                   </p>
                 </div>
               </div>
@@ -471,10 +470,7 @@ export default function PdfPagesClient() {
 
         <PrivacyNotice>
           <p>
-            Every PDF you load is parsed and processed entirely inside your
-            browser using pdf-lib. Files are never uploaded to a server, stored
-            on our infrastructure, or sent to third parties. Close the tab and
-            your documents are gone from memory.
+            {t("tools.pdf-pages.privacyNotice")}
           </p>
         </PrivacyNotice>
 
@@ -489,22 +485,22 @@ export default function PdfPagesClient() {
               {
                 step: "01",
                 title: "Load PDFs",
-                text: "Drop one or more PDF files. Pages from every file appear in a single list, in load order — that is your merge.",
+                text: t("tools.pdf-pages.howItWorks.step1"),
               },
               {
                 step: "02",
                 title: "Edit Pages",
-                text: "Drag rows to reorder, rotate individual pages 90°, delete unwanted pages, or select pages for extraction.",
+                text: t("tools.pdf-pages.howItWorks.step2"),
               },
               {
                 step: "03",
                 title: "Export",
-                text: "Click Merge & Export All Pages for the full working set, or Export selected pages to split out only the pages you checked.",
+                text: t("tools.pdf-pages.howItWorks.step3"),
               },
               {
                 step: "04",
                 title: "Download",
-                text: "pdf-lib copies original page objects into a new file — no rasterization, so quality and text selectability are preserved.",
+                text: t("tools.pdf-pages.howItWorks.step4"),
               },
             ].map((item) => (
               <div
@@ -531,27 +527,26 @@ export default function PdfPagesClient() {
               What You Can Use It For
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Merge, split, and tidy PDFs without desktop software or cloud
-              uploads.
+              {t("tools.pdf-pages.useCases.subtitle")}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               {
                 title: "Merge Reports & Scans",
-                text: "Combine invoices, contracts, or scanned pages from multiple files into one ordered document.",
+                text: t("tools.pdf-pages.useCases.case1"),
               },
               {
                 title: "Extract a Chapter",
-                text: "Select only the pages you need and export a smaller PDF — useful for sharing one section of a large file.",
+                text: t("tools.pdf-pages.useCases.case2"),
               },
               {
                 title: "Fix Page Order",
-                text: "Reorder pages after a bad scan or a mixed export without re-printing or re-scanning.",
+                text: t("tools.pdf-pages.useCases.case3"),
               },
               {
                 title: "Rotate Misaligned Pages",
-                text: "Turn individual landscape or upside-down pages upright before exporting the final PDF.",
+                text: t("tools.pdf-pages.useCases.case4"),
               },
             ].map((useCase) => (
               <div
@@ -579,24 +574,24 @@ export default function PdfPagesClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                q: "Are my PDFs uploaded to a server?",
-                a: "No. All loading, editing, and exporting happens locally in your browser. Your files never leave your device.",
+                q: t("tools.pdf-pages.faq.q1"),
+                a: t("tools.pdf-pages.faq.a1"),
               },
               {
-                q: "How do I merge two PDFs?",
-                a: "Load the first file, then click Add more files and load the second. Pages appear in one combined list in the order you added them. Merge & Export All Pages to save the merged result.",
+                q: t("tools.pdf-pages.faq.q2"),
+                a: t("tools.pdf-pages.faq.a2"),
               },
               {
-                q: "How do I split or extract pages?",
-                a: "Select the pages you want with the checkbox on each row, then click Export selected pages. Only checked pages are included in the download.",
+                q: t("tools.pdf-pages.faq.q3"),
+                a: t("tools.pdf-pages.faq.a3"),
               },
               {
-                q: "Does export reduce quality?",
-                a: "No. pdf-lib copies the original page objects into a new PDF. Content is not re-rendered or rasterized.",
+                q: t("tools.pdf-pages.faq.q4"),
+                a: t("tools.pdf-pages.faq.a4"),
               },
               {
-                q: "Can I use password-protected PDFs?",
-                a: "Encrypted or password-protected PDFs cannot be opened in the browser without the password. Remove protection first with a desktop tool, then load the file here.",
+                q: t("tools.pdf-pages.faq.q5"),
+                a: t("tools.pdf-pages.faq.a5"),
               },
             ].map((faq) => (
               <div key={faq.q} className="space-y-1.5 p-1">
