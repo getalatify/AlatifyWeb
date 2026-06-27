@@ -557,11 +557,15 @@ export default function IdProtectorClient() {
                           className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#000000' ? "border-primary" : "border-transparent")}
                           style={{ backgroundColor: '#000000' }}
                           onClick={() => setSolidColor('#000000')}
+                          title="Select Black Color"
+                          aria-label="Select black color for solid redaction"
                         />
                         <button
                           className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#ffffff' ? "border-primary" : "border-border")}
                           style={{ backgroundColor: '#ffffff' }}
                           onClick={() => setSolidColor('#ffffff')}
+                          title="Select White Color"
+                          aria-label="Select white color for solid redaction"
                         />
                       </div>
                     </div>
