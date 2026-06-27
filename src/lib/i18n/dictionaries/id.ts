@@ -145,6 +145,11 @@ export const id = {
       "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Kompres gambar JPG, PNG, dan WebP secara instan dan privat di perangkat Anda sendiri."
     },
     "bg-remover": {
+      "sizes": {
+        "isnet_quint8": "~45 MB",
+        "isnet_fp16": "~85 MB",
+        "isnet": "~170 MB"
+      },
       "intro": "Sebagian besar penghapus latar belakang gratis mengunggah gambar Anda ke server mereka — dan banyak yang diam-diam menggunakannya untuk melatih AI mereka atau membatasi unduhan gratis pada resolusi rendah. Alatify berjalan sepenuhnya di browser Anda menggunakan AI di perangkat yang diakselerasi GPU. Foto Anda tidak pernah meninggalkan perangkat Anda. Tanpa pendaftaran, tanpa watermark, tanpa batas resolusi, dan tanpa batasan jumlah yang Anda proses — kualitas penuh, sepenuhnya privat, tanpa batas.",
       "howItWorks": {
         "step1": "Letakkan gambar Anda. Gambar tetap berada di perangkat Anda.",
@@ -172,7 +177,8 @@ export const id = {
       },
       "privacyNotice": "Alatify menghapus latar belakang gambar seluruhnya di dalam tab browser Anda menggunakan AI di perangkat yang diakselerasi GPU. Foto Anda tidak pernah diunggah ke server, tidak pernah digunakan untuk melatih model, dan tidak pernah dicatat — membuat alat ini 100% kebal terhadap kebocoran atau retensi data di sisi server. Dapatkan PNG transparan resolusi penuh yang bebas watermark tanpa batas, diproses secara privat di perangkat Anda sendiri.",
       "onnxNotice": "Ekstraksi latar AI Alatify menjalankan jaringan saraf yang sangat dioptimalkan di sandbox browser Anda menggunakan ONNX runtime WebAssembly.",
-      "modelNotice": "Model GPU lebih cepat di perangkat yang didukung; model Lite (CPU) paling cocok untuk perangkat tanpa akselerasi GPU."
+      "modelNotice": "Model GPU lebih cepat di perangkat yang didukung; model Lite (CPU) paling cocok untuk perangkat tanpa akselerasi GPU.",
+      "runtimeNotice": "Penggunaan pertama juga akan mengunduh runtime AI (~33 MB) sekali. Setelah itu semuanya disimpan di cache offline — penggunaan berikutnya akan dimuat secara instan."
     },
     "blur": {
       "intro": "Kaburkan wajah, pelat nomor, dan kredensial sensitif secara aman di browser web Anda. Seret kotak persegi panjang atau gambar sapuan kuas bebas untuk menghancurkan data piksel sensitif secara offline sepenuhnya.",
@@ -508,6 +514,72 @@ export const id = {
         "a5": "Tidak. Seperti semua alat di Alatify, konverter ini sepenuhnya gratis, tanpa batas pemakaian, dan tidak memerlukan pendaftaran."
       },
       "privacyNotice": "Alatify memproses file dokumen Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Format dan kompilasi Markdown ke PDF secara aman langsung di perangkat Anda sendiri."
+    },
+    "pdf-to-markdown": {
+    "intro": "Ekstrak lapisan teks dari dokumen PDF dan ubah menjadi Markdown yang mudah dibaca — sepenuhnya di browser Anda. File Anda tidak pernah meninggalkan perangkat.",
+    "howItWorks": {
+      "step1": "Pilih atau seret dokumen PDF standar yang memiliki lapisan teks dapat dipilih.",
+      "step2": "Klik Convert to Markdown untuk menganalisis string teks, struktur tata letak, dan baris secara offline sepenuhnya.",
+      "step3": "Hitung ukuran font dominan untuk memetakan tingkat heading dan daftar secara otomatis.",
+      "step4": "Tinjau hasil Markdown yang sudah diformat, lalu salin teks atau unduh file .md-nya."
+    },
+    "useCases": {
+      "subtitle": "Ubah bahan bacaan, makalah, dan transkrip menjadi format markup yang bersih.",
+      "case1": "Pulihkan teks polos dari publikasi ilmiah atau jurnal dan formatkan menjadi Markdown untuk aplikasi catatan.",
+      "case2": "Ubah panduan teks-tebal, makalah teknis, atau ebook berlisensi terbuka menjadi draf Markdown yang siap diedit.",
+      "case3": "Proses faktur, kontrak, atau catatan sensitif secara lokal dan rahasia, tanpa mengirim teks ke server pihak ketiga.",
+      "case4": "Ubah panduan belajar, laporan outline, dan dokumen referensi menjadi catatan wiki yang rapi dan terformat."
+    },
+    "faq": {
+      "q1": "Apakah dokumen saya diunggah ke server?",
+      "a1": "Tidak. Semua pemrosesan file, parsing, dan ekstraksi teks dilakukan 100% di sisi klien di dalam browser Anda. Tidak ada yang diunggah ke backend mana pun.",
+      "q2": "Bisakah mengekstrak teks dari PDF hasil scan atau hanya gambar?",
+      "a2": "Tidak. PDF hasil scan adalah kumpulan gambar yang dibungkus dalam PDF dan tidak memiliki metadata teks. Karena kami berjalan sepenuhnya offline, OCR tidak didukung. Jika dokumen scan terdeteksi, banner peringatan akan muncul.",
+      "q3": "Bagaimana cara mendeteksi heading dan daftar?",
+      "a3": "Ia memindai ukuran karakter di halaman untuk menghitung tinggi font body yang dominan. Kemudian mengklasifikasikan baris yang lebih besar menjadi H1, H2, atau H3 berdasarkan rasio ukuran. Daftar diparse dengan mendeteksi penanda awal seperti titik atau angka.",
+      "q4": "Apa batasan tool ini?",
+      "a4": "Converter ini mengekstrak struktur tata letak polos. PDF tidak memiliki definisi kolom atau grid asli, sehingga tabel akan menjadi baris linear datar, dan urutan bacaan di halaman multi-kolom mungkin terlipat tidak rapi."
+    },
+    "privacyNotice": "Semua ekstraksi teks PDF dan kompilasi dokumen dilakukan sepenuhnya di dalam sandbox browser lokal Anda. Tidak ada file yang pernah dikirim ke server atau penyedia cloud eksternal, menjaga kerahasiaan dan privasi mutlak.",
+    "placeholder": "Unggah dokumen dan pilih \"Convert to Markdown\" untuk melihat hasil yang sudah diformat di sini.",
+    "warningScanned": "Kami mendeteksi sedikit atau tidak ada teks yang dapat dipilih di dokumen ini. Sangat mungkin ini adalah PDF hasil scan/hanya gambar tanpa lapisan teks tersemat. OCR offline tidak didukung.",
+    "limitations": {
+      "tables": "PDF tidak memiliki semantik tabel. Koordinat grid datar dan hasil keluaran berupa baris linear.",
+      "columns": "Alur teks diproses secara berurutan, urutan bacaan mungkin saling tumpang tindih.",
+      "scanned": "Tidak dilakukan OCR offline. Halaman hasil scan akan memicu banner peringatan."
+    }
+    },
+    "pdf-pages": {
+    "intro": "Muat satu atau beberapa PDF, susun ulang halaman dengan drag-and-drop, putar atau hapus halaman tertentu, lalu ekspor PDF baru — sepenuhnya di browser Anda. Memuat banyak file akan menggabungkannya sesuai urutan. Pilih halaman untuk mengekstrak subset. Tanpa unggah, tanpa akun, tanpa data yang meninggalkan perangkat Anda.",
+    "howItWorks": {
+      "step1": "Jatuhkan satu atau beberapa file PDF. Halaman dari setiap file muncul dalam satu daftar, sesuai urutan pemuatan — itulah hasil penggabungan Anda.",
+      "step2": "Seret baris untuk mengubah urutan, putar halaman individu 90°, hapus halaman yang tidak diinginkan, atau pilih halaman untuk diekstrak.",
+      "step3": "Klik Merge & Export All Pages untuk seluruh set halaman, atau Export selected pages untuk hanya mengekspor halaman yang Anda centang.",
+      "step4": "pdf-lib menyalin objek halaman asli ke file baru — tanpa rasterisasi, sehingga kualitas dan kemampuan memilih teks tetap terjaga."
+    },
+    "useCases": {
+      "subtitle": "Gabung, pisah, dan rapikan PDF tanpa software desktop atau unggah cloud.",
+      "case1": "Gabungkan faktur, kontrak, atau halaman hasil scan dari beberapa file menjadi satu dokumen berurutan.",
+      "case2": "Pilih hanya halaman yang Anda butuhkan dan ekspor PDF yang lebih kecil — berguna untuk membagikan satu bagian dari file besar.",
+      "case3": "Susun ulang halaman setelah scan buruk atau ekspor campur aduk tanpa harus mencetak ulang atau scan ulang.",
+      "case4": "Perbaiki halaman landscape atau terbalik menjadi tegak sebelum mengekspor PDF akhir."
+    },
+    "faq": {
+      "q1": "Apakah PDF saya diunggah ke server?",
+      "a1": "Tidak. Semua pemuatan, pengeditan, dan ekspor dilakukan secara lokal di browser Anda. File Anda tidak pernah meninggalkan perangkat.",
+      "q2": "Bagaimana cara menggabungkan dua PDF?",
+      "a2": "Muat file pertama, lalu klik Add more files dan muat file kedua. Halaman akan muncul dalam satu daftar gabungan sesuai urutan penambahan. Klik Merge & Export All Pages untuk menyimpan hasil gabungan.",
+      "q3": "Bagaimana cara memisah atau mengekstrak halaman?",
+      "a3": "Centang halaman yang diinginkan pada kotak di setiap baris, lalu klik Export selected pages. Hanya halaman yang dicek yang akan disertakan dalam unduhan.",
+      "q4": "Apakah ekspor mengurangi kualitas?",
+      "a4": "Tidak. pdf-lib menyalin objek halaman asli ke PDF baru. Konten tidak dirender ulang atau dirasterisasi.",
+      "q5": "Bisakah menggunakan PDF yang dilindungi kata sandi?",
+      "a5": "PDF terenkripsi atau dilindungi kata sandi tidak dapat dibuka di browser tanpa kata sandi. Hapus proteksi terlebih dahulu dengan tool desktop, lalu muat file di sini."
+    },
+    "privacyNotice": "Setiap PDF yang Anda muat diparse dan diproses sepenuhnya di dalam browser Anda menggunakan pdf-lib. File tidak pernah diunggah ke server, disimpan di infrastruktur kami, atau dikirim ke pihak ketiga. Tutup tab dan dokumen Anda hilang dari memori.",
+    "exportAllExplanation": "Ekspor semua halaman sebagai satu PDF, sesuai urutan yang ditampilkan di atas.",
+    "exportSelectedPlaceholder": "Pilih halaman terlebih dahulu.",
+    "exportSelectedExplanation": "Hanya halaman yang dicek yang diekspor."
     }
   },
   "toolsPage": {

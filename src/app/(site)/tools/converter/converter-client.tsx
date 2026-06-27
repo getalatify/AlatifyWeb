@@ -1797,6 +1797,7 @@ export default function FormatConverterPage() {
                           disabled={index === 0 || isConverting}
                           className="w-8 h-8 rounded-lg hover:bg-secondary border border-transparent disabled:opacity-40"
                           title="Move up"
+                          aria-label="Move image up"
                         >
                           <ArrowUp className="w-3.5 h-3.5" />
                         </Button>
@@ -1807,6 +1808,7 @@ export default function FormatConverterPage() {
                           disabled={index === imagesList.length - 1 || isConverting}
                           className="w-8 h-8 rounded-lg hover:bg-secondary border border-transparent disabled:opacity-40"
                           title="Move down"
+                          aria-label="Move image down"
                         >
                           <ArrowDown className="w-3.5 h-3.5" />
                         </Button>
@@ -1817,6 +1819,7 @@ export default function FormatConverterPage() {
                           disabled={isConverting}
                           className="w-8 h-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                           title="Remove image"
+                          aria-label="Remove image from list"
                         >
                           <X className="w-3.5 h-3.5" />
                         </Button>
@@ -2284,7 +2287,7 @@ export default function FormatConverterPage() {
           <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
             Related Tools
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Link
               href="/tools/compressor"
               className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
@@ -2319,6 +2322,26 @@ export default function FormatConverterPage() {
                   </h4>
                   <p className="text-[10px] text-muted-foreground">
                     {t("shared.related.resizer-dimensions")}
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+            </Link>
+
+            <Link
+              href="/tools/pdf-pages"
+              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    PDF Page Tools
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground">
+                    Merge, split, reorder, rotate, and delete PDF pages.
                   </p>
                 </div>
               </div>

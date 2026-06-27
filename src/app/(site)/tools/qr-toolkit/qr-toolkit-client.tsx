@@ -692,6 +692,8 @@ export default function QrToolkitClient() {
                           onClick={() => setFgColor(c)}
                           className="w-5 h-5 rounded-full border border-border/60 hover:scale-110 active:scale-95 transition-all shadow-sm"
                           style={{ backgroundColor: c }}
+                          title={`Set foreground to ${c}`}
+                          aria-label={`Set foreground color to ${c}`}
                         />
                       ))}
                     </div>
@@ -731,6 +733,8 @@ export default function QrToolkitClient() {
                             backgroundSize: "6px 6px",
                             backgroundPosition: "0 0, 0 3px, 3px -3px, -3px 0"
                           }}
+                          title={`Set background to ${c}`}
+                          aria-label={`Set background color to ${c}`}
                         >
                           {c === "transparent" && <span className="opacity-70 font-bold select-none text-[8px]">T</span>}
                         </button>

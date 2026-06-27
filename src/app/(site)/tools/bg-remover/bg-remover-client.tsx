@@ -36,6 +36,12 @@ async function verifyWebGPUSupport(): Promise<boolean> {
   } catch { return false; }
 }
 
+const MODEL_SIZE_KEYS = {
+  isnet_quint8: "tools.bg-remover.sizes.isnet_quint8",
+  isnet_fp16: "tools.bg-remover.sizes.isnet_fp16",
+  isnet: "tools.bg-remover.sizes.isnet",
+} as const;
+
 export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean }) {
   const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
@@ -957,7 +963,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
                               </span>
                             </div>
                             <div className="text-[10px] text-muted-foreground font-medium mt-0.5">
-                              ISNet Quant8 · ~10MB
+                              ISNet Quant8 · {t("tools.bg-remover.sizes.isnet_quint8")}
                             </div>
                           </div>
                         </SelectItem>
@@ -975,7 +981,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
                               </span>
                             </div>
                             <div className="text-[10px] text-muted-foreground font-medium mt-0.5">
-                              ISNet FP16 · ~22MB
+                              ISNet FP16 · {t("tools.bg-remover.sizes.isnet_fp16")}
                             </div>
                           </div>
                         </SelectItem>
@@ -990,7 +996,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
                               </span>
                             </div>
                             <div className="text-[10px] text-muted-foreground font-medium mt-0.5">
-                              ISNet Base · ~40MB
+                              ISNet Base · {t("tools.bg-remover.sizes.isnet")}
                             </div>
                           </div>
                         </SelectItem>
@@ -998,6 +1004,9 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
                     </Select>
                     <p className="text-[10px] text-muted-foreground leading-normal mt-1">
                       {t("tools.bg-remover.modelNotice")}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground leading-normal mt-1">
+                      {t("tools.bg-remover.runtimeNotice")}
                     </p>
                   </div>
 
@@ -1360,6 +1369,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
         downloadProgress={downloadProgress}
         downloadingFile={downloadingFile}
         modelType={modelType}
+        modelSizeLabel={t(MODEL_SIZE_KEYS[modelType])}
       />
     </ContainerTag>
   );

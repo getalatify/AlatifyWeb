@@ -14,7 +14,6 @@ import {
   CheckCircle2,
   Minimize2,
   RefreshCw,
-  Shield,
   FileCode,
 } from "lucide-react";
 import MarkdownIt from "markdown-it";
@@ -471,19 +470,19 @@ export default function MarkdownToPdfClient() {
             </Link>
 
             <Link
-              href="/tools/exif-cleaner"
+              href="/tools/pdf-to-markdown"
               className="flex flex-col justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group animate-fade-in"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors shrink-0">
-                  <Shield className="w-4 h-4" />
+                  <FileText className="w-4 h-4" />
                 </div>
                 <div>
                   <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
-                    EXIF Privacy Cleaner
+                    PDF to Markdown
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Strip camera EXIF tags and geolocation data offline.
+                    Extract text from a PDF into clean Markdown, on-device.
                   </p>
                 </div>
               </div>
