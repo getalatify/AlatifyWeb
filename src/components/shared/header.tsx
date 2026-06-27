@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageToggle } from "./language-toggle";
+import { ToolSearch } from "@/components/ToolSearch";
 
 interface HeaderProps {
   showBackToTools?: boolean;
@@ -39,6 +40,7 @@ export function Header({
       </div>
 
       <div className="flex items-center gap-4 sm:gap-6">
+        <ToolSearch />
         {showToolsLink && (
           <Link
             href="/tools"
