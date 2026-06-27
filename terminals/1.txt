@@ -1,0 +1,62 @@
+---
+pid: 15144
+cwd: "C:\Users\Lenovo\Claude\Projects\Tools\Alatify-pdf-pages"
+command: "cd C:\\Users\\Lenovo\\Claude\\Projects\\Tools\\Alatify-pdf-pages; npm run build"
+started_at: 2026-06-27T05:20:38.503Z
+running_for_ms: 14285001 
+---
+
+> alatify@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+
+   Creating an optimized production build ...
+   Linting and checking validity of types ...
+ ⚠ Compiled with warnings
+
+./node_modules/onnxruntime-web/dist/ort.bundle.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.bundle.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+./node_modules/onnxruntime-web/dist/ort.node.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.node.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+Failed to compile.
+
+./src/app/(site)/tools/pdf-pages/pdf-utils.ts:65:7
+Type error: Property 'destroy' does not exist on type 'PDFDocumentProxy'.
+
+  63 |   }
+  64 |   await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+> 65 |   pdf.destroy();
+     |       ^
+  66 |   return canvas.toDataURL("image/jpeg", 0.82);
+  67 | }
+  68 |
+Next.js build worker exited with code: 1 and signal: null

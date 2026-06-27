@@ -19,6 +19,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools/steganography',
     '/tools/qr-toolkit',
     '/tools/markdown-to-pdf',
+    '/tools/pdf-to-markdown',
+    '/tools/pdf-pages',
     '/privacy',
     '/terms',
     '/about',

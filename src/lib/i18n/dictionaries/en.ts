@@ -145,6 +145,11 @@ export const en = {
       "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Compress JPG, PNG, and WebP images instantly and privately on your own device."
     },
     "bg-remover": {
+      "sizes": {
+        "isnet_quint8": "~45 MB",
+        "isnet_fp16": "~85 MB",
+        "isnet": "~170 MB"
+      },
       "intro": "Most free background removers upload your image to their servers — and many quietly use it to train their AI or cap free downloads at low resolution. Alatify's runs entirely in your browser using GPU-accelerated on-device AI. Your photo never leaves your device. No sign-up, no watermark, no resolution limit, and no cap on how many you process — full quality, fully private, unlimited.",
       "howItWorks": {
         "step1": "Drop your image. It stays on your device.",
@@ -172,7 +177,8 @@ export const en = {
       },
       "privacyNotice": "Alatify removes image backgrounds entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, full-resolution, watermark-free transparent PNGs, processed privately on your own device.",
       "onnxNotice": "Alatify AI background extraction runs a highly optimized neural network on your browser sandbox using ONNX runtime WebAssembly.",
-      "modelNotice": "GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration."
+      "modelNotice": "GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration.",
+      "runtimeNotice": "First use also downloads the AI runtime (~33 MB) once. Everything is then cached offline — later uses load instantly."
     },
     "blur": {
       "intro": "Obscure faces, license plates, and sensitive credentials securely in your web browser. Drag rectangular boxes or draw freeform brush strokes to completely destroy sensitive pixel data offline.",
@@ -508,6 +514,72 @@ export const en = {
         "a5": "No. Like all tools on Alatify, this converter is completely free, has no caps or limits, and requires no registration."
       },
       "privacyNotice": "Alatify processes your document files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Securely format and compile Markdown to PDF directly on your own device."
+    },
+    "pdf-to-markdown": {
+      "intro": "Extract text layers from PDF documents and format them into readable Markdown — entirely in your browser. Your files never leave your device.",
+      "howItWorks": {
+        "step1": "Choose or drag in a standard PDF document containing selectable text layers.",
+        "step2": "Click convert to analyze text strings, layout structures, and lines fully offline.",
+        "step3": "Compute dominant font sizes to map heading tiers and lists automatically.",
+        "step4": "Review the formatted Markdown results, then copy the text or download the .md file."
+      },
+      "useCases": {
+        "subtitle": "Convert reading material, papers, and transcripts back to clean markup formats.",
+        "case1": "Recover plain text from scholastic publications or journals and format them into Markdown for note-taking tools.",
+        "case2": "Convert text-heavy guides, technical papers, or open-licensed ebooks into Markdown drafts for editing.",
+        "case3": "Process sensitive invoices, contracts, or records locally and confidentially, keeping text off third-party servers.",
+        "case4": "Instantly convert study guides, outline reports, and reference documents into tidy formatted wiki notes."
+      },
+      "faq": {
+        "q1": "Is my document uploaded to a server?",
+        "a1": "No. All file processing, parsing, and text extraction is completed 100% on the client side inside your web browser. Nothing is uploaded to any backend.",
+        "q2": "Can it extract text from scanned or picture-only PDFs?",
+        "a2": "No. Scanned PDFs are image files compiled into PDF envelopes and do not contain text metadata. Since we run entirely offline, OCR is out of scope. If scanned sheets are detected, a warning banner will appear.",
+        "q3": "How does it detect headings and lists?",
+        "a3": "It scans the page's character sizes to compute the dominant body font height. It then classifies larger lines into H1, H2, or H3 depending on size ratios. Lists are parsed by identifying leading markers like dots or numbers.",
+        "q4": "What are the limitations of this tool?",
+        "a4": "This converter extracts plain layout structures. PDF doesn't have native column or grid definitions, meaning tables will convert into flat linear rows, and reading order in multi-column sheets might wrap awkwardly."
+      },
+      "privacyNotice": "All PDF text extraction and document compiling is done entirely inside your local browser sandbox. No file is ever sent to a server or external cloud provider, preserving absolute confidentiality and privacy.",
+      "placeholder": "Upload a document and select \"Convert to Markdown\" to see the formatted output here.",
+      "warningScanned": "We detected little to no selectable text in this document. It is highly likely this is a scanned/image-only PDF with no embedded text layers. Offline OCR is not supported.",
+      "limitations": {
+        "tables": "PDFs contain no tabular semantics. Grid coordinates are flat and output is linear.",
+        "columns": "Text runs are processed sequentially, reading order may interleave.",
+        "scanned": "No offline OCR is performed. Scanned pages will trigger a warning banner."
+      }
+    },
+    "pdf-pages": {
+      "intro": "Load one or more PDFs, rearrange pages with drag-and-drop, rotate or remove individual pages, and export a new PDF — entirely in your browser. Loading multiple files merges them in order. Select pages to extract a subset. No upload, no account, no data leaves your device.",
+      "howItWorks": {
+        "step1": "Drop one or more PDF files. Pages from every file appear in a single list, in load order — that is your merge.",
+        "step2": "Drag rows to reorder, rotate individual pages 90°, delete unwanted pages, or select pages for extraction.",
+        "step3": "Click Merge & Export All Pages for the full working set, or Export selected pages to split out only the pages you checked.",
+        "step4": "pdf-lib copies original page objects into a new file — no rasterization, so quality and text selectability are preserved."
+      },
+      "useCases": {
+        "subtitle": "Merge, split, and tidy PDFs without desktop software or cloud uploads.",
+        "case1": "Combine invoices, contracts, or scanned pages from multiple files into one ordered document.",
+        "case2": "Select only the pages you need and export a smaller PDF — useful for sharing one section of a large file.",
+        "case3": "Reorder pages after a bad scan or a mixed export without re-printing or re-scanning.",
+        "case4": "Turn individual landscape or upside-down pages upright before exporting the final PDF."
+      },
+      "faq": {
+        "q1": "Are my PDFs uploaded to a server?",
+        "a1": "No. All loading, editing, and exporting happens locally in your browser. Your files never leave your device.",
+        "q2": "How do I merge two PDFs?",
+        "a2": "Load the first file, then click Add more files and load the second. Pages appear in one combined list in the order you added them. Merge & Export All Pages to save the merged result.",
+        "q3": "How do I split or extract pages?",
+        "a3": "Select the pages you want with the checkbox on each row, then click Export selected pages. Only checked pages are included in the download.",
+        "q4": "Does export reduce quality?",
+        "a4": "No. pdf-lib copies the original page objects into a new PDF. Content is not re-rendered or rasterized.",
+        "q5": "Can I use password-protected PDFs?",
+        "a5": "Encrypted or password-protected PDFs cannot be opened in the browser without the password. Remove protection first with a desktop tool, then load the file here."
+      },
+      "privacyNotice": "Every PDF you load is parsed and processed entirely inside your browser using pdf-lib. Files are never uploaded to a server, stored on our infrastructure, or sent to third parties. Close the tab and your documents are gone from memory.",
+      "exportAllExplanation": "Export all pages as one PDF, in the order shown above.",
+      "exportSelectedPlaceholder": "Select pages first.",
+      "exportSelectedExplanation": "Only checked pages are exported."
     }
   },
   "toolsPage": {
