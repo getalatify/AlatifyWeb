@@ -617,7 +617,7 @@ export default function PdfPagesClient() {
           <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
             Related Tools
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Link
               href="/tools/converter"
               className="flex flex-col justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
@@ -653,6 +653,25 @@ export default function PdfPagesClient() {
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
                     Turn Markdown notes and docs into clean, printable PDFs in
                     your browser.
+                  </p>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              href="/tools/pdf-to-markdown"
+              className="flex flex-col justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors shrink-0">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                    PDF to Markdown
+                  </h4>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
+                    Extract text from a PDF into clean Markdown, on-device.
                   </p>
                 </div>
               </div>

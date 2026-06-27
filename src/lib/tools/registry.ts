@@ -298,43 +298,37 @@ export const TOOLS: ToolEntry[] = [
     ],
   },
 
-  // ──────────────────────────────────────────────────────────────────────
-  // DO NOT ADD THE TWO NEW PDF TOOLS HERE YET.
-  // pdf-to-markdown (Antigravity) and pdf-pages (Grok) get appended on the
-  // INTEGRATION branch, after their pages merge. Keyword sets are pre-drafted
-  // below — keep them out of this array until integration.
-  //
-  // {
-  //   id: "pdf-to-markdown",
-  //   name: "PDF to Markdown",
-  //   route: "/tools/pdf-to-markdown",
-  //   category: "document",
-  //   description: "Extract text from a PDF into clean Markdown, on-device.",
-  //   keywords: [
-  //     // === ENGLISH ===
-  //     "pdf to markdown", "pdf to md", "convert pdf to markdown", "pdf converter",
-  //     "extract text from pdf", "pdf to text", "pdf to readme", "markdown from pdf",
-  //     "pdf extract", "pdf text extractor",
-  //     // === BAHASA INDONESIA ===
-  //     "pdf ke markdown", "pdf ke md", "konversi pdf ke markdown", "ekstrak teks pdf",
-  //     "pdf ke teks", "ambil teks dari pdf", "konverter pdf",
-  //   ],
-  // },
-  // {
-  //   id: "pdf-pages",
-  //   name: "PDF Page Tools",
-  //   route: "/tools/pdf-pages",
-  //   category: "document",
-  //   description: "Merge, split, reorder, rotate, and delete PDF pages on-device.",
-  //   keywords: [
-  //     // === ENGLISH ===
-  //     "merge pdf", "combine pdf", "pdf merger", "split pdf", "pdf splitter",
-  //     "reorder pdf", "rearrange pdf", "rotate pdf", "delete pdf page",
-  //     "remove page from pdf", "extract pages", "organize pdf", "pdf page editor",
-  //     // === BAHASA INDONESIA ===
-  //     "gabung pdf", "gabungkan pdf", "pisah pdf", "split pdf", "urutkan pdf",
-  //     "putar halaman pdf", "hapus halaman pdf", "ambil halaman pdf",
-  //     "atur halaman pdf", "edit halaman pdf",
-  //   ],
-  // },
+  {
+    id: "pdf-to-markdown",
+    name: "PDF to Markdown",
+    route: "/tools/pdf-to-markdown",
+    category: "document",
+    description: "Extract text from a PDF into clean Markdown, on-device.",
+    keywords: [
+      // === ENGLISH ===
+      "pdf to markdown", "pdf to md", "convert pdf to markdown", "pdf converter",
+      "extract text from pdf", "pdf to text", "pdf to readme", "markdown from pdf",
+      "pdf extract", "pdf text extractor",
+      // === BAHASA INDONESIA ===
+      "pdf ke markdown", "pdf ke md", "konversi pdf ke markdown", "ekstrak teks pdf",
+      "pdf ke teks", "ambil teks dari pdf", "konverter pdf",
+    ],
+  },
+  {
+    id: "pdf-pages",
+    name: "PDF Page Tools",
+    route: "/tools/pdf-pages",
+    category: "document",
+    description: "Merge, split, reorder, rotate, and delete PDF pages on-device.",
+    keywords: [
+      // === ENGLISH ===
+      "merge pdf", "combine pdf", "pdf merger", "split pdf", "pdf splitter",
+      "reorder pdf", "rearrange pdf", "rotate pdf", "delete pdf page",
+      "remove page from pdf", "extract pages", "organize pdf", "pdf page editor",
+      // === BAHASA INDONESIA ===
+      "gabung pdf", "gabungkan pdf", "pisah pdf", "split pdf", "urutkan pdf",
+      "putar halaman pdf", "hapus halaman pdf", "ambil halaman pdf",
+      "atur halaman pdf", "edit halaman pdf",
+    ],
+  },
 ];
