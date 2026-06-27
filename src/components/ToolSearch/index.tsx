@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Search, X } from "lucide-react";
 import Link from "next/link";
 import { searchTools, SEARCHABLE_TOOLS } from "@/lib/tools/search";
@@ -11,14 +12,18 @@ export function ToolSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const [coords, setCoords] = useState<{ top: number; left: number; width: number } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const results = query ? searchTools(query).map(r => r.tool) : SEARCHABLE_TOOLS;
 
   useEffect(() => {
+    setMounted(true);
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
@@ -31,13 +36,59 @@ export function ToolSearch() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        !(dropdownRef.current && dropdownRef.current.contains(target))
+      ) {
         setIsOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updatePosition = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const isMobile = window.innerWidth < 640;
+        
+        let left: number;
+        let width: number;
+        
+        if (isMobile) {
+          width = window.innerWidth - 32; // calc(100vw - 2rem)
+          const leftVal = rect.right + window.scrollX - width;
+          left = Math.max(16, leftVal);
+        } else {
+          width = 400; // sm:w-[400px]
+          left = rect.left + window.scrollX;
+          if (left + width > window.innerWidth - 16) {
+            left = Math.max(16, window.innerWidth - width - 16);
+          }
+        }
+        
+        setCoords({
+          top: rect.bottom + window.scrollY,
+          left,
+          width,
+        });
+      }
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, { capture: true });
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, { capture: true });
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -85,8 +136,18 @@ export function ToolSearch() {
         </kbd>
       </button>
 
-      {isOpen && (
-        <div className="absolute top-full right-0 sm:right-auto mt-2 w-[calc(100vw-2rem)] sm:w-[400px] bg-background border border-border rounded-xl shadow-lg overflow-hidden flex flex-col">
+      {isOpen && mounted && coords && createPortal(
+        <div
+          ref={dropdownRef}
+          style={{
+            position: "absolute",
+            top: `${coords.top + 8}px`,
+            left: `${coords.left}px`,
+            width: `${coords.width}px`,
+            zIndex: 9999,
+          }}
+          className="bg-background border border-border rounded-xl shadow-lg overflow-hidden flex flex-col"
+        >
           <div className="flex items-center p-3 border-b border-border/50">
             <Search className="w-5 h-5 text-muted-foreground shrink-0 mr-2" />
             <input
@@ -138,7 +199,8 @@ export function ToolSearch() {
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
