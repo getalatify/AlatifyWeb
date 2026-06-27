@@ -1408,6 +1408,8 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                       variant="ghost"
                       size="sm"
                       onClick={handleRemoveLogo}
+                      title="Remove Logo"
+                      aria-label="Remove logo"
                       className="text-destructive hover:text-destructive hover:bg-destructive/10 p-2 shrink-0 h-8 w-8 rounded-lg"
                     >
                       <X className="w-4 h-4" />
@@ -1543,6 +1545,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                       key={pos}
                       onClick={() => setSettings(prev => ({ ...prev, gridPosition: pos }))}
                       title={pos}
+                      aria-label={`Align watermark to ${pos}`}
                       className={`w-8 h-8 rounded-lg border transition-all ${settings.gridPosition === pos ? "bg-primary border-primary shadow-md text-primary-foreground scale-105" : "bg-card border-border/60 text-muted-foreground hover:bg-secondary/80 hover:text-foreground"}`}
                     >
                       <div className={`w-2 h-2 rounded-full mx-auto ${settings.gridPosition === pos ? "bg-background" : "bg-muted-foreground/35"}`} />
@@ -1820,6 +1823,8 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                           size="sm"
                           onClick={() => moveImageItem(idx, 'up')}
                           disabled={idx === 0}
+                          title="Move Up"
+                          aria-label="Move item up"
                           className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg"
                         >
                           <ArrowUp className="w-3.5 h-3.5" />
@@ -1829,6 +1834,8 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                           size="sm"
                           onClick={() => moveImageItem(idx, 'down')}
                           disabled={idx === imagesList.length - 1}
+                          title="Move Down"
+                          aria-label="Move item down"
                           className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg"
                         >
                           <ArrowDown className="w-3.5 h-3.5" />
@@ -1837,6 +1844,8 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                           variant="ghost"
                           size="sm"
                           onClick={() => removeImageItem(item.id)}
+                          title="Remove Image"
+                          aria-label="Remove item from queue"
                           className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg ml-1"
                         >
                           <X className="w-3.5 h-3.5" />
