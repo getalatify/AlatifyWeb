@@ -13,7 +13,6 @@ import {
   CheckCircle2,
   Minimize2,
   RefreshCw,
-  Shield,
   FileCode,
   Copy,
   Check,
@@ -103,7 +102,7 @@ export default function PdfToMarkdownClient() {
       const pdf = await loadingTask.promise;
       const numPages = pdf.numPages;
       
-      let pageMarkdowns: string[] = [];
+      const pageMarkdowns: string[] = [];
       let emptyPageCount = 0;
       
       for (let pageNum = 1; pageNum <= numPages; pageNum++) {
@@ -377,10 +376,11 @@ export default function PdfToMarkdownClient() {
       
       toast.dismiss(toastId);
       toast.success("PDF converted to Markdown successfully!");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       toast.dismiss(toastId);
-      toast.error(err.message || "An error occurred while reading the PDF.");
+      const errorMessage = err instanceof Error ? err.message : "An error occurred while reading the PDF.";
+      toast.error(errorMessage);
     } finally {
       setIsConverting(false);
     }
@@ -393,7 +393,7 @@ export default function PdfToMarkdownClient() {
       setCopied(true);
       toast.success("Markdown copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch {
       toast.error("Failed to copy text.");
     }
   };
