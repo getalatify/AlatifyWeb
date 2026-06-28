@@ -10,6 +10,9 @@ export const metadata: Metadata = {
     title: 'All Image Tools | Alatify',
     description: 'Explore Alatify\'s complete collection of client-side browser tools. High-fidelity image manipulation, completely private.',
   },
+  alternates: {
+    canonical: 'https://getalatify.com/tools',
+  },
 };
 
 export default function ToolsHubPage() {
