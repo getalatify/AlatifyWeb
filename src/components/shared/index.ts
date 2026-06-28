@@ -8,6 +8,7 @@ export { Header } from "./header";
 export { Footer } from "./footer";
 export { Logo } from "./logo";
 export { PrivacyNotice } from "./privacy-notice";
+export { BackToTop } from "./back-to-top";
 
 
 

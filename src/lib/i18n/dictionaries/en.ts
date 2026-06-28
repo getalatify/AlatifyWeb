@@ -513,7 +513,8 @@ export const en = {
         "q5": "Do I need to pay or create an account?",
         "a5": "No. Like all tools on Alatify, this converter is completely free, has no caps or limits, and requires no registration."
       },
-      "privacyNotice": "Alatify processes your document files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Securely format and compile Markdown to PDF directly on your own device."
+      "privacyNotice": "Alatify processes your document files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Securely format and compile Markdown to PDF directly on your own device.",
+      "downloadMd": "Download .md"
     },
     "pdf-to-markdown": {
       "intro": "Extract text layers from PDF documents and format them into readable Markdown — entirely in your browser. Your files never leave your device.",
@@ -584,5 +585,16 @@ export const en = {
   },
   "toolsPage": {
     "intro": "A curated collection of privacy-first image tools that run entirely in your browser — no uploads, no sign-up, fully private. From Background Remover and Image Compressor to format conversion, resizing, and more, every tool processes your images right on your device."
+  },
+  "tools-image": {
+    "intro": "Browse our privacy-first tools for image editing, optimization, and conversion. Everything runs locally in your browser sandbox.",
+    "nav": "Image"
+  },
+  "tools-document": {
+    "intro": "Access our secure, browser-based utilities for PDF page operations, Markdown conversion, and text extraction.",
+    "nav": "Document"
+  },
+  "tools-all": {
+    "nav": "All"
   }
 };

@@ -513,7 +513,8 @@ export const id = {
         "q5": "Apakah saya harus membayar atau membuat akun?",
         "a5": "Tidak. Seperti semua alat di Alatify, konverter ini sepenuhnya gratis, tanpa batas pemakaian, dan tidak memerlukan pendaftaran."
       },
-      "privacyNotice": "Alatify memproses file dokumen Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Format dan kompilasi Markdown ke PDF secara aman langsung di perangkat Anda sendiri."
+      "privacyNotice": "Alatify memproses file dokumen Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Format dan kompilasi Markdown ke PDF secara aman langsung di perangkat Anda sendiri.",
+      "downloadMd": ""
     },
     "pdf-to-markdown": {
     "intro": "Ekstrak lapisan teks dari dokumen PDF dan ubah menjadi Markdown yang mudah dibaca — sepenuhnya di browser Anda. File Anda tidak pernah meninggalkan perangkat.",
@@ -584,5 +585,16 @@ export const id = {
   },
   "toolsPage": {
     "intro": "Koleksi pilihan alat gambar yang mengutamakan privasi dan berjalan sepenuhnya di browser Anda — tanpa unggah, tanpa daftar akun, sepenuhnya privat. Mulai dari Background Remover dan Image Compressor hingga konversi format, pengubahan ukuran, dan lainnya, setiap alat memproses gambar Anda langsung di perangkat."
+  },
+  "tools-image": {
+    "intro": "",
+    "nav": ""
+  },
+  "tools-document": {
+    "intro": "",
+    "nav": ""
+  },
+  "tools-all": {
+    "nav": ""
   }
 };

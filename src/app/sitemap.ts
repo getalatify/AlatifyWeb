@@ -5,6 +5,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     '',
     '/tools',
+    '/tools/image',
+    '/tools/document',
     '/tools/compressor',
     '/tools/bg-remover',
     '/tools/resizer',
