@@ -157,6 +157,25 @@ export default function MarkdownToPdfClient() {
     }
   };
 
+  const handleDownloadMd = () => {
+    if (!markdown.trim()) return;
+    try {
+      const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = "document.md";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+      toast.success("Markdown file downloaded successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to download Markdown file.");
+    }
+  };
+
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 overflow-x-clip">
       {/* Background Glows for Premium Vibe */}
@@ -251,23 +270,34 @@ export default function MarkdownToPdfClient() {
               className="w-full h-[450px] p-5 rounded-2xl bg-card border border-border/40 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-sm font-mono leading-relaxed outline-none resize-none transition-all shadow-inner placeholder:text-muted-foreground/60"
             />
 
-            <Button
-              onClick={handleDownload}
-              disabled={isExporting || !markdown.trim()}
-              className="w-full py-6 text-sm font-extrabold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 active:scale-[0.99] transition-all gap-2 flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
-            >
-              {isExporting ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  Generating PDF...
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4" />
-                  Download PDF
-                </>
-              )}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                onClick={handleDownload}
+                disabled={isExporting || !markdown.trim()}
+                className="flex-1 py-6 text-sm font-extrabold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 active:scale-[0.99] transition-all gap-2 flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
+              >
+                {isExporting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Generating PDF...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    Download PDF
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={handleDownloadMd}
+                disabled={!markdown.trim()}
+                variant="outline"
+                className="flex-1 py-6 text-sm font-extrabold rounded-xl border-border bg-card text-foreground hover:bg-secondary/40 active:scale-[0.99] transition-all gap-2 flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
+              >
+                <Download className="w-4 h-4" />
+                {t("tools.markdown-to-pdf.downloadMd")}
+              </Button>
+            </div>
           </div>
 
           {/* Right Panel: Live Preview */}

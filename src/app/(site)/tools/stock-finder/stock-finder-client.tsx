@@ -159,7 +159,7 @@ export default function StockFinderClient() {
 
     try {
       const pendingData = {
-        url: item.previewUrl,
+        url: item.provider === 'pixabay' ? item.fullUrl : item.previewUrl,
         provider: item.provider,
         id: item.id,
       };

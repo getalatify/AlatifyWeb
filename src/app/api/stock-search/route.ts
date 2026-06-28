@@ -80,6 +80,8 @@ interface PixabayHit {
   // Only present when the account has full API access approval. For vectors,
   // this is the true SVG resource; otherwise omitted.
   vectorURL?: string;
+  fullHDURL?: string;
+  imageURL?: string;
 }
 
 // In-Memory Cache for Pixabay (24 hours TTL)
@@ -166,7 +168,7 @@ export async function GET(req: NextRequest) {
         name: item.user.name,
         profileUrl: item.user.links.html,
       },
-      sourceUrl: item.links.html,
+      sourceUrl: `${item.links.html}?utm_source=alatify&utm_medium=referral`,
       downloadTriggerUrl: item.links.download_location,
       altText: item.alt_description || item.description || 'Stock photo from Unsplash',
       contentType: 'photo',
@@ -249,8 +251,8 @@ export async function GET(req: NextRequest) {
       id: `pixabay_${item.id}`,
       provider: 'pixabay',
       thumbnailUrl: item.previewURL || item.webformatURL,
-      previewUrl: item.largeImageURL || item.webformatURL,
-      fullUrl: item.largeImageURL,
+      previewUrl: item.fullHDURL || item.largeImageURL || item.webformatURL,
+      fullUrl: item.vectorURL || item.fullHDURL || item.imageURL || item.largeImageURL,
       width: item.imageWidth,
       height: item.imageHeight,
       photographer: {
