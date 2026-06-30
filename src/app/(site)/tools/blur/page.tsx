@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const BlurClient = dynamic(() => import("./blur-client"), { ssr: false });
+const BlurClient = dynamic(() => import("./blur-client"));
 
 export const metadata: Metadata = {
   title: "Blur & Redact Image Online — Hide Faces, License Plates & Sensitive Info, No Upload | Alatify",

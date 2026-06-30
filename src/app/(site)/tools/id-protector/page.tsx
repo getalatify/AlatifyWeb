@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const IdProtectorClient = dynamic(() => import("./id-protector-client"), { ssr: false });
+const IdProtectorClient = dynamic(() => import("./id-protector-client"));
 
 export const metadata: Metadata = {
   title: "ID Privacy Shield — Redact & Watermark Locally | Alatify",

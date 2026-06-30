@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const SteganographyClient = dynamic(() => import("./steganography-client"), { ssr: false });
+const SteganographyClient = dynamic(() => import("./steganography-client"));
 
 export const metadata: Metadata = {
   title: "Image Steganography — Hide Encrypted Text in Images Offline | Alatify",
