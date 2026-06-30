@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { TOOLS } from "@/lib/tools/registry";
+import { TOOLS, ToolEntry } from "@/lib/tools/registry";
 import { 
   ArrowLeft, 
   ArrowDown,
@@ -26,130 +26,6 @@ import {
   QrCode,
   FileText
 } from "lucide-react";
-
-const pipelineTools = [
-  {
-    name: "Image Compressor",
-    description: "Lossy and lossless client-side compression. Reduce file sizes by up to 90% while maintaining crisp details.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Minimize2,
-    href: "/tools/compressor",
-  },
-  {
-    name: "Background Remover",
-    description: "Instant AI-powered local subject extraction and backdrop removal running completely inside your browser sandbox.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Scissors,
-    href: "/tools/bg-remover",
-  },
-  {
-    name: "Image Resizer",
-    description: "Batch image dimension scaling by percentage, pixels, or ratio locks using high-quality resampling filters.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Maximize2,
-    href: "/tools/resizer",
-  },
-  {
-    name: "Format Converter",
-    description: "Convert image files between PNG, JPEG, and WebP formats instantly without server uploads.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: RefreshCw,
-    href: "/tools/converter",
-  },
-  {
-    name: "Image Cropper",
-    description: "Interactive precise crop ratios, bounding box adjustments, and rotation alignment with fluid real-time feedback.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Crop,
-    href: "/tools/cropper",
-  },
-
-  {
-    name: "EXIF Privacy Cleaner",
-    description: "Remove location data, camera info, and metadata from your images to protect privacy before sharing.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Shield,
-    href: "/tools/exif-cleaner",
-  },
-  {
-    name: "Blur & Redact",
-    description: "Obscure faces, license plates, and sensitive details in your images entirely in the browser using boxes or brush strokes.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: EyeOff,
-    href: "/tools/blur",
-  },
-  {
-    name: "Watermark",
-    description: "Apply custom text or logo watermarks to your images locally in your browser with relative sizing.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Type,
-    href: "/tools/watermark",
-  },
-  {
-    name: "ID Privacy Shield",
-    description: "Redact and watermark sensitive documents — entirely on your device.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Shield,
-    href: "/tools/id-protector",
-  },
-  {
-    name: "AI Upscaler",
-    description: "Enhance image resolution up to 4x using on-device AI. Sharper details, completely private.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Sparkles,
-    href: "/tools/upscaler",
-  },
-  {
-    name: "Steganography",
-    description: "Hide an encrypted text message inside an ordinary-looking image — entirely on your device.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: Binary,
-    href: "/tools/steganography",
-  },
-  {
-    name: "QR Toolkit",
-    description: "Generate clean, tracker-free QR codes and scan unknown ones safely.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: QrCode,
-    href: "/tools/qr-toolkit",
-  },
-  {
-    name: "Markdown to PDF",
-    description: "Convert Markdown syntax or raw text to clean, printable PDF documents 100% locally in your browser.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: FileText,
-    href: "/tools/markdown-to-pdf",
-  },
-  {
-    name: "PDF to Markdown",
-    description: "Extract text from a PDF into clean Markdown, on-device.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: FileText,
-    href: "/tools/pdf-to-markdown",
-  },
-  {
-    name: "PDF Page Tools",
-    description: "Merge, split, reorder, rotate, and delete PDF pages on-device.",
-    status: "Available",
-    statusColor: "bg-success/10 text-success border-success/20",
-    icon: FileText,
-    href: "/tools/pdf-pages",
-  },
-];
 
 const TOOL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   "compressor": Minimize2,
@@ -170,6 +46,15 @@ const TOOL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
   "pdf-pages": FileText,
 };
 
+const mapToolToCard = (t: ToolEntry) => ({
+  name: t.name,
+  description: t.description,
+  status: "Available",
+  statusColor: "bg-success/10 text-success border-success/20",
+  icon: TOOL_ICONS[t.id] ?? FileText,
+  href: t.route,
+});
+
 export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "image" | "document" } = {}) {
   const t = useT();
   const pathname = usePathname();
@@ -181,25 +66,11 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
 
   const displayTools = React.useMemo(() => {
     if (categoryFilter === "document") {
-      return TOOLS.filter(t => t.category === "document").map(t => ({
-        name: t.name,
-        description: t.description,
-        status: "Available",
-        statusColor: "bg-success/10 text-success border-success/20",
-        icon: TOOL_ICONS[t.id] || FileText,
-        href: t.route,
-      }));
+      return TOOLS.filter(t => t.category === "document").map(mapToolToCard);
     } else if (categoryFilter === "image") {
-      return TOOLS.filter(t => t.category !== "document" && t.id !== "stock-finder").map(t => ({
-        name: t.name,
-        description: t.description,
-        status: "Available",
-        statusColor: "bg-success/10 text-success border-success/20",
-        icon: TOOL_ICONS[t.id] || Sparkles,
-        href: t.route,
-      }));
+      return TOOLS.filter(t => t.category !== "document" && t.id !== "stock-finder").map(mapToolToCard);
     }
-    return pipelineTools;
+    return TOOLS.filter(t => t.id !== "stock-finder").map(mapToolToCard);
   }, [categoryFilter]);
 
   const introText = React.useMemo(() => {
@@ -351,10 +222,10 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
           {/* Section Header */}
           <div className="text-center space-y-2">
             <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-              What we&apos;re building
+              Our tools
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-              Our pipeline of upcoming utilities designed to run 100% locally on your device.
+              Every tool runs 100% locally in your browser — nothing leaves your device.
             </p>
           </div>
 

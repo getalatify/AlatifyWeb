@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const StockFinderClient = dynamic(() => import("./stock-finder-client"), { ssr: false });
+const StockFinderClient = dynamic(() => import("./stock-finder-client"));
 
 export const metadata: Metadata = {
   title: "Free Stock Photos, Illustrations & Vectors — Search & Edit | Alatify",

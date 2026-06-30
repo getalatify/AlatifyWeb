@@ -4,7 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { JsonLd } from "@/components/json-ld";
 
-const WatermarkClient = dynamic(() => import("./watermark-client"), { ssr: false });
+const WatermarkClient = dynamic(() => import("./watermark-client"));
 
 export const metadata: Metadata = {
   title: "Free Image Watermark Tool — Add Text or Logo Watermarks, Batch | Alatify",

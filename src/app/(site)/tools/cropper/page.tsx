@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const CropperClient = dynamic(() => import("./cropper-client"), { ssr: false });
+const CropperClient = dynamic(() => import("./cropper-client"));
 
 export const metadata: Metadata = {
   title: "Free Image Cropper — Crop & Straighten Online, No Upload | Alatify",

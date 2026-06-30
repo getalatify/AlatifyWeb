@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const ResizerClient = dynamic(() => import("./resizer-client"), { ssr: false });
+const ResizerClient = dynamic(() => import("./resizer-client"));
 
 export const metadata: Metadata = {
   title: "Free Image Resizer — Resize by Pixels or Percentage, No Upload | Alatify",

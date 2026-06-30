@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
-const ToolsClient = dynamic(() => import("../tools-client"), { ssr: false });
+const ToolsClient = dynamic(() => import("../tools-client"));
 
 export const metadata: Metadata = {
   title: "Free Image Editing & Optimization Tools | Alatify",

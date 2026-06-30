@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const CompressorClient = dynamic(() => import("./compressor-client"), { ssr: false });
+const CompressorClient = dynamic(() => import("./compressor-client"));
 
 export const metadata: Metadata = {
   title: "Free Image Compressor — Reduce File Size, No Upload | Alatify",
