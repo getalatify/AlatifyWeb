@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const ConverterClient = dynamic(() => import("./converter-client"), { ssr: false });
+const ConverterClient = dynamic(() => import("./converter-client"));
 
 export const metadata: Metadata = {
   title: "Free Image Converter — Convert to PNG, JPG, WebP, ICO, SVG & PDF | Alatify",

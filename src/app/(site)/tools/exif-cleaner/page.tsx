@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const ExifCleanerClient = dynamic(() => import("./exif-cleaner-client"), { ssr: false });
+const ExifCleanerClient = dynamic(() => import("./exif-cleaner-client"));
 
 export const metadata: Metadata = {
   title: "Remove EXIF & GPS Metadata from Photos — Free, No Upload | Alatify",

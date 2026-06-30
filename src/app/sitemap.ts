@@ -1,32 +1,29 @@
 import { MetadataRoute } from 'next';
+import { TOOLS } from '@/lib/tools/registry';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://getalatify.com';
-  const routes = [
+  
+  const staticRoutes = [
     '',
     '/tools',
     '/tools/image',
     '/tools/document',
-    '/tools/compressor',
-    '/tools/bg-remover',
-    '/tools/resizer',
-    '/tools/converter',
-    '/tools/cropper',
-    '/tools/exif-cleaner',
-    '/tools/blur',
-    '/tools/id-protector',
-    '/tools/stock-finder',
-    '/tools/watermark',
-    '/tools/upscaler',
-    '/tools/steganography',
-    '/tools/qr-toolkit',
-    '/tools/markdown-to-pdf',
-    '/tools/pdf-to-markdown',
-    '/tools/pdf-pages',
+  ];
+
+  const toolRoutes = TOOLS.map((t) => t.route);
+
+  const otherRoutes = [
     '/privacy',
     '/terms',
     '/about',
     '/embed',
+  ];
+
+  const routes = [
+    ...staticRoutes,
+    ...toolRoutes,
+    ...otherRoutes,
   ];
 
   return routes.map((route) => ({

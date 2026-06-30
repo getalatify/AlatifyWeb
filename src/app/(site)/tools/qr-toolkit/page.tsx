@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const QrToolkitClient = dynamic(() => import("./qr-toolkit-client"), { ssr: false });
+const QrToolkitClient = dynamic(() => import("./qr-toolkit-client"));
 
 export const metadata: Metadata = {
   title: "QR Toolkit — Free Offline QR Generator & Safe Scanner | Alatify",
