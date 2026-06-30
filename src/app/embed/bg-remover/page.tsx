@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
-const BgRemoverClient = dynamic(() => import("@/app/(site)/tools/bg-remover/bg-remover-client"), {
-  ssr: false,
-});
+const BgRemoverClient = dynamic(() => import("@/app/(site)/tools/bg-remover/bg-remover-client"));
 
 export const metadata: Metadata = {
   robots: {

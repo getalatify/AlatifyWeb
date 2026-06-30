@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const BgRemoverClient = dynamic(() => import("./bg-remover-client"), { ssr: false });
+const BgRemoverClient = dynamic(() => import("./bg-remover-client"));
 
 export const metadata: Metadata = {
   title: "Free Background Remover — Unlimited, Full-Res, No Upload | Alatify",

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { JsonLd } from "@/components/json-ld";
 
-const UpscalerClient = dynamic(() => import("./upscaler-client"), { ssr: false });
+const UpscalerClient = dynamic(() => import("./upscaler-client"));
 
 export const metadata: Metadata = {
   title: "Free AI Image Upscaler — Enlarge Photos 2x & 4x | Alatify",

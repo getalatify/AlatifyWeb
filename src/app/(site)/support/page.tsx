@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
-const SupportClient = dynamic(() => import("./support-client"), { ssr: false });
+const SupportClient = dynamic(() => import("./support-client"));
 
 export const metadata: Metadata = {
   title: "Support Us",
