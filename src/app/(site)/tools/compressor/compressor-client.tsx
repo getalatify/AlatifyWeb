@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { usePendingImage } from "@/hooks/use-pending-image";
 import { useT } from "@/lib/i18n/useT";
 
-export default function ImageCompressorPage() {
+export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boolean }) {
   const t = useT();
   // Isolated Local States
   const [activeImage, setActiveImage] = useState<File | null>(null);
@@ -186,14 +186,24 @@ export default function ImageCompressorPage() {
       ? Math.round(((originalSize - compressedSize) / originalSize) * 100)
       : 0;
 
+  const ContainerTag = isEmbed ? "div" : "main";
+  const containerClasses = isEmbed
+    ? "relative w-full h-full min-h-[620px] bg-background text-foreground transition-colors duration-300 select-none flex flex-col p-4 overflow-y-auto"
+    : "relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip";
+
+  const contentClasses = isEmbed
+    ? "flex-1 w-full z-10 flex flex-col gap-4"
+    : "flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10";
+
   return (
-    <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip">
+    <ContainerTag className={containerClasses}>
+      {isEmbed && <EmbedBrandHeader slug="compressor" />}
       {/* Background Glows for Premium Vibe */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Bar */}
-      <Header showBackToTools />
+      {!isEmbed && <Header showBackToTools />}
 
       {/* Hidden File Input for Replaces */}
       <input
@@ -204,9 +214,11 @@ export default function ImageCompressorPage() {
         className="hidden"
       />
 
-      <div className="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10">
+      <div className={contentClasses}>
+        {isEmbed && <EmbedHelpBubble slug="compressor" />}
         {/* Intro Header */}
-        <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
+        {!isEmbed && (
+          <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
             <Minimize2 className="w-3.5 h-3.5 text-primary" />
             Image Compressor
@@ -218,6 +230,7 @@ export default function ImageCompressorPage() {
             {t("tools.compressor.intro")}
           </p>
         </section>
+        )}
 
         {/* Conditional Layout Rendering */}
         {isProcessingPending ? (
@@ -507,203 +520,213 @@ export default function ImageCompressorPage() {
             </div>
           </section>
         )}
-        {!activeImage && <UrlInputHelp />}
+        {!isEmbed && !activeImage && <UrlInputHelp />}
 
-        {/* How It Works Guide Section */}
-        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
-          <div className="text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
-              How It Works
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Compress image sizes in four quick steps.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {
-                step: "01",
-                title: "Upload",
-                text: t("tools.compressor.howItWorks.step1"),
-              },
-              {
-                step: "02",
-                title: "Adjust",
-                text: t("tools.compressor.howItWorks.step2"),
-              },
-              {
-                step: "03",
-                title: "Compress",
-                text: t("tools.compressor.howItWorks.step3"),
-              },
-              {
-                step: "04",
-                title: "Download",
-                text: t("tools.compressor.howItWorks.step4"),
-              },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
-              >
-                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
-                  {item.step}
-                </span>
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {item.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Use Cases Section */}
-        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
-          <div className="text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
-              What You Can Do
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Optimize files for performance, email attachments, or storage space.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              {
-                title: "Faster websites",
-                text: t("tools.compressor.useCases.case1"),
-              },
-              {
-                title: "Email & uploads",
-                text: t("tools.compressor.useCases.case2"),
-              },
-              {
-                title: "Storage",
-                text: t("tools.compressor.useCases.case3"),
-              },
-              {
-                title: "Social & marketplaces",
-                text: t("tools.compressor.useCases.case4"),
-              },
-            ].map((useCase, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
-              >
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-                  {useCase.title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {useCase.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
-          <div className="text-center sm:text-left flex items-center gap-2">
-            <HelpCircle className="w-5 h-5 text-primary" />
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
-              Frequently Asked Questions
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              {
-                q: t("tools.compressor.faq.q1"),
-                a: t("tools.compressor.faq.a1"),
-              },
-              {
-                q: t("tools.compressor.faq.q2"),
-                a: t("tools.compressor.faq.a2"),
-              },
-              {
-                q: t("tools.compressor.faq.q3"),
-                a: t("tools.compressor.faq.a3"),
-              },
-              {
-                q: t("tools.compressor.faq.q4"),
-                a: t("tools.compressor.faq.a4"),
-              },
-              {
-                q: t("tools.compressor.faq.q5"),
-                a: t("tools.compressor.faq.a5"),
-              },
-            ].map((faq, idx) => (
-              <div key={idx} className="space-y-1.5 p-1">
-                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <span>{faq.q}</span>
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
-                  {faq.a}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Related Tools Section */}
-        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
-          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
-            Related Tools
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link
-              href="/tools/converter"
-              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
-                  <RefreshCw className="w-4 h-4" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
-                    Format Converter
-                  </h4>
-                  <p className="text-[10px] text-muted-foreground">
-                    {t("shared.related.converter-formats")}
+        {!isEmbed && (
+          /* How It Works Guide Section */
+          <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                How It Works
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Compress image sizes in four quick steps.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                {
+                  step: "01",
+                  title: "Upload",
+                  text: t("tools.compressor.howItWorks.step1"),
+                },
+                {
+                  step: "02",
+                  title: "Adjust",
+                  text: t("tools.compressor.howItWorks.step2"),
+                },
+                {
+                  step: "03",
+                  title: "Compress",
+                  text: t("tools.compressor.howItWorks.step3"),
+                },
+                {
+                  step: "04",
+                  title: "Download",
+                  text: t("tools.compressor.howItWorks.step4"),
+                },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+                >
+                  <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                    {item.step}
+                  </span>
+                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {item.text}
                   </p>
                 </div>
-              </div>
-              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
-            </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
-            <Link
-              href="/tools/resizer"
-              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
-                  <Maximize2 className="w-4 h-4" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
-                    Image Resizer
-                  </h4>
-                  <p className="text-[10px] text-muted-foreground">
-                    {t("shared.related.resizer-dimensions")}
+        {!isEmbed && (
+          /* Use Cases Section */
+          <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                What You Can Do
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Optimize files for performance, email attachments, or storage space.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                {
+                  title: "Faster websites",
+                  text: t("tools.compressor.useCases.case1"),
+                },
+                {
+                  title: "Email & uploads",
+                  text: t("tools.compressor.useCases.case2"),
+                },
+                {
+                  title: "Storage",
+                  text: t("tools.compressor.useCases.case3"),
+                },
+                {
+                  title: "Social & marketplaces",
+                  text: t("tools.compressor.useCases.case4"),
+                },
+              ].map((useCase, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+                >
+                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                    {useCase.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {useCase.text}
                   </p>
                 </div>
-              </div>
-              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
-            </Link>
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
-        {/* Info panel highlighting offline privacy */}
-        <PrivacyNotice>
-          <p>
-            {t("tools.compressor.privacyNotice")}
-          </p>
-        </PrivacyNotice>
+        {!isEmbed && (
+          <>
+            {/* FAQ Section */}
+            <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+              <div className="text-center sm:text-left flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-primary" />
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                  Frequently Asked Questions
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  {
+                    q: t("tools.compressor.faq.q1"),
+                    a: t("tools.compressor.faq.a1"),
+                  },
+                  {
+                    q: t("tools.compressor.faq.q2"),
+                    a: t("tools.compressor.faq.a2"),
+                  },
+                  {
+                    q: t("tools.compressor.faq.q3"),
+                    a: t("tools.compressor.faq.a3"),
+                  },
+                  {
+                    q: t("tools.compressor.faq.q4"),
+                    a: t("tools.compressor.faq.a4"),
+                  },
+                  {
+                    q: t("tools.compressor.faq.q5"),
+                    a: t("tools.compressor.faq.a5"),
+                  },
+                ].map((faq, idx) => (
+                  <div key={idx} className="space-y-1.5 p-1">
+                    <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                      <span>{faq.q}</span>
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                      {faq.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Related Tools Section */}
+            <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
+              <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+              <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+                Related Tools
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Link
+                  href="/tools/converter"
+                  className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                      <RefreshCw className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                        Format Converter
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground">
+                        {t("shared.related.converter-formats")}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+                </Link>
+
+                <Link
+                  href="/tools/resizer"
+                  className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                      <Maximize2 className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                        Image Resizer
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground">
+                        {t("shared.related.resizer-dimensions")}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+                </Link>
+              </div>
+            </section>
+
+            {/* Info panel highlighting offline privacy */}
+            <PrivacyNotice>
+              <p>
+                {t("tools.compressor.privacyNotice")}
+              </p>
+            </PrivacyNotice>
+          </>
+        )}
       </div>
-    </main>
+
+      {isEmbed && <EmbedAttribution slug="compressor" />}
+    </ContainerTag>
   );
 }

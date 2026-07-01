@@ -3,7 +3,7 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Header, PrivacyNotice } from "@/components/shared";
+import { Header, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { QrCode, Scan, Download, Copy, Check, AlertTriangle, ExternalLink, Wifi, Type, Link2, CheckCircle2, HelpCircle, Shield, EyeOff, Camera, Upload, Info } from "lucide-react";
@@ -20,7 +20,7 @@ interface CleanedUrlInfo {
   strippedList: string[];
 }
 
-export default function QrToolkitClient() {
+export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean }) {
   const t = useT();
   const [activeTab, setActiveTab] = useState<"generate" | "scan">("generate");
 
@@ -398,33 +398,47 @@ export default function QrToolkitClient() {
     };
   }, []);
 
+  const ContainerTag = isEmbed ? "div" : "main";
+  const containerClasses = isEmbed
+    ? "relative w-full h-full min-h-[620px] bg-background text-foreground transition-colors duration-300 select-none flex flex-col p-4 overflow-y-auto"
+    : "relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip";
+
+  const contentClasses = isEmbed
+    ? "flex-1 w-full z-10 flex flex-col gap-4"
+    : "flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10";
+
   return (
-    <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip">
+    <ContainerTag className={containerClasses}>
+      {isEmbed && <EmbedBrandHeader slug="qr-toolkit" />}
       {/* Background glow effects */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header Panel */}
-      <Header showBackToTools />
+      {!isEmbed && <Header showBackToTools />}
 
-      <div className="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-10 z-10 flex flex-col gap-6 sm:gap-10">
+      <div className={contentClasses}>
+        {isEmbed && <EmbedHelpBubble slug="qr-toolkit" />}
         {/* Intro */}
-        <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
-            <QrCode className="w-3.5 h-3.5 text-primary" />
-            QR Toolkit
-          </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Generate clean, tracker-free QR codes and scan unknown ones safely.
-          </h1>
-          <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
-            {t("tools.qr-toolkit.intro")}
-          </p>
-        </section>
+        {!isEmbed && (
+          <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
+              <QrCode className="w-3.5 h-3.5 text-primary" />
+              QR Toolkit
+            </div>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
+              Generate clean, tracker-free QR codes and scan unknown ones safely.
+            </h1>
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
+              {t("tools.qr-toolkit.intro")}
+            </p>
+          </section>
+        )}
 
         {/* Tab Toggle Navigation */}
-        <div className="flex justify-center sm:justify-start">
-          <div className="inline-flex p-1 rounded-xl bg-secondary/80 border border-border/60">
+        {!isEmbed && (
+          <div className="flex justify-center sm:justify-start">
+            <div className="inline-flex p-1 rounded-xl bg-secondary/80 border border-border/60">
             <button
               onClick={() => {
                 stopCamera();
@@ -452,6 +466,7 @@ export default function QrToolkitClient() {
             </button>
           </div>
         </div>
+        )}
 
         {/* TAB 1: GENERATOR CONTENT */}
         {activeTab === "generate" ? (
@@ -822,9 +837,7 @@ export default function QrToolkitClient() {
             </div>
           </section>
         ) : (
-          // =========================================================================
-          // TAB 2: SCANNER CONTENT
-          // =========================================================================
+          !isEmbed && (
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full animate-fade-in">
             {/* Input scan channels */}
             <div className="lg:col-span-2 w-full flex flex-col gap-6">
@@ -1136,160 +1149,166 @@ export default function QrToolkitClient() {
               )}
             </div>
           </section>
+        ))}
+
+        {!isEmbed && (
+          <>
+            {/* Divider */}
+            <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-4" />
+
+            {/* How It Works Guide Section */}
+            <section className="max-w-4xl mx-auto w-full space-y-6">
+              <div className="text-center sm:text-left">
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                  How It Works
+                </h2>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Offline generation and safety auditing for QR codes in four steps.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {[
+                  {
+                    step: "01",
+                    title: "Generate / Input",
+                    text: t("tools.qr-toolkit.howItWorks.step1"),
+                  },
+                  {
+                    step: "02",
+                    title: "Customize & Save",
+                    text: t("tools.qr-toolkit.howItWorks.step2"),
+                  },
+                  {
+                    step: "03",
+                    title: "Scan Safely",
+                    text: t("tools.qr-toolkit.howItWorks.step3"),
+                  },
+                  {
+                    step: "04",
+                    title: "Audit Preview",
+                    text: t("tools.qr-toolkit.howItWorks.step4"),
+                  },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+                  >
+                    <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                      {item.step}
+                    </span>
+                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {item.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+              <div className="text-center sm:text-left flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-primary" />
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                  Frequently Asked Questions
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  {
+                    q: t("tools.qr-toolkit.faq.q1"),
+                    a: t("tools.qr-toolkit.faq.a1"),
+                  },
+                  {
+                    q: t("tools.qr-toolkit.faq.q2"),
+                    a: t("tools.qr-toolkit.faq.a2"),
+                  },
+                  {
+                    q: t("tools.qr-toolkit.faq.q3"),
+                    a: t("tools.qr-toolkit.faq.a3"),
+                  },
+                  {
+                    q: t("tools.qr-toolkit.faq.q4"),
+                    a: t("tools.qr-toolkit.faq.a4"),
+                  },
+                ].map((faq, idx) => (
+                  <div key={idx} className="space-y-1.5 p-1">
+                    <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                      <span>{faq.q}</span>
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
+                      {faq.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Related Tools internal link block */}
+            <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
+              <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
+              <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
+                Related Privacy Tools
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Link
+                  href="/tools/exif-cleaner"
+                  onClick={stopCamera}
+                  className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group animate-fade-in"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                      <Shield className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                        EXIF Privacy Cleaner
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground">
+                        {t("shared.related.exif-cleaner-metadata")}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+                </Link>
+
+                <Link
+                  href="/tools/blur"
+                  onClick={stopCamera}
+                  className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group animate-fade-in"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
+                      <EyeOff className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
+                        Blur & Redact Image
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground">
+                        {t("shared.related.blur")}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
+                </Link>
+              </div>
+            </section>
+
+            {/* Offline Privacy Notice */}
+            <PrivacyNotice>
+              <p>
+                {t("tools.qr-toolkit.privacyNotice")}
+              </p>
+            </PrivacyNotice>
+          </>
         )}
-
-        {/* Divider */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-4" />
-
-        {/* How It Works Guide Section */}
-        <section className="max-w-4xl mx-auto w-full space-y-6">
-          <div className="text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
-              How It Works
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Offline generation and safety auditing for QR codes in four steps.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[
-              {
-                step: "01",
-                title: "Generate / Input",
-                text: t("tools.qr-toolkit.howItWorks.step1"),
-              },
-              {
-                step: "02",
-                title: "Customize & Save",
-                text: t("tools.qr-toolkit.howItWorks.step2"),
-              },
-              {
-                step: "03",
-                title: "Scan Safely",
-                text: t("tools.qr-toolkit.howItWorks.step3"),
-              },
-              {
-                step: "04",
-                title: "Audit Preview",
-                text: t("tools.qr-toolkit.howItWorks.step4"),
-              },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
-              >
-                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
-                  {item.step}
-                </span>
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {item.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
-          <div className="text-center sm:text-left flex items-center gap-2">
-            <HelpCircle className="w-5 h-5 text-primary" />
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
-              Frequently Asked Questions
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              {
-                q: t("tools.qr-toolkit.faq.q1"),
-                a: t("tools.qr-toolkit.faq.a1"),
-              },
-              {
-                q: t("tools.qr-toolkit.faq.q2"),
-                a: t("tools.qr-toolkit.faq.a2"),
-              },
-              {
-                q: t("tools.qr-toolkit.faq.q3"),
-                a: t("tools.qr-toolkit.faq.a3"),
-              },
-              {
-                q: t("tools.qr-toolkit.faq.q4"),
-                a: t("tools.qr-toolkit.faq.a4"),
-              },
-            ].map((faq, idx) => (
-              <div key={idx} className="space-y-1.5 p-1">
-                <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <span>{faq.q}</span>
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed pl-5.5">
-                  {faq.a}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Related Tools internal link block */}
-        <section className="max-w-4xl mx-auto w-full space-y-4 pt-4">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
-          <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
-            Related Privacy Tools
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Link
-              href="/tools/exif-cleaner"
-              onClick={stopCamera}
-              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group animate-fade-in"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
-                  <Shield className="w-4 h-4" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
-                    EXIF Privacy Cleaner
-                  </h4>
-                  <p className="text-[10px] text-muted-foreground">
-                    {t("shared.related.exif-cleaner-metadata")}
-                  </p>
-                </div>
-              </div>
-              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
-            </Link>
-
-            <Link
-              href="/tools/blur"
-              onClick={stopCamera}
-              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group animate-fade-in"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors">
-                  <EyeOff className="w-4 h-4" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">
-                    Blur & Redact Image
-                  </h4>
-                  <p className="text-[10px] text-muted-foreground">
-                    {t("shared.related.blur")}
-                  </p>
-                </div>
-              </div>
-              <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">→</span>
-            </Link>
-          </div>
-        </section>
-
-        {/* Offline Privacy Notice */}
-        <PrivacyNotice>
-          <p>
-            {t("tools.qr-toolkit.privacyNotice")}
-          </p>
-        </PrivacyNotice>
       </div>
-    </main>
+
+      {isEmbed && <EmbedAttribution slug="qr-toolkit" />}
+    </ContainerTag>
   );
 }

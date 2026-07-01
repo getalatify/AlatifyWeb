@@ -91,6 +91,23 @@ export default function Home() {
           </p>
         </div>
       </div>
+
+      {/* Embed section - additive only */}
+      <section className="mt-16 mb-8 max-w-3xl w-full text-center sm:text-left z-10 px-6 py-6 rounded-2xl border border-border/40 bg-secondary/20 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in shrink-0">
+        <div className="space-y-1">
+          <h4 className="text-sm font-extrabold text-foreground">
+            Building a website or blog?
+          </h4>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Embed our privacy-first, 100% client-side widgets directly on your own page.
+          </p>
+        </div>
+        <Link href="/embed">
+          <Button variant="outline" size="sm" className="font-bold text-xs rounded-xl border-border bg-card hover:bg-secondary transition-colors shrink-0">
+            Get Embed Code
+          </Button>
+        </Link>
+      </section>
     </main>
   );
 }
