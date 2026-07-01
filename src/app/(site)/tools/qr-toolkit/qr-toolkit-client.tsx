@@ -3,7 +3,7 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Header, PrivacyNotice, EmbedAttribution, EmbedBrandHeader } from "@/components/shared";
+import { Header, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { QrCode, Scan, Download, Copy, Check, AlertTriangle, ExternalLink, Wifi, Type, Link2, CheckCircle2, HelpCircle, Shield, EyeOff, Camera, Upload, Info } from "lucide-react";
@@ -418,6 +418,7 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
       {!isEmbed && <Header showBackToTools />}
 
       <div className={contentClasses}>
+        {isEmbed && <EmbedHelpBubble slug="qr-toolkit" />}
         {/* Intro */}
         {!isEmbed && (
           <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">

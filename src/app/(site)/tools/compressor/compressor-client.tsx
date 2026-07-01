@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Header, DownloadButton, PrivacyNotice, EmbedAttribution, EmbedBrandHeader } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -215,6 +215,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
       />
 
       <div className={contentClasses}>
+        {isEmbed && <EmbedHelpBubble slug="compressor" />}
         {/* Intro Header */}
         {!isEmbed && (
           <section className="text-center sm:text-left space-y-2 sm:space-y-3 max-w-2xl">
@@ -519,58 +520,60 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
             </div>
           </section>
         )}
-        {!activeImage && <UrlInputHelp />}
+        {!isEmbed && !activeImage && <UrlInputHelp />}
 
-        {/* How It Works Guide Section */}
-        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
-          <div className="text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
-              How It Works
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Compress image sizes in four quick steps.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {
-                step: "01",
-                title: "Upload",
-                text: t("tools.compressor.howItWorks.step1"),
-              },
-              {
-                step: "02",
-                title: "Adjust",
-                text: t("tools.compressor.howItWorks.step2"),
-              },
-              {
-                step: "03",
-                title: "Compress",
-                text: t("tools.compressor.howItWorks.step3"),
-              },
-              {
-                step: "04",
-                title: "Download",
-                text: t("tools.compressor.howItWorks.step4"),
-              },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
-              >
-                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
-                  {item.step}
-                </span>
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {item.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {!isEmbed && (
+          /* How It Works Guide Section */
+          <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                How It Works
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Compress image sizes in four quick steps.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                {
+                  step: "01",
+                  title: "Upload",
+                  text: t("tools.compressor.howItWorks.step1"),
+                },
+                {
+                  step: "02",
+                  title: "Adjust",
+                  text: t("tools.compressor.howItWorks.step2"),
+                },
+                {
+                  step: "03",
+                  title: "Compress",
+                  text: t("tools.compressor.howItWorks.step3"),
+                },
+                {
+                  step: "04",
+                  title: "Download",
+                  text: t("tools.compressor.howItWorks.step4"),
+                },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+                >
+                  <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 select-none font-mono">
+                    {item.step}
+                  </span>
+                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {item.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Use Cases Section */}
         <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
