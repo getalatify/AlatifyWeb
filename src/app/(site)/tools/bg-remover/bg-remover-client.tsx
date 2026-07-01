@@ -4,7 +4,7 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice, EmbedAttribution } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -1344,21 +1344,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
         )}
       </div>
 
-      {isEmbed && (
-        <footer className="w-full mt-auto pt-4 border-t border-border/40 text-center flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-muted-foreground z-10 shrink-0">
-          <p>
-            100% in your browser — nothing is uploaded.
-          </p>
-          <a
-            href="/tools/bg-remover"
-            target="_blank"
-            rel="noopener"
-            className="font-bold text-primary hover:underline"
-          >
-            Background remover by Alatify
-          </a>
-        </footer>
-      )}
+      {isEmbed && <EmbedAttribution slug="bg-remover" />}
 
       <ProcessingOverlay
         isProcessing={isProcessing}

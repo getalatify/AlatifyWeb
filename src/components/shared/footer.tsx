@@ -36,6 +36,12 @@ export function Footer() {
             All Tools
           </Link>
           <Link
+            href="/embed"
+            className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
+          >
+            Embed Widgets
+          </Link>
+          <Link
             href="/privacy"
             className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
           >

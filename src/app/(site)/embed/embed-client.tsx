@@ -5,17 +5,20 @@ import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Code, Copy, Check, Eye, ShieldAlert, Cpu } from "lucide-react";
-
-const EMBED_SNIPPET = `<iframe src="https://getalatify.com/embed/bg-remover" width="100%" height="640" style="border:0;border-radius:12px;max-width:520px" title="Free Background Remover by Alatify" loading="lazy"></iframe>
-<p>Free background remover by <a href="https://getalatify.com/tools/bg-remover">Alatify</a> — runs 100% in your browser.</p>`;
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { EMBEDDABLE_TOOLS } from "@/lib/embed/config";
 
 export default function EmbedClient() {
   const [copied, setCopied] = useState(false);
   const [previewLoaded, setPreviewLoaded] = useState(false);
+  const [selectedTool, setSelectedTool] = useState(EMBEDDABLE_TOOLS[0]);
+
+  const currentSnippet = `<iframe src="https://getalatify.com/embed/${selectedTool.slug}" width="${selectedTool.defaultWidth}" height="${selectedTool.defaultHeight}" style="border:0;border-radius:12px;max-width:${selectedTool.maxWidth}" title="${selectedTool.iframeTitle}" loading="lazy"></iframe>
+<p>Free ${selectedTool.attributionName} by <a href="https://getalatify.com/tools/${selectedTool.slug}">Alatify</a> — runs 100% in your browser.</p>`;
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(EMBED_SNIPPET);
+      await navigator.clipboard.writeText(currentSnippet);
       setCopied(true);
       toast.success("Copied to clipboard!", {
         description: "Embed snippet is ready to be pasted into your website.",
@@ -43,10 +46,10 @@ export default function EmbedClient() {
             Developer Embed Code
           </div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
-            Embed Alatify&apos;s Background Remover
+            Embed Alatify&apos;s Tools
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed select-text">
-            Distribute our privacy-first, 100% client-side background remover tool on your own blog, app, or website. It runs completely inside the user&apos;s browser via WebGPU and ONNX Runtime — no server bandwidth or sign-ups required.
+            Distribute our privacy-first, 100% client-side widgets on your own blog, app, or website. They run completely inside the user&apos;s browser — no server bandwidth or sign-ups required.
           </p>
         </section>
 
@@ -54,6 +57,34 @@ export default function EmbedClient() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
           {/* Left Column: Embed code & details */}
           <div className="lg:col-span-7 space-y-6 flex flex-col w-full">
+            {/* Tool Selector Card */}
+            <div className="p-5 rounded-2xl bg-card border border-border shadow-md space-y-3">
+              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                Select Tool to Embed
+              </label>
+              <Select
+                value={selectedTool.id}
+                onValueChange={(val) => {
+                  const tool = EMBEDDABLE_TOOLS.find((t) => t.id === val);
+                  if (tool) {
+                    setSelectedTool(tool);
+                    setPreviewLoaded(false); // Reset preview when switching tools
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full sm:max-w-xs font-bold rounded-xl border-border/60">
+                  <SelectValue placeholder="Choose a tool" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  {EMBEDDABLE_TOOLS.map((tool) => (
+                    <SelectItem key={tool.id} value={tool.id} className="font-bold rounded-lg">
+                      {tool.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Copy Snippet Card */}
             <div className="p-5 rounded-2xl bg-card border border-border shadow-md space-y-4">
               <div className="flex items-center justify-between border-b border-border/40 pb-3">
@@ -82,7 +113,7 @@ export default function EmbedClient() {
 
               {/* Code block */}
               <div className="relative rounded-xl overflow-hidden bg-secondary border border-border select-text font-mono text-xs p-4 leading-relaxed max-h-[160px] overflow-y-auto shadow-inner text-muted-foreground">
-                <pre className="whitespace-pre-wrap break-all">{EMBED_SNIPPET}</pre>
+                <pre className="whitespace-pre-wrap break-all">{currentSnippet}</pre>
               </div>
             </div>
 
@@ -98,7 +129,7 @@ export default function EmbedClient() {
                   </div>
                   <div>
                     <h4 className="font-bold text-foreground">Zero Server Overhead</h4>
-                    <p className="text-xs mt-0.5">The widget runs the ONNX AI models completely client-side in the user&apos;s browser. It uses WebGPU acceleration when available and falls back to CPU cleanly.</p>
+                    <p className="text-xs mt-0.5">The widget runs AI models and utilities completely client-side in the user&apos;s browser. It uses WebGPU acceleration when available and falls back to CPU cleanly.</p>
                   </div>
                 </div>
 
@@ -123,12 +154,12 @@ export default function EmbedClient() {
             </h3>
 
             {/* Preview Viewport Container */}
-            <div className="w-full aspect-[4/5] min-h-[500px] sm:min-h-[580px] lg:min-h-[640px] rounded-2xl bg-card border border-border shadow-lg relative overflow-hidden flex flex-col">
+            <div className="w-full aspect-[4/5] min-h-[500px] sm:min-h-[580px] lg:min-h-[640px] rounded-2xl bg-card border border-border shadow-lg relative overflow-hidden flex flex-col animate-fade-in">
               {previewLoaded ? (
                 <iframe
-                  src="/embed/bg-remover"
+                  src={`/embed/${selectedTool.slug}`}
                   className="w-full h-full border-0 rounded-2xl bg-background"
-                  title="Free Background Remover by Alatify"
+                  title={selectedTool.iframeTitle}
                 />
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-card to-secondary/30">
@@ -136,10 +167,10 @@ export default function EmbedClient() {
                     <Eye className="w-8 h-8" />
                   </div>
                   <h4 className="text-sm font-bold text-foreground mb-2">
-                    Background Remover Preview
+                    {selectedTool.name} Preview
                   </h4>
                   <p className="text-xs text-muted-foreground max-w-xs mb-6 leading-relaxed">
-                    Click below to load the live widget preview. This prevents loading the ONNX AI model until you are ready to test it.
+                    Click below to load the live widget preview. This prevents loading the widget until you are ready to test it.
                   </p>
                   <Button
                     onClick={() => setPreviewLoaded(true)}
