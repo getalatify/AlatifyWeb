@@ -250,7 +250,7 @@ export async function GET(req: NextRequest) {
     const normalized: StockImage[] = hits.map((item): StockImage => ({
       id: `pixabay_${item.id}`,
       provider: 'pixabay',
-      thumbnailUrl: item.previewURL || item.webformatURL,
+      thumbnailUrl: item.webformatURL || item.previewURL,
       previewUrl: item.fullHDURL || item.largeImageURL || item.webformatURL,
       fullUrl: item.vectorURL || item.fullHDURL || item.imageURL || item.largeImageURL,
       width: item.imageWidth,
