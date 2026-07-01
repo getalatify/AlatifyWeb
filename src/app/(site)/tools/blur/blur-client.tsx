@@ -662,13 +662,25 @@ export default function BlurClient() {
     }
 
     setIsDetecting(true);
+    let loadingModelPhase = false;
     try {
       // Lazy-load and cache face detector if not already loaded
       if (!faceDetectorRef.current) {
+        loadingModelPhase = true;
         // Retrieve model via cached fetch
         const cache = await caches.open("alatify-model-cache");
         const modelUrl = "/models/blaze_face_short_range.tflite";
         let modelResponse = await cache.match(modelUrl);
+
+        // Fast Guard: Offline and model not cached
+        if (!modelResponse && typeof navigator !== "undefined" && !navigator.onLine) {
+          toast.error(
+            "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas — that works fully offline."
+          );
+          setIsDetecting(false);
+          return;
+        }
+
         if (!modelResponse) {
           const resp = await fetch(modelUrl);
           if (!resp.ok) {
@@ -710,6 +722,7 @@ export default function BlurClient() {
           runningMode: "IMAGE"
         });
         faceDetectorRef.current = detector;
+        loadingModelPhase = false;
       }
 
       // Execute detection on natural image
@@ -761,7 +774,21 @@ export default function BlurClient() {
       }
     } catch (err) {
       console.error("Face detection failed:", err);
-      toast.error(err instanceof Error ? err.message : "Face detection failed.");
+      const isNetworkError =
+        loadingModelPhase &&
+        (err instanceof TypeError ||
+          (err instanceof Error &&
+            (err.message.includes("Failed to download local face detection model") ||
+              err.message.includes("Failed to fetch") ||
+              err.message.includes("fetch"))));
+
+      if (isNetworkError) {
+        toast.error(
+          "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas — that works fully offline."
+        );
+      } else {
+        toast.error(err instanceof Error ? err.message : "Face detection failed.");
+      }
     } finally {
       setIsDetecting(false);
     }
