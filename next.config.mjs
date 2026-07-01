@@ -1,8 +1,80 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
+import withPWAInit from '@ducanh2912/next-pwa';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const withPWA = withPWAInit({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  reloadOnOnline: false,
+  register: true,
+  skipWaiting: true,
+  clientsClaim: true,
+  publicExcludes: [
+    '!models/**/*',
+    '!onnx/**/*',
+    '!wasm/**/*',
+    '!embed/**/*',
+  ],
+  workboxOptions: {
+    exclude: [
+      /models\/.*/,
+      /onnx\/.*/,
+      /wasm\/.*/,
+      /embed\/.*/,
+      /^api\/.*/,
+      /\.map$/,
+    ],
+    runtimeCaching: [
+      {
+        urlPattern: ({ url }) => url.pathname.startsWith('/tools'),
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'alatify-tools-pages',
+          expiration: {
+            maxEntries: 48,
+            maxAgeSeconds: 24 * 60 * 60,
+          },
+        },
+      },
+      {
+        urlPattern: /\/_next\/static\/.*/i,
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'next-static-assets',
+          expiration: {
+            maxEntries: 128,
+            maxAgeSeconds: 30 * 24 * 60 * 60,
+          },
+        },
+      },
+      {
+        urlPattern: ({ url }) => url.search.includes('_rsc'),
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'next-rsc-data',
+          expiration: {
+            maxEntries: 64,
+            maxAgeSeconds: 24 * 60 * 60,
+          },
+        },
+      },
+      {
+        urlPattern: /\/_next\/image\?/i,
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'next-images',
+          expiration: {
+            maxEntries: 64,
+            maxAgeSeconds: 7 * 24 * 60 * 60,
+          },
+        },
+      },
+    ],
+  },
+});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -57,4 +129,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);
