@@ -9,6 +9,10 @@ export { Footer } from "./footer";
 export { Logo } from "./logo";
 export { PrivacyNotice } from "./privacy-notice";
 export { BackToTop } from "./back-to-top";
+export { EmbedAttribution } from "./embed-attribution";
+export { EmbedBrandHeader } from "./embed-brand-header";
+export { EmbedHelpBubble } from "./embed-help-bubble";
+
 
 
 
