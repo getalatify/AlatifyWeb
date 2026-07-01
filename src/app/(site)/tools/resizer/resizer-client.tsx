@@ -821,49 +821,51 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
           </section>
         )}
 
-        {/* Use Cases Section */}
-        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
-          <div className="text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
-              What You Can Do
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Resize files for any social layout, web performance, or print format.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              {
-                title: "Social media",
-                text: t("tools.resizer.useCases.case1"),
-              },
-              {
-                title: "Web & email",
-                text: t("tools.resizer.useCases.case2"),
-              },
-              {
-                title: "Bulk resizing",
-                text: t("tools.resizer.useCases.case3"),
-              },
-              {
-                title: "Print & documents",
-                text: t("tools.resizer.useCases.case4"),
-              },
-            ].map((useCase, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
-              >
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-                  {useCase.title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {useCase.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {!isEmbed && (
+          /* Use Cases Section */
+          <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                What You Can Do
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Resize files for any social layout, web performance, or print format.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                {
+                  title: "Social media",
+                  text: t("tools.resizer.useCases.case1"),
+                },
+                {
+                  title: "Web & email",
+                  text: t("tools.resizer.useCases.case2"),
+                },
+                {
+                  title: "Bulk resizing",
+                  text: t("tools.resizer.useCases.case3"),
+                },
+                {
+                  title: "Print & documents",
+                  text: t("tools.resizer.useCases.case4"),
+                },
+              ].map((useCase, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+                >
+                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                    {useCase.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {useCase.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {!isEmbed && (
           <>
