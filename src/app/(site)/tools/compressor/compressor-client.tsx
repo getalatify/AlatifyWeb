@@ -575,49 +575,51 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
           </section>
         )}
 
-        {/* Use Cases Section */}
-        <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
-          <div className="text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
-              What You Can Do
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Optimize files for performance, email attachments, or storage space.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              {
-                title: "Faster websites",
-                text: t("tools.compressor.useCases.case1"),
-              },
-              {
-                title: "Email & uploads",
-                text: t("tools.compressor.useCases.case2"),
-              },
-              {
-                title: "Storage",
-                text: t("tools.compressor.useCases.case3"),
-              },
-              {
-                title: "Social & marketplaces",
-                text: t("tools.compressor.useCases.case4"),
-              },
-            ].map((useCase, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
-              >
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-                  {useCase.title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {useCase.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {!isEmbed && (
+          /* Use Cases Section */
+          <section className="max-w-4xl mx-auto w-full space-y-6 pt-2">
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                What You Can Do
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Optimize files for performance, email attachments, or storage space.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                {
+                  title: "Faster websites",
+                  text: t("tools.compressor.useCases.case1"),
+                },
+                {
+                  title: "Email & uploads",
+                  text: t("tools.compressor.useCases.case2"),
+                },
+                {
+                  title: "Storage",
+                  text: t("tools.compressor.useCases.case3"),
+                },
+                {
+                  title: "Social & marketplaces",
+                  text: t("tools.compressor.useCases.case4"),
+                },
+              ].map((useCase, idx) => (
+                <div
+                  key={idx}
+                  className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+                >
+                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                    {useCase.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {useCase.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {!isEmbed && (
           <>

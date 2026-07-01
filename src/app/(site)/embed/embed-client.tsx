@@ -148,10 +148,20 @@ export default function EmbedClient() {
 
           {/* Right Column: Live preview box */}
           <div className="lg:col-span-5 flex flex-col w-full max-w-[520px] mx-auto">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5 justify-center lg:justify-start">
-              <Eye className="w-3.5 h-3.5 text-primary" />
-              Live Interactive Preview
-            </h3>
+            <div className="flex items-center justify-between mb-3 w-full px-1">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 justify-center lg:justify-start">
+                <Eye className="w-3.5 h-3.5 text-primary" />
+                Live Interactive Preview
+              </h3>
+              <a
+                href={`/embed/${selectedTool.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] font-extrabold text-muted-foreground hover:text-primary transition-colors flex items-center gap-0.5"
+              >
+                Open full preview ↗
+              </a>
+            </div>
 
             {/* Preview Viewport Container */}
             <div className="w-full aspect-[4/5] min-h-[500px] sm:min-h-[580px] lg:min-h-[640px] rounded-2xl bg-card border border-border shadow-lg relative overflow-hidden flex flex-col animate-fade-in">
