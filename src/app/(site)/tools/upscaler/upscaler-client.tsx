@@ -4,7 +4,8 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice, RequiresInternet } from "@/components/shared";
+import { useOnlineStatus } from "@/hooks/use-online-status";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -98,6 +99,20 @@ export default function UpscalerClient() {
   const [scale, setScale] = useState<UpscaleFactor>(2);
 
   const [stage, setStage] = useState<Stage>("idle");
+  const { isOnline, recheck } = useOnlineStatus();
+  const [hasNetworkError, setHasNetworkError] = useState(false);
+  const stageRef = useRef(stage);
+
+  useEffect(() => {
+    stageRef.current = stage;
+  }, [stage]);
+
+  useEffect(() => {
+    if (isOnline) {
+      setHasNetworkError(false);
+    }
+  }, [isOnline]);
+
   const isProcessing =
     stage === "initializing" ||
     stage === "downloading" ||
@@ -415,6 +430,9 @@ export default function UpscalerClient() {
           clearWatchdog();
           worker.terminate();
           workerRef.current = null;
+          if (stageRef.current === "initializing" || stageRef.current === "downloading") {
+            setHasNetworkError(true);
+          }
           setError(msg.error || "Upscaling failed.");
           setStage("error");
           updateCacheSize();
@@ -430,6 +448,9 @@ export default function UpscalerClient() {
       clearWatchdog();
       worker.terminate();
       workerRef.current = null;
+      if (stageRef.current === "initializing" || stageRef.current === "downloading") {
+        setHasNetworkError(true);
+      }
       setError(e.message || "The AI engine crashed. Try reloading the page.");
       setStage("error");
     };
@@ -514,7 +535,14 @@ export default function UpscalerClient() {
           </p>
         </section>
 
-        {!activeImage ? (
+        {!isOnline || hasNetworkError ? (
+          <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
+            <RequiresInternet
+              toolName="AI Upscaler"
+              onCheckConnection={recheck}
+            />
+          </section>
+        ) : !activeImage ? (
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
             <ImageSourceInput onImageReady={setActiveImage} className="w-full animate-fade-in" />
           </section>
