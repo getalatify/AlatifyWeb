@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
+  manifest: null,
 };
 
 export default function EmbedResizerPage() {

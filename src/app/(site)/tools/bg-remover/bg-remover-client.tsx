@@ -4,7 +4,8 @@
 import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Header, DownloadButton, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble, RequiresInternet } from "@/components/shared";
+import { useOnlineStatus } from "@/hooks/use-online-status";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -75,6 +76,20 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
 
   // States
   const [stage, setStage] = useState<'idle' | 'initializing' | 'downloading' | 'compiling' | 'processing' | 'complete' | 'error'>('idle');
+  const { isOnline, recheck } = useOnlineStatus();
+  const [hasNetworkError, setHasNetworkError] = useState(false);
+  const stageRef = useRef(stage);
+
+  useEffect(() => {
+    stageRef.current = stage;
+  }, [stage]);
+
+  useEffect(() => {
+    if (isOnline) {
+      setHasNetworkError(false);
+    }
+  }, [isOnline]);
+
   const isProcessing = stage !== 'idle' && stage !== 'complete' && stage !== 'error';
   const workerRef = useRef<Worker | null>(null);
   const watchdogTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -504,6 +519,12 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
         const errorMessage = msg.error;
         console.log(`[BG Remover] Failed at ${totalDuration}s (attempt took ${attemptDuration}s) — Error: ${errorMessage}`);
 
+        // Check if error is in model download phase
+        const isDownloadPhase = stageRef.current === "initializing" || stageRef.current === "downloading";
+        if (isDownloadPhase) {
+          setHasNetworkError(true);
+        }
+
         if (activeDeviceRef.current === "gpu") {
           console.warn("[BG Remover] GPU processing error detected. Activating CPU fallback.");
           handleGpuFallbackRef.current?.();
@@ -687,7 +708,14 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
         )}
 
         {/* Conditional Layout */}
-        {isProcessingPending ? (
+        {!isOnline || hasNetworkError ? (
+          <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
+            <RequiresInternet
+              toolName="Background Remover"
+              onCheckConnection={recheck}
+            />
+          </section>
+        ) : isProcessingPending ? (
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
             <div className="p-8 bg-card rounded-2xl border border-border/60 shadow-lg flex flex-col items-center gap-3 max-w-[250px] text-center animate-pulse">
               <Loader2 className="w-8 h-8 text-primary animate-spin" />
