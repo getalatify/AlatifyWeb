@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Header, DownloadButton, PrivacyNotice, EmbedAttribution } from "@/components/shared";
+import { Header, DownloadButton, PrivacyNotice, EmbedAttribution, EmbedBrandHeader } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -197,6 +197,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
 
   return (
     <ContainerTag className={containerClasses}>
+      {isEmbed && <EmbedBrandHeader slug="compressor" />}
       {/* Background Glows for Premium Vibe */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
