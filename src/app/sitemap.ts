@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { TOOLS } from '@/lib/tools/registry';
+import { LANDING_PAGES } from '@/lib/landing/registry';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://getalatify.com';
@@ -20,10 +21,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/embed',
   ];
 
+  const landingRoutes = LANDING_PAGES.map((p) => `/${p.slug}`);
+
   const routes = [
     ...staticRoutes,
     ...toolRoutes,
     ...otherRoutes,
+    ...landingRoutes,
   ];
 
   return routes.map((route) => ({
