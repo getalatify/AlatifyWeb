@@ -90,6 +90,7 @@ export const metadata: Metadata = {
 };
 
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
+import { WorkingImageProvider } from "@/lib/chaining/WorkingImageProvider";
 
 export default function RootLayout({
   children,
@@ -113,7 +114,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            {children}
+            <WorkingImageProvider>
+              {children}
+            </WorkingImageProvider>
             <Toaster richColors position="top-right" />
           </LanguageProvider>
         </ThemeProvider>

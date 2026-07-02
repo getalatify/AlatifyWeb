@@ -5,6 +5,9 @@ import { useT } from "@/lib/i18n/useT";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
+import { useHandoffInput } from "@/lib/chaining/useHandoffInput";
+import { type Provenance } from "@/lib/chaining/WorkingImageProvider";
+import { ContinueWith } from "@/components/chaining/continue-with";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -29,6 +32,23 @@ export default function FormatConverterPage() {
   }
 
   const [imagesList, setImagesList] = useState<ImageItem[]>([]);
+  const [provenance, setProvenance] = useState<Provenance>({
+    sourceToolId: "converter",
+    sourceType: "user-upload",
+    aiProcessingBlocked: false,
+  });
+
+  const handoff = useHandoffInput();
+
+  useEffect(() => {
+    if (handoff) {
+      const file = new File([handoff.blob], handoff.fileName, { type: handoff.blob.type });
+      handleImagesAdded([file]);
+      setProvenance(handoff.provenance);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handoff]);
+
   const [conversionProgress, setConversionProgress] = useState<{
     total: number;
     current: number;
@@ -67,6 +87,11 @@ export default function FormatConverterPage() {
 
   const handleAddMoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      setProvenance({
+        sourceToolId: "converter",
+        sourceType: "user-upload",
+        aiProcessingBlocked: false,
+      });
       handleImagesAdded(Array.from(e.target.files));
     }
   };
@@ -1117,6 +1142,10 @@ export default function FormatConverterPage() {
     setConvertedImage(null);
   }, [activeImage]);
 
+  useEffect(() => {
+    setConvertedImage(null);
+  }, [targetFormat, quality, transparencyFill, customFillColor, svgPreset]);
+
   // Replace file helper
   const handleReplaceClick = () => {
     fileInputRef.current?.click();
@@ -1124,6 +1153,11 @@ export default function FormatConverterPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      setProvenance({
+        sourceToolId: "converter",
+        sourceType: "user-upload",
+        aiProcessingBlocked: false,
+      });
       setActiveImage(e.target.files[0]);
     }
   };
@@ -1251,8 +1285,22 @@ export default function FormatConverterPage() {
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
             <ImageSourceInput 
               multiple={true}
-              onImagesReady={handleImagesAdded}
-              onImageReady={setActiveImage} 
+              onImagesReady={(files) => {
+                setProvenance({
+                  sourceToolId: "converter",
+                  sourceType: "user-upload",
+                  aiProcessingBlocked: false,
+                });
+                handleImagesAdded(files);
+              }}
+              onImageReady={(file) => {
+                setProvenance({
+                  sourceToolId: "converter",
+                  sourceType: "user-upload",
+                  aiProcessingBlocked: false,
+                });
+                setActiveImage(file);
+              }} 
               className="w-full animate-fade-in" 
             />
           </section>
@@ -1714,6 +1762,16 @@ export default function FormatConverterPage() {
                 >
                   Download Converted File
                 </DownloadButton>
+
+                {imagesList.length === 1 && convertedImage && (
+                  <ContinueWith
+                    currentToolId="converter"
+                    outputBlob={convertedImage}
+                    outputFileName={convertedImage instanceof File ? convertedImage.name : `converted-${activeImage ? (activeImage as File).name : "image.png"}`}
+                    provenance={provenance}
+                    onStartOver={clearActiveImage}
+                  />
+                )}
               </div>
 
             </div>
