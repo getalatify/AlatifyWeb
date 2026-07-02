@@ -4,9 +4,10 @@ import React, { useState } from "react";
 import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Code, Copy, Check, Eye, ShieldAlert, Cpu } from "lucide-react";
+import { Code, Copy, Check, Eye, ShieldAlert, Cpu, ArrowLeft } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EMBEDDABLE_TOOLS } from "@/lib/embed/config";
+import Link from "next/link";
 
 export default function EmbedClient() {
   const [copied, setCopied] = useState(false);
@@ -37,6 +38,17 @@ export default function EmbedClient() {
 
       {/* Header Bar */}
       <Header showToolsLink showSupportLink />
+
+      {/* Back to home — placed BELOW the header box, aligned with the logo */}
+      <div className="max-w-5xl mx-auto w-full px-6 mt-3 z-10 shrink-0">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 pl-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+          Back to home
+        </Link>
+      </div>
 
       <div className="flex-1 w-full max-w-5xl mx-auto px-4 py-8 sm:py-12 z-10 flex flex-col gap-8">
         {/* Intro Section */}
