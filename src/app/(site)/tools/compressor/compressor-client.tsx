@@ -309,8 +309,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
           </section>
         ) : (
           /* WORKSPACE STATE: Side-by-side on desktop, vertical stack on mobile */
-          <>
-            <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full animate-fade-in">
+          <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full animate-fade-in">
             {/* Previews Area: Splits to 2 columns on tablet, stacks on mobile */}
             <div className="lg:col-span-2 flex flex-col gap-4 sm:gap-6 w-full">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full">
@@ -571,22 +570,20 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                 >
                   Download Compressed Image
                 </DownloadButton>
+
+                {compressedImage && (
+                  <ContinueWith
+                    currentToolId="compressor"
+                    outputBlob={compressedImage}
+                    outputFileName={(compressedImage as File).name || (activeImage ? `compressed-${activeImage.name}` : "compressed-image")}
+                    provenance={provenance}
+                    onStartOver={clearActiveImage}
+                  />
+                )}
               </div>
             </div>
           </section>
-          {compressedImage && (
-            <div className="w-full mt-6">
-              <ContinueWith
-                currentToolId="compressor"
-                outputBlob={compressedImage}
-                outputFileName={(compressedImage as File).name || (activeImage ? `compressed-${activeImage.name}` : "compressed-image")}
-                provenance={provenance}
-                onStartOver={clearActiveImage}
-              />
-            </div>
-          )}
-        </>
-      )}
+        )}
         {!isEmbed && !activeImage && <UrlInputHelp />}
 
         {!isEmbed && (
