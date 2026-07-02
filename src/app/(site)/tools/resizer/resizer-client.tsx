@@ -437,8 +437,7 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
           </section>
         ) : (
           /* WORKSPACE ACTIVE */
-          <>
-            <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full animate-fade-in">
+          <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full animate-fade-in">
             
             {/* Previews Area (Stacks vertical on mobile at 2/3 width, grid side-by-side on desktop) */}
             <div className="lg:col-span-2 flex flex-col gap-4 sm:gap-6 w-full">
@@ -818,24 +817,22 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
                 >
                   Download Resized Image
                 </DownloadButton>
+
+                {resizedImage && (
+                  <ContinueWith
+                    currentToolId="resizer"
+                    outputBlob={resizedImage}
+                    outputFileName={(resizedImage as File).name || (activeImage ? `resized-${activeImage.name}` : "resized-image")}
+                    provenance={provenance}
+                    onStartOver={clearActiveImage}
+                  />
+                )}
               </div>
 
             </div>
 
           </section>
-          {resizedImage && (
-            <div className="w-full mt-6">
-              <ContinueWith
-                currentToolId="resizer"
-                outputBlob={resizedImage}
-                outputFileName={(resizedImage as File).name || (activeImage ? `resized-${activeImage.name}` : "resized-image")}
-                provenance={provenance}
-                onStartOver={clearActiveImage}
-              />
-            </div>
-          )}
-        </>
-      )}
+        )}
         {!isEmbed && !activeImage && <UrlInputHelp />}
 
         {!isEmbed && (

@@ -59,22 +59,23 @@ export function ContinueWith({
       <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
         Next Steps
       </span>
-      <div className="flex flex-col sm:flex-row gap-2 w-full">
+      <div className="flex flex-col gap-2 w-full">
         {candidates.map((candidate) => {
           const tool = TOOLS.find((t) => t.id === candidate);
           const displayName = tool ? tool.name : candidate;
           return (
             <Button
               key={candidate}
+              variant="outline"
               onClick={() => handleContinue(candidate)}
-              className="flex-1 py-5 rounded-xl font-bold bg-card border border-border/60 hover:bg-accent/40 hover:text-accent-foreground text-foreground shadow-sm active:scale-[0.98] transition-all duration-150 text-xs gap-1.5"
+              className="w-full py-5 rounded-xl font-bold bg-transparent border border-border/60 hover:bg-muted/40 hover:text-foreground text-muted-foreground active:scale-[0.98] transition-all duration-150 text-xs gap-1.5"
             >
               Continue with {displayName} →
             </Button>
           );
         })}
       </div>
-      <div className="flex justify-center sm:justify-start">
+      <div className="flex justify-center mt-1">
         <button
           onClick={handleStartOver}
           className="text-[11px] text-muted-foreground hover:text-foreground font-semibold underline underline-offset-4 cursor-pointer transition-colors"

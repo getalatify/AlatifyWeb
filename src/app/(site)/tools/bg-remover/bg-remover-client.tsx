@@ -787,8 +787,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
           </section>
         ) : (
           /* WORKSPACE ACTIVE */
-          <>
-            <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full animate-fade-in">
+          <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full animate-fade-in">
             
             {/* Previews Grid Area (Stacks vertically on mobile, side-by-side on desktop) */}
             <div className="lg:col-span-2 flex flex-col gap-4 sm:gap-6 w-full">
@@ -1200,24 +1199,22 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
                   <Download className="w-4 h-4" />
                   Download Transparent PNG
                 </DownloadButton>
+
+                {stage === 'complete' && processedImage && (
+                  <ContinueWith
+                    currentToolId="bg-remover"
+                    outputBlob={processedImage}
+                    outputFileName={(processedImage as File).name || (activeImage ? `no-bg-${activeImage.name}` : "no-bg.png")}
+                    provenance={provenance}
+                    onStartOver={handleRemove}
+                  />
+                )}
               </div>
 
             </div>
 
           </section>
-          {stage === 'complete' && processedImage && (
-            <div className="w-full mt-6">
-              <ContinueWith
-                currentToolId="bg-remover"
-                outputBlob={processedImage}
-                outputFileName={(processedImage as File).name || (activeImage ? `no-bg-${activeImage.name}` : "no-bg.png")}
-                provenance={provenance}
-                onStartOver={handleRemove}
-              />
-            </div>
-          )}
-        </>
-      )}
+        )}
         {!isEmbed && !activeImage && <UrlInputHelp />}
 
         {!isEmbed && (
