@@ -8,6 +8,9 @@ import { Header, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useHandoffInput } from "@/lib/chaining/useHandoffInput";
+import { type Provenance } from "@/lib/chaining/WorkingImageProvider";
+import { ContinueWith } from "@/components/chaining/continue-with";
 import {
   Settings,
   Download,
@@ -110,10 +113,32 @@ interface WatermarkClientProps {
 export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: WatermarkClientProps) {
   const t = useT();
   const [imagesList, setImagesList] = useState<ImageItem[]>([]);
+  const [provenance, setProvenance] = useState<Provenance>({
+    sourceToolId: "watermark",
+    sourceType: "user-upload",
+    aiProcessingBlocked: false,
+  });
+  const [watermarkedImage, setWatermarkedImage] = useState<Blob | null>(null);
+
+  const handoff = useHandoffInput();
+
+  useEffect(() => {
+    if (handoff) {
+      const file = new File([handoff.blob], handoff.fileName, { type: handoff.blob.type });
+      handleImagesAdded([file]);
+      setProvenance(handoff.provenance);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handoff]);
+
   const [settings, setSettings] = useState<WatermarkSettings>(() => ({
     ...defaultSettings,
     fontFamily: `${geistSansFamily}, system-ui, sans-serif`
   }));
+
+  useEffect(() => {
+    setWatermarkedImage(null);
+  }, [settings, imagesList]);
   
   // Logo States
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -842,6 +867,8 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
       });
 
       if (!blob) throw new Error("Canvas render compression error");
+
+      setWatermarkedImage(blob);
 
       // Clean up canvas references
       canvas.width = 0;
@@ -1664,8 +1691,22 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
             <div className="w-full">
               <ImageSourceInput
                 multiple={true}
-                onImagesReady={handleImagesAdded}
-                onImageReady={(file) => handleImagesAdded([file])}
+                onImagesReady={(files) => {
+                  setProvenance({
+                    sourceToolId: "watermark",
+                    sourceType: "user-upload",
+                    aiProcessingBlocked: false,
+                  });
+                  handleImagesAdded(files);
+                }}
+                onImageReady={(file) => {
+                  setProvenance({
+                    sourceToolId: "watermark",
+                    sourceType: "user-upload",
+                    aiProcessingBlocked: false,
+                  });
+                  handleImagesAdded([file]);
+                }}
                 maxSizeMB={50}
               />
             </div>
@@ -1775,6 +1816,22 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                     <span>Clear Batch</span>
                   </Button>
                 </div>
+                {imagesList.length === 1 && watermarkedImage && (
+                  <ContinueWith
+                    currentToolId="watermark"
+                    outputBlob={watermarkedImage}
+                    outputFileName={
+                      imagesList[0]
+                        ? getWatermarkedFilename(
+                            imagesList[0].file.name,
+                            settings.outputFormat === "original" ? imagesList[0].file.type : settings.outputFormat
+                          )
+                        : "watermarked.png"
+                    }
+                    provenance={provenance}
+                    onStartOver={clearImagesList}
+                  />
+                )}
               </div>
 
               {/* Batch Queue File List */}
@@ -1858,8 +1915,13 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                 <input
                   type="file"
                   ref={addMoreFileInputRef}
-                  onChange={(e) => {
+                   onChange={(e) => {
                     if (e.target.files && e.target.files.length > 0) {
+                      setProvenance({
+                        sourceToolId: "watermark",
+                        sourceType: "user-upload",
+                        aiProcessingBlocked: false,
+                      });
                       handleImagesAdded(Array.from(e.target.files));
                     }
                   }}
