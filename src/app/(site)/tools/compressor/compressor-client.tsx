@@ -12,6 +12,9 @@ import imageCompression from "browser-image-compression";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { usePendingImage } from "@/hooks/use-pending-image";
 import { useT } from "@/lib/i18n/useT";
+import { useHandoffInput } from "@/lib/chaining/useHandoffInput";
+import { ContinueWith } from "@/components/chaining/continue-with";
+import { Provenance, ImageSourceType } from "@/lib/chaining/WorkingImageProvider";
 
 export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boolean }) {
   const t = useT();
@@ -19,6 +22,40 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
   const [activeImage, setActiveImage] = useState<File | null>(null);
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
+
+  // Provenance State
+  const [provenance, setProvenance] = useState<Provenance>(() => {
+    if (typeof window !== "undefined") {
+      const pendingDataStr = sessionStorage.getItem("alatify-pending-image");
+      if (pendingDataStr) {
+        try {
+          const data = JSON.parse(pendingDataStr);
+          if (data.provider) {
+            return {
+              sourceToolId: "stock-finder",
+              sourceType: `stock-${data.provider}` as ImageSourceType,
+              aiProcessingBlocked: false,
+            };
+          }
+        } catch {}
+      }
+    }
+    return {
+      sourceToolId: "compressor",
+      sourceType: "user-upload",
+      aiProcessingBlocked: false,
+    };
+  });
+
+  const handoff = useHandoffInput();
+
+  useEffect(() => {
+    if (handoff) {
+      const file = new File([handoff.blob], handoff.fileName, { type: handoff.blob.type });
+      setActiveImage(file);
+      setProvenance(handoff.provenance);
+    }
+  }, [handoff]);
 
   // Manage local active image Blob URL lifetime
   useEffect(() => {
@@ -37,6 +74,11 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
     setActiveImage(null);
     setCompressedImage(null);
     setError(null);
+    setProvenance({
+      sourceToolId: "compressor",
+      sourceType: "user-upload",
+      aiProcessingBlocked: false,
+    });
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -171,6 +213,11 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setActiveImage(e.target.files[0]);
+      setProvenance({
+        sourceToolId: "compressor",
+        sourceType: "user-upload",
+        aiProcessingBlocked: false,
+      });
     }
   };
 
@@ -249,7 +296,14 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
           /* BEFORE UPLOAD: Centered centerpiece */
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
             <ImageSourceInput
-              onImageReady={setActiveImage}
+              onImageReady={(file) => {
+                setActiveImage(file);
+                setProvenance({
+                  sourceToolId: "compressor",
+                  sourceType: "user-upload",
+                  aiProcessingBlocked: false,
+                });
+              }}
               className="w-full animate-fade-in"
             />
           </section>
@@ -516,6 +570,16 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                 >
                   Download Compressed Image
                 </DownloadButton>
+
+                {compressedImage && (
+                  <ContinueWith
+                    currentToolId="compressor"
+                    outputBlob={compressedImage}
+                    outputFileName={(compressedImage as File).name || (activeImage ? `compressed-${activeImage.name}` : "compressed-image")}
+                    provenance={provenance}
+                    onStartOver={clearActiveImage}
+                  />
+                )}
               </div>
             </div>
           </section>

@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import { usePendingImage } from "@/hooks/use-pending-image";
 import { Maximize2, Loader2, AlertCircle, Settings, Image as ImageIcon, RefreshCw, Trash2, Lock, Unlock, AlertTriangle, CheckCircle2, HelpCircle, Minimize2, Sparkles } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
+import { useHandoffInput } from "@/lib/chaining/useHandoffInput";
+import { ContinueWith } from "@/components/chaining/continue-with";
+import { Provenance, ImageSourceType } from "@/lib/chaining/WorkingImageProvider";
 
 const socialPresets = [
   { id: "ig-square", group: "Instagram", name: "Square", width: 1080, height: 1080 },
@@ -32,6 +35,40 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
 
+  // Provenance State
+  const [provenance, setProvenance] = useState<Provenance>(() => {
+    if (typeof window !== "undefined") {
+      const pendingDataStr = sessionStorage.getItem("alatify-pending-image");
+      if (pendingDataStr) {
+        try {
+          const data = JSON.parse(pendingDataStr);
+          if (data.provider) {
+            return {
+              sourceToolId: "stock-finder",
+              sourceType: `stock-${data.provider}` as ImageSourceType,
+              aiProcessingBlocked: false,
+            };
+          }
+        } catch {}
+      }
+    }
+    return {
+      sourceToolId: "resizer",
+      sourceType: "user-upload",
+      aiProcessingBlocked: false,
+    };
+  });
+
+  const handoff = useHandoffInput();
+
+  useEffect(() => {
+    if (handoff) {
+      const file = new File([handoff.blob], handoff.fileName, { type: handoff.blob.type });
+      setActiveImage(file);
+      setProvenance(handoff.provenance);
+    }
+  }, [handoff]);
+
   // Manage local active image Blob URL lifetime
   useEffect(() => {
     if (!activeImage) {
@@ -49,6 +86,11 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
     setActiveImage(null);
     setResizedImage(null);
     setError(null);
+    setProvenance({
+      sourceToolId: "resizer",
+      sourceType: "user-upload",
+      aiProcessingBlocked: false,
+    });
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -301,6 +343,11 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setActiveImage(e.target.files[0]);
+      setProvenance({
+        sourceToolId: "resizer",
+        sourceType: "user-upload",
+        aiProcessingBlocked: false,
+      });
     }
   };
 
@@ -376,7 +423,17 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
         ) : !activeImage ? (
           /* BEFORE UPLOAD empty uploader centerpiece */
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
-            <ImageSourceInput onImageReady={setActiveImage} className="w-full animate-fade-in" />
+            <ImageSourceInput
+              onImageReady={(file) => {
+                setActiveImage(file);
+                setProvenance({
+                  sourceToolId: "resizer",
+                  sourceType: "user-upload",
+                  aiProcessingBlocked: false,
+                });
+              }}
+              className="w-full animate-fade-in"
+            />
           </section>
         ) : (
           /* WORKSPACE ACTIVE */
@@ -760,6 +817,16 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
                 >
                   Download Resized Image
                 </DownloadButton>
+
+                {resizedImage && (
+                  <ContinueWith
+                    currentToolId="resizer"
+                    outputBlob={resizedImage}
+                    outputFileName={(resizedImage as File).name || (activeImage ? `resized-${activeImage.name}` : "resized-image")}
+                    provenance={provenance}
+                    onStartOver={clearActiveImage}
+                  />
+                )}
               </div>
 
             </div>
