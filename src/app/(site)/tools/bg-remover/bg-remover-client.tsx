@@ -14,6 +14,9 @@ import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import { ProcessingOverlay } from "@/components/processing-overlay";
 import { usePendingImage } from "@/hooks/use-pending-image";
+import { useHandoffInput } from "@/lib/chaining/useHandoffInput";
+import { ContinueWith } from "@/components/chaining/continue-with";
+import { Provenance, ImageSourceType } from "@/lib/chaining/WorkingImageProvider";
 import { 
   Select,
   SelectContent,
@@ -49,6 +52,40 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
 
+  // Provenance State
+  const [provenance, setProvenance] = useState<Provenance>(() => {
+    if (typeof window !== "undefined") {
+      const pendingDataStr = sessionStorage.getItem("alatify-pending-image");
+      if (pendingDataStr) {
+        try {
+          const data = JSON.parse(pendingDataStr);
+          if (data.provider) {
+            return {
+              sourceToolId: "stock-finder",
+              sourceType: `stock-${data.provider}` as ImageSourceType,
+              aiProcessingBlocked: false,
+            };
+          }
+        } catch {}
+      }
+    }
+    return {
+      sourceToolId: "bg-remover",
+      sourceType: "user-upload",
+      aiProcessingBlocked: false,
+    };
+  });
+
+  const handoff = useHandoffInput();
+
+  useEffect(() => {
+    if (handoff) {
+      const file = new File([handoff.blob], handoff.fileName, { type: handoff.blob.type });
+      setActiveImage(file);
+      setProvenance(handoff.provenance);
+    }
+  }, [handoff]);
+
   // Manage local active image Blob URL lifetime
   useEffect(() => {
     if (!activeImage) {
@@ -67,6 +104,11 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
     setProcessedImage(null);
     setError(null);
     setStage("idle");
+    setProvenance({
+      sourceToolId: "bg-remover",
+      sourceType: "user-upload",
+      aiProcessingBlocked: false,
+    });
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -642,6 +684,11 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setActiveImage(e.target.files[0]);
+      setProvenance({
+        sourceToolId: "bg-remover",
+        sourceType: "user-upload",
+        aiProcessingBlocked: false,
+      });
     }
   };
 
@@ -726,7 +773,17 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
         ) : !activeImage ? (
           /* BEFORE UPLOAD empty state centerpiece */
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
-            <ImageSourceInput onImageReady={setActiveImage} className="w-full animate-fade-in" />
+            <ImageSourceInput
+              onImageReady={(file) => {
+                setActiveImage(file);
+                setProvenance({
+                  sourceToolId: "bg-remover",
+                  sourceType: "user-upload",
+                  aiProcessingBlocked: false,
+                });
+              }}
+              className="w-full animate-fade-in"
+            />
           </section>
         ) : (
           /* WORKSPACE ACTIVE */
@@ -1142,6 +1199,16 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
                   <Download className="w-4 h-4" />
                   Download Transparent PNG
                 </DownloadButton>
+
+                {stage === 'complete' && processedImage && (
+                  <ContinueWith
+                    currentToolId="bg-remover"
+                    outputBlob={processedImage}
+                    outputFileName={(processedImage as File).name || (activeImage ? `no-bg-${activeImage.name}` : "no-bg.png")}
+                    provenance={provenance}
+                    onStartOver={handleRemove}
+                  />
+                )}
               </div>
 
             </div>

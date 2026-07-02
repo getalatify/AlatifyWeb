@@ -7,6 +7,9 @@ import Link from "next/link";
 import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
+import { useHandoffInput } from "@/lib/chaining/useHandoffInput";
+import { type Provenance } from "@/lib/chaining/WorkingImageProvider";
+import { ContinueWith } from "@/components/chaining/continue-with";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
@@ -147,6 +150,22 @@ const aspectRatios = [
 export default function CropperClient() {
   const t = useT();
   const [activeImage, setActiveImage] = useState<File | null>(null);
+  const [provenance, setProvenance] = useState<Provenance>({
+    sourceToolId: "cropper",
+    sourceType: "user-upload",
+    aiProcessingBlocked: false,
+  });
+
+  const handoff = useHandoffInput();
+
+  useEffect(() => {
+    if (handoff) {
+      const file = new File([handoff.blob], handoff.fileName, { type: handoff.blob.type });
+      setActiveImage(file);
+      setProvenance(handoff.provenance);
+    }
+  }, [handoff]);
+
   const { isProcessing: isProcessingPending } = usePendingImage(setActiveImage);
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(null);
 
@@ -418,6 +437,11 @@ export default function CropperClient() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      setProvenance({
+        sourceToolId: "cropper",
+        sourceType: "user-upload",
+        aiProcessingBlocked: false,
+      });
       setActiveImage(e.target.files[0]);
       handleReset();
     }
@@ -519,7 +543,17 @@ export default function CropperClient() {
         ) : !activeImage ? (
           /* BEFORE UPLOAD centerpiece */
           <section className="flex-1 flex flex-col items-center justify-center py-12 max-w-xl mx-auto w-full">
-            <ImageSourceInput onImageReady={setActiveImage} className="w-full animate-fade-in" />
+            <ImageSourceInput
+              onImageReady={(file) => {
+                setProvenance({
+                  sourceToolId: "cropper",
+                  sourceType: "user-upload",
+                  aiProcessingBlocked: false,
+                });
+                setActiveImage(file);
+              }}
+              className="w-full animate-fade-in"
+            />
           </section>
         ) : (
           /* WORKSPACE ACTIVE */
@@ -843,6 +877,16 @@ export default function CropperClient() {
                 >
                   Download Cropped File
                 </DownloadButton>
+
+                {croppedImage && (
+                  <ContinueWith
+                    currentToolId="cropper"
+                    outputBlob={croppedImage}
+                    outputFileName={(activeImage as File)?.name ? `cropped-${(activeImage as File).name}` : "cropped-image.png"}
+                    provenance={provenance}
+                    onStartOver={clearActiveImage}
+                  />
+                )}
               </div>
 
             </div>
