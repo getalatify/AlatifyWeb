@@ -513,7 +513,11 @@ export const en = {
         "q5": "Does the tool support password-protected files?",
         "a5": "Protected or encrypted PDFs cannot be rendered in the browser. You must remove password protection first before uploading."
       },
-      "privacyNotice": "Alatify processes your PDF files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging."
+      "privacyNotice": "Alatify processes your PDF files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging.",
+      "scaleStandard": "1x (Standard)",
+      "scaleHigh": "2x (High)",
+      "scaleMaximum": "3x (Maximum)",
+      "scaleHelper": "Higher scale = sharper images, but larger files and slower processing."
     },
     "image-to-pdf": {
       "intro": "Combine multiple JPG, PNG, or WebP images into a single, beautifully organized PDF document. Rearrange pages with drag-and-drop or shift buttons, set page dimensions, margins, and orientation — all computed locally on-device.",

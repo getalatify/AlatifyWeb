@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useDropzone } from "react-dropzone";
 import { useT } from "@/lib/i18n/useT";
@@ -33,8 +33,6 @@ export default function PdfToImageClient() {
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
   const [isConverting, setIsConverting] = useState(false);
   const [progress, setProgress] = useState<{ current: number; total: number } | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     accept: { "application/pdf": [".pdf"] },
@@ -266,7 +264,7 @@ export default function PdfToImageClient() {
                 isDragReject && "border-destructive bg-destructive/5"
               )}
             >
-              <input {...getInputProps()} ref={fileInputRef} />
+              <input {...getInputProps()} />
               <div className="w-16 h-16 rounded-2xl bg-secondary border border-border flex items-center justify-center text-muted-foreground mb-4 shadow-sm group-hover:text-primary transition-colors">
                 <FileText className="w-8 h-8" />
               </div>
@@ -377,9 +375,9 @@ export default function PdfToImageClient() {
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { value: 1, label: "1x (Normal)" },
-                    { value: 2, label: "2x (High)" },
-                    { value: 3, label: "3x (Crisp)" }
+                    { value: 1, label: t("tools.pdf-to-image.scaleStandard") || "1x (Standard)" },
+                    { value: 2, label: t("tools.pdf-to-image.scaleHigh") || "2x (High)" },
+                    { value: 3, label: t("tools.pdf-to-image.scaleMaximum") || "3x (Maximum)" }
                   ].map((scale) => (
                     <button
                       key={scale.value}
@@ -397,6 +395,9 @@ export default function PdfToImageClient() {
                     </button>
                   ))}
                 </div>
+                <p className="text-[10px] text-muted-foreground leading-normal pl-1">
+                  {t("tools.pdf-to-image.scaleHelper")}
+                </p>
               </div>
 
               {/* Setting 3: Export Scope */}
