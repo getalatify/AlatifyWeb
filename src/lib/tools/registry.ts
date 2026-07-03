@@ -331,4 +331,35 @@ export const TOOLS: ToolEntry[] = [
       "atur halaman pdf", "edit halaman pdf",
     ],
   },
+  {
+    id: "pdf-to-image",
+    name: "PDF to Image Converter",
+    route: "/tools/pdf-to-image",
+    category: "document",
+    description: "Convert PDF pages into high-quality JPG or PNG images on-device.",
+    keywords: [
+      // === ENGLISH ===
+      "pdf to image", "pdf to png", "pdf to jpg", "pdf to jpeg", "extract pdf pages",
+      "convert pdf to image", "save pdf as image", "rasterize pdf", "pdf page extractor",
+      // === BAHASA INDONESIA ===
+      "pdf ke gambar", "pdf ke png", "pdf ke jpg", "ekstrak halaman pdf",
+      "ubah pdf ke gambar", "simpan pdf sebagai gambar", "konversi pdf ke png"
+    ],
+  },
+  {
+    id: "image-to-pdf",
+    name: "Image to PDF",
+    route: "/tools/image-to-pdf",
+    category: "document",
+    description: "Combine multiple PNG, JPG, or WebP images into a single PDF, on-device.",
+    keywords: [
+      // === ENGLISH ===
+      "image to pdf", "jpg to pdf", "png to pdf", "webp to pdf", "combine images to pdf",
+      "merge images to pdf", "compile images to pdf", "images to pdf converter",
+      // === BAHASA INDONESIA ===
+      "gambar ke pdf", "jpg ke pdf", "png ke pdf", "webp ke pdf", "gabungkan gambar ke pdf",
+      "konversi gambar ke pdf", "buat pdf dari gambar"
+    ],
+  },
 ];
+
