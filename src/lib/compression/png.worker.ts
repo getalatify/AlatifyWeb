@@ -9,18 +9,21 @@ const workerPostMessage = (message: unknown, transfer?: Transferable[]) => {
 };
 
 self.onmessage = async (e: MessageEvent) => {
-  const { buffer, mode, quality } = e.data;
+  const { buffer, mode, quality, rgba, width, height } = e.data;
   try {
     let out: ArrayBuffer;
 
-    if (mode === "lossless") {
+    if (rgba) {
+      const cnum = Math.min(256, Math.max(2, Math.round((quality / 100) * 256)));
+      out = UPNG.encode([rgba], width, height, cnum) as ArrayBuffer;
+    } else if (mode === "lossless") {
       let level = 3;
       try {
         if (buffer && buffer.byteLength >= 24) {
           const view = new DataView(buffer);
-          const width = view.getUint32(16, false);
-          const height = view.getUint32(20, false);
-          const megapixels = (width * height) / 1_000_000;
+          const w = view.getUint32(16, false);
+          const h = view.getUint32(20, false);
+          const megapixels = (w * h) / 1_000_000;
           if (megapixels > 24) {
             level = 1;
           } else if (megapixels > 8) {
