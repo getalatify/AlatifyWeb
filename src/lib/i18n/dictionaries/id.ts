@@ -117,7 +117,11 @@ export const id = {
   },
   "tools": {
     "compressor": {
-      "intro": "Kurangi ukuran file gambar hingga 90% sekaligus menjaganya tetap tajam — sepenuhnya di browser Anda. Pilih kompresi lossy untuk ukuran terkecil atau lossless untuk mempertahankan setiap piksel, dan proses seluruh kumpulan sekaligus. Tanpa unggah, tanpa pendaftaran — gambar Anda tidak pernah meninggalkan perangkat Anda.",
+      "intro": "Kurangi ukuran file gambar dengan kontrol penuh. Pilih kompresi lossy untuk ukuran file terkecil, atau lossless untuk mempertahankan setiap piksel — berjalan sepenuhnya di browser Anda tanpa perlu unggah.",
+      "hintBubble": "Tip: untuk file paling kecil, ekspor foto sebagai JPEG. Pilih PNG kalau butuh transparansi.",
+      "alreadyOptimised": "Sudah optimal — file ini tidak dapat diperkecil lebih jauh.",
+      "losslessConvertDisabled": "Lossless hanya tersedia saat mengompres ulang PNG asli.",
+      "pngLargerNudge": "Konversi ke PNG membuat file ini lebih besar. Untuk ukuran lebih kecil, coba WebP atau JPEG.",
       "howItWorks": {
         "step1": "Tambahkan satu atau banyak gambar.",
         "step2": "Pilih lossy atau lossless, dan atur target kualitas Anda.",
