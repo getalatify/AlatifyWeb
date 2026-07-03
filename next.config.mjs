@@ -78,7 +78,7 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@imgly/background-removal', 'onnxruntime-web'],
+  transpilePackages: ['@imgly/background-removal', 'onnxruntime-web', '@jsquash/oxipng'],
   async headers() {
     return [
       {
@@ -105,10 +105,10 @@ const nextConfig = {
       };
     }
 
-    // 1. asyncWebAssembly experiment for WASM support
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,
+      topLevelAwait: true,
     };
 
     // 2. Module rule to treat pre-minified .min.mjs as javascript/auto (skip transformation)
