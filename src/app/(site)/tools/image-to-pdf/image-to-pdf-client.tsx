@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useDropzone } from "react-dropzone";
 import { useT } from "@/lib/i18n/useT";
@@ -40,8 +40,6 @@ export default function ImageToPdfClient() {
   const [marginSize, setMarginSize] = useState<"none" | "small" | "medium">("none");
   const [isCompiling, setIsCompiling] = useState(false);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     accept: { "image/*": [".png", ".jpg", ".jpeg", ".webp"] },
@@ -242,6 +240,75 @@ export default function ImageToPdfClient() {
     }
   };
 
+  const renderPaperPreview = () => {
+    let widthClass = "w-16";
+    let heightClass = "h-[90px]";
+    let isDashed = false;
+    let isPortrait = true;
+    let labelText = "";
+
+    if (pageSize === "fit") {
+      isDashed = true;
+      widthClass = "w-20";
+      heightClass = "h-20";
+      labelText = "Fits image";
+    } else {
+      const actualOrientation = orientation === "auto" ? "portrait" : orientation;
+      isPortrait = actualOrientation === "portrait";
+      labelText = `${pageSize.toUpperCase()} ${actualOrientation}`;
+
+      if (orientation === "auto") {
+        widthClass = "w-16";
+        heightClass = "h-[80px]";
+      } else if (isPortrait) {
+        widthClass = "w-16";
+        heightClass = pageSize === "a4" ? "h-[90px]" : "h-[80px]";
+      } else {
+        widthClass = "w-[90px]";
+        heightClass = pageSize === "a4" ? "h-[64px]" : "h-[70px]";
+      }
+    }
+
+    return (
+      <div className="w-full h-32 flex flex-col items-center justify-center bg-secondary/35 border border-border/40 rounded-2xl p-4 gap-2">
+        <div
+          className={cn(
+            "transition-all duration-300 ease-in-out border-2 shadow-sm rounded-md relative flex flex-col justify-between p-2",
+            widthClass,
+            heightClass,
+            isDashed ? "border-dashed" : "border-solid",
+            "bg-white dark:bg-zinc-100 text-zinc-700 border-zinc-300 dark:border-zinc-400"
+          )}
+        >
+          {/* Margin visual outline */}
+          <div
+            className={cn(
+              "w-full h-full border border-zinc-200/50 rounded flex flex-col justify-between p-1.5 transition-all duration-300",
+              marginSize === "none" && "border-transparent",
+              marginSize === "small" && "m-0.5 border-dashed border-zinc-300 dark:border-zinc-400",
+              marginSize === "medium" && "m-1.5 border-dashed border-zinc-300 dark:border-zinc-400"
+            )}
+          >
+            {/* Schematic lines (thin bars) */}
+            <div className="space-y-1 w-full">
+              <div className="h-1 bg-zinc-200 dark:bg-zinc-300 rounded w-3/4" />
+              <div className="h-1 bg-zinc-200 dark:bg-zinc-300 rounded w-full" />
+              <div className="h-1 bg-zinc-200 dark:bg-zinc-300 rounded w-5/6" />
+            </div>
+            
+            {/* Sizing text helper inside paper */}
+            <span className="text-[7px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-center block select-none">
+              {orientation === "auto" && pageSize !== "fit" ? "Auto Layout" : (pageSize === "fit" ? "Fit" : orientation.toUpperCase())}
+            </span>
+          </div>
+        </div>
+        <span className="text-[10px] text-muted-foreground font-medium select-none">
+          {labelText}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 overflow-x-clip select-none">
       {/* Glow Effects */}
@@ -286,7 +353,7 @@ export default function ImageToPdfClient() {
                 isDragReject && "border-destructive bg-destructive/5"
               )}
             >
-              <input {...getInputProps()} ref={fileInputRef} />
+              <input {...getInputProps()} />
               <p className="text-sm font-bold text-foreground max-w-xs leading-relaxed">
                 Drag & drop multiple images here
               </p>
@@ -396,6 +463,10 @@ export default function ImageToPdfClient() {
                 <Settings className="w-4 h-4 text-primary" />
                 Settings
               </h2>
+
+              <div className="pb-4 border-b border-border/30">
+                {renderPaperPreview()}
+              </div>
 
               {/* Setting 1: Page Size */}
               <div className="space-y-2.5">

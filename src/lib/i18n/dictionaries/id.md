@@ -486,62 +486,66 @@ export const id = {
         "q5": "Dari mana gambar-gambar ini berasal?",
         "a5": "Tiga pustaka stok gratis terbesar: Unsplash, Pexels, dan Pixabay."
       }
+    },
+    "pdf-to-image": {
+      "intro": "Konversi halaman PDF menjadi gambar JPG atau PNG berkualitas tinggi langsung di browser Anda. Pilih halaman atau rentang tertentu, sesuaikan skala resolusi, dan unduh halaman individual atau arsip ZIP gabungan. Tanpa unggah, tanpa pendaftaran — 100% privat.",
+      "howItWorks": {
+        "step1": "Unggah dokumen PDF Anda dengan menyeretnya masuk atau memilih file.",
+        "step2": "Pilih PNG (menjaga transparansi) atau JPG (latar belakang putih) dan atur skala render.",
+        "step3": "Pilih semua halaman atau tentukan rentang halaman khusus untuk diekstrak.",
+        "step4": "Klik Konversi dan unduh gambar Anda atau ZIP yang berisi semua halaman."
+      },
+      "useCases": {
+        "case1": "Konversi slide presentasi atau halaman dokumen menjadi gambar untuk disematkan di halaman web atau slide.",
+        "case2": "Ekstrak foto, tanda terima, atau diagram satu halaman dari PDF sebagai aset gambar bersih.",
+        "case3": "Ubah dokumen menjadi gambar media sosial yang tidak memerlukan pembaca PDF.",
+        "case4": "Konversi lembar keuangan sensitif secara lokal di perangkat Anda tanpa melewati server pihak ketiga."
+      },
+      "faq": {
+        "q1": "Apakah PDF saya diunggah ke server untuk konversi?",
+        "a1": "Tidak. Semuanya berjalan di dalam sandbox browser Anda. Halaman PDF dirender langsung ke elemen canvas lokal, menjaga keamanan file Anda.",
+        "q2": "Format apa saja yang bisa saya gunakan untuk menyimpan halaman?",
+        "a2": "Anda dapat mengekspor halaman sebagai PNG (terbaik untuk grafis tanpa penurunan kualitas) atau JPEG (format terkompresi resolusi tinggi dengan latar belakang putih).",
+        "q3": "Apa fungsi pengaturan skala render?",
+        "a3": "Ini mengontrol resolusi gambar keluaran. Skala 1x mencocokkan dimensi halaman default PDF, sedangkan 2x dan 3x mengalikan piksel untuk teks dan grafis yang lebih tajam dan berkualitas cetak.",
+        "q4": "Dapatkah saya mengonversi sebagian halaman saja?",
+        "a4": "Ya. Anda dapat memilih semua halaman, memilih halaman tertentu dari daftar visual, atau menentukan rentang khusus (misalnya 1-3, 5).",
+        "q5": "Apakah alat ini mendukung file yang dilindungi kata sandi?",
+        "a5": "PDF yang dilindungi atau dienkripsi tidak dapat dirender di browser. Anda harus menghapus perlindungan kata sandi terlebih dahulu sebelum mengunggah."
+      },
+      "privacyNotice": "Alatify memproses file PDF Anda sepenuhnya secara lokal menggunakan API sandbox di dalam tab browser Anda. Kami tidak pernah mengunggah file Anda ke cloud eksternal, membuat alat ini 100% aman dari kebocoran data.",
+      "scaleStandard": "1x (Standar)",
+      "scaleHigh": "2x (Tinggi)",
+      "scaleMaximum": "3x (Maksimum)",
+      "scaleHelper": "Skala lebih tinggi = gambar lebih tajam, tetapi ukuran file lebih besar dan pemrosesan lebih lambat."
+    },
+    "image-to-pdf": {
+      "intro": "Gabungkan beberapa gambar JPG, PNG, atau WebP menjadi satu dokumen PDF yang terorganisir dengan indah. Atur ulang halaman dengan seret-dan-lepas atau tombol geser, atur dimensi halaman, margin, dan orientasi — semuanya dihitung secara lokal di perangkat Anda.",
+      "howItWorks": {
+        "step1": "Tambahkan satu atau beberapa gambar (seret-dan-lepas atau pilih beberapa file).",
+        "step2": "Atur ulang halaman dengan menyeret thumbnail atau menggunakan tombol Naik/Turun.",
+        "step3": "Konfigurasikan ukuran halaman (sesuaikan dengan gambar, A4, atau Letter), orientasi, dan margin.",
+        "step4": "Hasilkan dan unduh dokumen PDF multi-halaman yang disusun secara instan."
+      },
+      "useCases": {
+        "case1": "Gabungkan gambar pindaian, tanda terima, atau sketsa menjadi satu dokumen PDF untuk pengiriman atau pengarsipan.",
+        "case2": "Buat portofolio digital, kompilasi foto, atau dek slide dari file desain terpisah.",
+        "case3": "Ubah urutan foto menjadi dokumen multi-halaman terstruktur untuk pembacaan yang mudah.",
+        "case4": "Susun catatan sensitif, kontrak, atau KTP secara lokal dan privat tanpa risiko kebocoran data."
+      },
+      "faq": {
+        "q1": "Apakah gambar saya diunggah ke server?",
+        "a1": "Tidak. Pembuatan PDF dilakukan sepenuhnya di sisi klien menggunakan jsPDF di tab browser Anda. File Anda tidak pernah meninggalkan perangkat Anda.",
+        "q2": "Dapatkah saya mengatur urutan halaman?",
+        "a2": "Ya. Anda dapat menyeret thumbnail halaman untuk mengaturnya kembali, atau menggunakan tombol Naik dan Turun (dirancang untuk berfungsi dengan andal di layar seluler/sentuh).",
+        "q3": "Pilihan ukuran halaman apa saja yang saya miliki?",
+        "a3": "Ukuran standar seperti A4 dan Letter dengan gambar yang diskalakan agar pas.",
+        "q4": "Apakah gambar saya dikompresi saat menyusun?",
+        "a4": "Alat ini menyematkan gambar secara langsung ke dalam PDF. Untuk ukuran file yang optimal, Anda dapat kompresi gambar sumber Anda menggunakan Kompresor Gambar kami sebelum menyusun.",
+        "q5": "Berapa banyak gambar yang dapat saya tambahkan sekaligus?",
+        "a5": "Tidak ada batasan ketat, tetapi menyusun lusinan gambar resolusi tinggi dapat memakan memori yang signifikan. Alat ini menangani set standar dengan lancar."
+      },
+      "privacyNotice": "Alatify menyusun gambar Anda ke dalam PDF sepenuhnya secara lokal menggunakan API sandbox di dalam tab browser Anda. Kami tidak pernah mengunggah file Anda ke cloud eksternal, membuat alat ini 100% aman dari kebocoran data."
     }
-  },
-  "pdf-to-image": {
-    "intro": "Konversi halaman PDF menjadi gambar JPG atau PNG berkualitas tinggi langsung di browser Anda. Pilih halaman atau rentang tertentu, sesuaikan skala resolusi, dan unduh halaman individual atau arsip ZIP gabungan. Tanpa unggah, tanpa pendaftaran — 100% privat.",
-    "howItWorks": {
-      "step1": "Unggah dokumen PDF Anda dengan menyeretnya masuk atau memilih file.",
-      "step2": "Pilih PNG (menjaga transparansi) atau JPG (latar belakang putih) dan atur skala render.",
-      "step3": "Pilih semua halaman atau tentukan rentang halaman khusus untuk diekstrak.",
-      "step4": "Klik Konversi dan unduh gambar Anda atau ZIP yang berisi semua halaman."
-    },
-    "useCases": {
-      "case1": "Konversi slide presentasi atau halaman dokumen menjadi gambar untuk disematkan di halaman web atau slide.",
-      "case2": "Ekstrak foto, tanda terima, atau diagram satu halaman dari PDF sebagai aset gambar bersih.",
-      "case3": "Ubah dokumen menjadi gambar media sosial yang tidak memerlukan pembaca PDF.",
-      "case4": "Konversi lembar keuangan sensitif secara lokal di perangkat Anda tanpa melewati server pihak ketiga."
-    },
-    "faq": {
-      "q1": "Apakah PDF saya diunggah ke server untuk konversi?",
-      "a1": "Tidak. Semuanya berjalan di dalam sandbox browser Anda. Halaman PDF dirender langsung ke elemen canvas lokal, menjaga keamanan file Anda.",
-      "q2": "Format apa saja yang bisa saya gunakan untuk menyimpan halaman?",
-      "a2": "Anda dapat mengekspor halaman sebagai PNG (terbaik untuk grafis tanpa penurunan kualitas) atau JPEG (format terkompresi resolusi tinggi dengan latar belakang putih).",
-      "q3": "Apa fungsi pengaturan skala render?",
-      "a3": "Ini mengontrol resolusi gambar keluaran. Skala 1x mencocokkan dimensi halaman default PDF, sedangkan 2x dan 3x mengalikan piksel untuk teks dan grafis yang lebih tajam dan berkualitas cetak.",
-      "q4": "Dapatkah saya mengonversi sebagian halaman saja?",
-      "a4": "Ya. Anda dapat memilih semua halaman, memilih halaman tertentu dari daftar visual, atau menentukan rentang khusus (misalnya 1-3, 5).",
-      "q5": "Apakah alat ini mendukung file yang dilindungi kata sandi?",
-      "a5": "PDF yang dilindungi atau dienkripsi tidak dapat dirender di browser. Anda harus menghapus perlindungan kata sandi terlebih dahulu sebelum mengunggah."
-    },
-    "privacyNotice": "Alatify memproses file PDF Anda sepenuhnya secara lokal menggunakan API sandbox di dalam tab browser Anda. Kami tidak pernah mengunggah file Anda ke cloud eksternal, membuat alat ini 100% aman dari kebocoran data."
-  },
-  "image-to-pdf": {
-    "intro": "Gabungkan beberapa gambar JPG, PNG, atau WebP menjadi satu dokumen PDF yang terorganisir dengan indah. Atur ulang halaman dengan seret-dan-lepas atau tombol geser, atur dimensi halaman, margin, dan orientasi — semuanya dihitung secara lokal di perangkat Anda.",
-    "howItWorks": {
-      "step1": "Tambahkan satu atau beberapa gambar (seret-dan-lepas atau pilih beberapa file).",
-      "step2": "Atur ulang halaman dengan menyeret thumbnail atau menggunakan tombol Naik/Turun.",
-      "step3": "Konfigurasikan ukuran halaman (sesuaikan dengan gambar, A4, atau Letter), orientasi, dan margin.",
-      "step4": "Hasilkan dan unduh dokumen PDF multi-halaman yang disusun secara instan."
-    },
-    "useCases": {
-      "case1": "Gabungkan gambar pindaian, tanda terima, atau sketsa menjadi satu dokumen PDF untuk pengiriman atau pengarsipan.",
-      "case2": "Buat portofolio digital, kompilasi foto, atau dek slide dari file desain terpisah.",
-      "case3": "Ubah urutan foto menjadi dokumen multi-halaman terstruktur untuk pembacaan yang mudah.",
-      "case4": "Susun catatan sensitif, kontrak, atau KTP secara lokal dan privat tanpa risiko kebocoran data."
-    },
-    "faq": {
-      "q1": "Apakah gambar saya diunggah ke server?",
-      "a1": "Tidak. Pembuatan PDF dilakukan sepenuhnya di sisi klien menggunakan jsPDF di tab browser Anda. File Anda tidak pernah meninggalkan perangkat Anda.",
-      "q2": "Dapatkah saya mengatur urutan halaman?",
-      "a2": "Ya. Anda dapat menyeret thumbnail halaman untuk mengaturnya kembali, atau menggunakan tombol Naik dan Turun (dirancang untuk berfungsi dengan andal di layar seluler/sentuh).",
-      "q3": "Pilihan ukuran halaman apa saja yang saya miliki?",
-      "a3": "Ukuran standar seperti A4 dan Letter dengan gambar yang diskalakan agar pas.",
-      "q4": "Apakah gambar saya dikompresi saat menyusun?",
-      "a4": "Alat ini menyematkan gambar secara langsung ke dalam PDF. Untuk ukuran file yang optimal, Anda dapat kompresi gambar sumber Anda menggunakan Kompresor Gambar kami sebelum menyusun.",
-      "q5": "Berapa banyak gambar yang dapat saya tambahkan sekaligus?",
-      "a5": "Tidak ada batasan ketat, tetapi menyusun lusinan gambar resolusi tinggi dapat memakan memori yang signifikan. Alat ini menangani set standar dengan lancar."
-    },
-    "privacyNotice": "Alatify menyusun gambar Anda ke dalam PDF sepenuhnya secara lokal menggunakan API sandbox di dalam tab browser Anda. Kami tidak pernah mengunggah file Anda ke cloud eksternal, membuat alat ini 100% aman dari kebocoran data."
   }
 };
