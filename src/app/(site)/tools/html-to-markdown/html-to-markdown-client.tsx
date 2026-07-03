@@ -57,7 +57,9 @@ type BulletListMarker = "-" | "*" | "+";
 type CodeBlockStyle = "fenced" | "indented";
 
 const selectClassName =
-  "h-8 px-2.5 rounded-lg border border-border bg-card text-xs font-semibold text-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer";
+  "html-to-markdown-select h-8 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-semibold outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer scheme-light dark:scheme-dark";
+
+const optionClassName = "bg-popover text-popover-foreground";
 
 export default function HtmlToMarkdownClient() {
   const t = useT();
@@ -111,7 +113,7 @@ export default function HtmlToMarkdownClient() {
   useEffect(() => {
     const timer = setTimeout(() => {
       void convertHtmlToMarkdown(html);
-    }, 400);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [html, convertHtmlToMarkdown]);
@@ -184,6 +186,21 @@ export default function HtmlToMarkdownClient() {
 
       <Header showBackToTools showSupportLink />
 
+      <style dangerouslySetInnerHTML={{ __html: `
+        .html-to-markdown-select {
+          background-color: hsl(var(--popover));
+          color: hsl(var(--popover-foreground));
+          color-scheme: light;
+        }
+        .dark .html-to-markdown-select {
+          color-scheme: dark;
+        }
+        .html-to-markdown-select option {
+          background-color: hsl(var(--popover));
+          color: hsl(var(--popover-foreground));
+        }
+      ` }} />
+
       <div className="max-w-7xl mx-auto w-full px-6 py-10 space-y-12 z-10">
 
         <section className="text-center md:text-left space-y-3">
@@ -240,8 +257,8 @@ export default function HtmlToMarkdownClient() {
                   className={selectClassName}
                   aria-label="Heading style"
                 >
-                  <option value="atx">ATX (#)</option>
-                  <option value="setext">Setext</option>
+                  <option className={optionClassName} value="atx">ATX (#)</option>
+                  <option className={optionClassName} value="setext">Setext</option>
                 </select>
               </label>
               <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
@@ -252,9 +269,9 @@ export default function HtmlToMarkdownClient() {
                   className={selectClassName}
                   aria-label="Bullet list marker"
                 >
-                  <option value="-">-</option>
-                  <option value="*">*</option>
-                  <option value="+">+</option>
+                  <option className={optionClassName} value="-">-</option>
+                  <option className={optionClassName} value="*">*</option>
+                  <option className={optionClassName} value="+">+</option>
                 </select>
               </label>
               <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
@@ -265,8 +282,8 @@ export default function HtmlToMarkdownClient() {
                   className={selectClassName}
                   aria-label="Code block style"
                 >
-                  <option value="fenced">Fenced</option>
-                  <option value="indented">Indented</option>
+                  <option className={optionClassName} value="fenced">Fenced</option>
+                  <option className={optionClassName} value="indented">Indented</option>
                 </select>
               </label>
             </div>
