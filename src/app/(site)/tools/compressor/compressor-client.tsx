@@ -245,6 +245,13 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
   const isPngTarget = format === "image/png" || (format === "original" && activeImage?.type === "image/png");
   const isSameFormat = !!activeImage && (format === "original" || format === activeImage.type);
 
+  // Sync PNG Mode: force "lossy" during format conversion
+  useEffect(() => {
+    if (activeImage && !isSameFormat && pngMode !== "lossy") {
+      setPngMode("lossy");
+    }
+  }, [activeImage, isSameFormat, pngMode]);
+
   const ContainerTag = isEmbed ? "div" : "main";
   const containerClasses = isEmbed
     ? "relative w-full h-full min-h-[620px] bg-background text-foreground transition-colors duration-300 select-none flex flex-col p-4 overflow-y-auto"
@@ -571,15 +578,21 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                       <button
                         type="button"
                         onClick={() => setPngMode("lossless")}
+                        disabled={!isSameFormat}
                         className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
                           pngMode === "lossless"
                             ? "bg-background text-foreground shadow-sm"
                             : "text-muted-foreground hover:text-foreground"
-                        }`}
+                        } ${!isSameFormat ? "opacity-40 cursor-not-allowed" : ""}`}
                       >
                         Lossless (Pixel-Perfect)
                       </button>
                     </div>
+                    {!isSameFormat && (
+                      <p className="text-[10px] text-muted-foreground mt-1 animate-fade-in leading-normal">
+                        {t("tools.compressor.losslessConvertDisabled")}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -615,6 +628,11 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                             `Shrunk from ${formatBytes(originalSize)} down to ${formatBytes(compressedSize)} running completely inside your browser thread.`
                           )}
                         </p>
+                        {!isSameFormat && compressedSize > originalSize && (
+                          <p className="text-[10px] text-destructive font-semibold leading-relaxed mt-1.5 animate-fade-in">
+                            {t("tools.compressor.pngLargerNudge")}
+                          </p>
+                        )}
                       </>
                     )}
                   </div>
