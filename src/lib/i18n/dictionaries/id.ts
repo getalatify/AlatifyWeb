@@ -119,6 +119,7 @@ export const id = {
     "compressor": {
       "intro": "Kurangi ukuran file gambar dengan kontrol penuh. Pilih kompresi lossy untuk ukuran file terkecil, atau lossless untuk mempertahankan setiap piksel — berjalan sepenuhnya di browser Anda tanpa perlu unggah.",
       "hintBubble": "Tip: untuk file paling kecil, ekspor foto sebagai JPEG. Pilih PNG kalau butuh transparansi.",
+      "alreadyOptimised": "Sudah optimal — file ini tidak dapat diperkecil lebih jauh.",
       "howItWorks": {
         "step1": "Tambahkan satu atau banyak gambar.",
         "step2": "Pilih lossy atau lossless, dan atur target kualitas Anda.",

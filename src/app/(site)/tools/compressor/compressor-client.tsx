@@ -243,6 +243,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
       ? Math.round(((originalSize - compressedSize) / originalSize) * 100)
       : 0;
   const isPngTarget = format === "image/png" || (format === "original" && activeImage?.type === "image/png");
+  const isSameFormat = !!activeImage && (format === "original" || format === activeImage.type);
 
   const ContainerTag = isEmbed ? "div" : "main";
   const containerClasses = isEmbed
@@ -377,8 +378,16 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                     </span>
                     <div className="flex items-center gap-2">
                       {compressedSize > 0 && !isCompressing && (
-                        <span className="text-[10px] font-bold text-success bg-success/10 border border-success/20 px-2 py-0.5 rounded-full">
-                          -{savingsPercent}%
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                          isSameFormat && compressedSize >= originalSize
+                            ? "bg-secondary text-muted-foreground border-border"
+                            : "text-success bg-success/10 border-success/20"
+                        }`}>
+                          {isSameFormat && compressedSize >= originalSize
+                            ? "0%"
+                            : savingsPercent < 0
+                              ? `+${Math.abs(savingsPercent)}%`
+                              : `-${savingsPercent}%`}
                         </span>
                       )}
                       <span className="text-xs font-semibold text-foreground px-2 py-0.5 rounded-full bg-secondary border border-border">
@@ -578,16 +587,36 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
               {/* Savings Summary & Action Button */}
               <div className="pt-4 sm:pt-6 border-t border-border/40 space-y-3 sm:space-y-4">
                 {compressedSize > 0 && !isCompressing && !error && (
-                  <div className="p-3 sm:p-4 rounded-xl bg-success/5 border border-success/15 space-y-1 sm:space-y-1.5">
-                    <div className="flex justify-between items-center text-xs font-bold text-success">
-                      <span>Compression Saved</span>
-                      <span>{savingsPercent}%</span>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground leading-relaxed">
-                      Shrunk from {formatBytes(originalSize)} down to{" "}
-                      {formatBytes(compressedSize)} running completely inside
-                      your browser thread.
-                    </p>
+                  <div className={`p-3 sm:p-4 rounded-xl space-y-1 sm:space-y-1.5 border ${
+                    isSameFormat && compressedSize >= originalSize
+                      ? "bg-secondary/20 border-border"
+                      : "bg-success/5 border-success/15"
+                  }`}>
+                    {isSameFormat && compressedSize >= originalSize ? (
+                      <>
+                        <div className="flex justify-between items-center text-xs font-bold text-muted-foreground">
+                          <span>Already Optimized</span>
+                          <span>0%</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-relaxed">
+                          {t("tools.compressor.alreadyOptimised")}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <div className={`flex justify-between items-center text-xs font-bold ${savingsPercent < 0 ? "text-destructive" : "text-success"}`}>
+                          <span>{savingsPercent < 0 ? "Format Conversion Size Change" : "Compression Saved"}</span>
+                          <span>{savingsPercent < 0 ? `+${Math.abs(savingsPercent)}%` : `${savingsPercent}%`}</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-relaxed">
+                          {savingsPercent < 0 ? (
+                            `Format conversion changed the size from ${formatBytes(originalSize)} to ${formatBytes(compressedSize)}.`
+                          ) : (
+                            `Shrunk from ${formatBytes(originalSize)} down to ${formatBytes(compressedSize)} running completely inside your browser thread.`
+                          )}
+                        </p>
+                      </>
+                    )}
                   </div>
                 )}
 
