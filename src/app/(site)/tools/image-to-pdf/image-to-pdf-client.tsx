@@ -28,9 +28,115 @@ interface ImageItem {
   file: File;
   name: string;
   previewUrl: string;
+  thumbnailUrl: string;
   width: number;
   height: number;
 }
+
+const ImageRow = React.memo(function ImageRow({
+  img,
+  index,
+  isFirst,
+  isLast,
+  dragIndex,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
+  onMoveUp,
+  onMoveDown,
+  onRemove
+}: {
+  img: ImageItem;
+  index: number;
+  isFirst: boolean;
+  isLast: boolean;
+  dragIndex: number | null;
+  onDragStart: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: () => void;
+  onDragEnd: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
+      className={cn(
+        "p-3 rounded-2xl bg-card border border-border/40 shadow-sm flex items-center justify-between gap-4 transition-all",
+        dragIndex === index ? "opacity-40 scale-[0.98]" : "hover:border-border/80"
+      )}
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        {/* Drag Handle */}
+        <div className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-primary transition-colors hidden sm:block">
+          <Menu className="w-4 h-4" />
+        </div>
+        {/* Thumbnail */}
+        <img
+          src={img.thumbnailUrl}
+          alt="thumbnail"
+          className="w-10 h-10 object-cover rounded-lg border border-border/50 shrink-0 bg-secondary"
+        />
+        <div className="min-w-0">
+          <p className="text-xs font-bold text-foreground truncate max-w-[200px] sm:max-w-[280px]">
+            {img.name}
+          </p>
+          <p className="text-[10px] text-muted-foreground">
+            Page {index + 1} • {img.width}x{img.height} px
+          </p>
+        </div>
+      </div>
+
+      {/* Reordering and deletion controls */}
+      <div className="flex items-center gap-1.5 shrink-0">
+        {/* Touch Mobile Reorder Buttons */}
+        <button
+          type="button"
+          disabled={isFirst}
+          onClick={onMoveUp}
+          className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+          title="Move Up"
+          aria-label="Move Up"
+        >
+          <ArrowUp className="w-3.5 h-3.5" />
+        </button>
+        <button
+          type="button"
+          disabled={isLast}
+          onClick={onMoveDown}
+          className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+          title="Move Down"
+          aria-label="Move Down"
+        >
+          <ArrowDown className="w-3.5 h-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="p-1.5 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 text-destructive transition-colors ml-1"
+          title="Remove image"
+          aria-label="Remove image"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.img.id === nextProps.img.id &&
+    prevProps.index === nextProps.index &&
+    prevProps.isFirst === nextProps.isFirst &&
+    prevProps.isLast === nextProps.isLast &&
+    prevProps.dragIndex === nextProps.dragIndex
+  );
+});
 
 export default function ImageToPdfClient() {
   const t = useT();
@@ -54,10 +160,40 @@ export default function ImageToPdfClient() {
         for (const file of acceptedFiles) {
           const previewUrl = URL.createObjectURL(file);
           
-          // Retrieve dimensions
-          const dimensions = await new Promise<{ width: number; height: number }>((resolve, reject) => {
+          // Retrieve dimensions & generate downscaled thumbnail
+          const result = await new Promise<{ width: number; height: number; thumbnailUrl: string }>((resolve, reject) => {
             const img = new Image();
-            img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              const ctx = canvas.getContext("2d");
+              
+              // Maintain aspect ratio, max dimension 150px
+              const maxDim = 150;
+              let thumbW = img.naturalWidth;
+              let thumbH = img.naturalHeight;
+              if (thumbW > maxDim || thumbH > maxDim) {
+                if (thumbW > thumbH) {
+                  thumbH = Math.round((thumbH * maxDim) / thumbW);
+                  thumbW = maxDim;
+                } else {
+                  thumbW = Math.round((thumbW * maxDim) / thumbH);
+                  thumbH = maxDim;
+                }
+              }
+              
+              canvas.width = thumbW;
+              canvas.height = thumbH;
+              if (ctx) {
+                ctx.drawImage(img, 0, 0, thumbW, thumbH);
+              }
+              
+              const thumbnailUrl = canvas.toDataURL("image/jpeg", 0.7);
+              resolve({
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+                thumbnailUrl
+              });
+            };
             img.onerror = () => reject(new Error("Failed to load image metadata."));
             img.src = previewUrl;
           });
@@ -67,8 +203,9 @@ export default function ImageToPdfClient() {
             file,
             name: file.name,
             previewUrl,
-            width: dimensions.width,
-            height: dimensions.height
+            thumbnailUrl: result.thumbnailUrl,
+            width: result.width,
+            height: result.height
           });
         }
 
@@ -383,73 +520,21 @@ export default function ImageToPdfClient() {
 
                 <div className="space-y-2">
                   {images.map((img, index) => (
-                    <div
+                    <ImageRow
                       key={img.id}
-                      draggable
+                      img={img}
+                      index={index}
+                      isFirst={index === 0}
+                      isLast={index === images.length - 1}
+                      dragIndex={dragIndex}
                       onDragStart={() => handleDragStart(index)}
                       onDragOver={handleDragOver}
                       onDrop={() => handleDrop(index)}
                       onDragEnd={handleDragEnd}
-                      className={cn(
-                        "p-3 rounded-2xl bg-card border border-border/40 shadow-sm flex items-center justify-between gap-4 transition-all",
-                        dragIndex === index ? "opacity-40 scale-[0.98]" : "hover:border-border/80"
-                      )}
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        {/* Drag Handle */}
-                        <div className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-primary transition-colors hidden sm:block">
-                          <Menu className="w-4 h-4" />
-                        </div>
-                        {/* Thumbnail */}
-                        <img
-                          src={img.previewUrl}
-                          alt="thumbnail"
-                          className="w-10 h-10 object-cover rounded-lg border border-border/50 shrink-0 bg-secondary"
-                        />
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-foreground truncate max-w-[200px] sm:max-w-[280px]">
-                            {img.name}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground">
-                            Page {index + 1} • {img.width}x{img.height} px
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Reordering and deletion controls */}
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {/* Touch Mobile Reorder Buttons */}
-                        <button
-                          type="button"
-                          disabled={index === 0}
-                          onClick={() => moveUp(index)}
-                          className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                          title="Move Up"
-                          aria-label="Move Up"
-                        >
-                          <ArrowUp className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          disabled={index === images.length - 1}
-                          onClick={() => moveDown(index)}
-                          className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                          title="Move Down"
-                          aria-label="Move Down"
-                        >
-                          <ArrowDown className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(img.id, img.previewUrl)}
-                          className="p-1.5 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 text-destructive transition-colors ml-1"
-                          title="Remove image"
-                          aria-label="Remove image"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
+                      onMoveUp={() => moveUp(index)}
+                      onMoveDown={() => moveDown(index)}
+                      onRemove={() => handleRemoveImage(img.id, img.previewUrl)}
+                    />
                   ))}
                 </div>
               </div>
