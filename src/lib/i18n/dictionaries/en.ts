@@ -120,6 +120,8 @@ export const en = {
       "intro": "Reduce image file sizes with full control. Choose lossy compression for the smallest size, or lossless to preserve every single pixel — running entirely in your browser without uploads.",
       "hintBubble": "Tip: for the smallest files, export photos as JPEG. Choose PNG when you need transparency.",
       "alreadyOptimised": "Already optimized — this file can't be shrunk further.",
+      "losslessConvertDisabled": "Lossless is only available when recompressing an original PNG.",
+      "pngLargerNudge": "Converting to PNG made this file larger. For a smaller file, try WebP or JPEG instead.",
       "howItWorks": {
         "step1": "Add one or many images.",
         "step2": "Choose lossy or lossless, and set your quality target.",
