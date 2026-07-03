@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Header, DownloadButton, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
 import { UrlInputHelp } from "@/components/url-input-help";
+import { HintBubble } from "@/components/ui/hint-bubble";
 import { Button } from "@/components/ui/button";
 import { Minimize2, Loader2, AlertCircle, Settings, Image as ImageIcon, RefreshCw, Trash2, CheckCircle2, HelpCircle, Maximize2 } from "lucide-react";
 import imageCompression from "browser-image-compression";
@@ -86,6 +87,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
   // Compressor States
   const [quality, setQuality] = useState<number>(75);
   const [format, setFormat] = useState<string>("original");
+  const [pngMode, setPngMode] = useState<"lossy" | "lossless">("lossy");
   const [compressedImage, setCompressedImage] = useState<Blob | File | null>(
     null,
   );
@@ -176,6 +178,14 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
 
     try {
       const resolvedType = f === "original" ? file.type : f;
+
+      if (resolvedType === "image/png") {
+        const { compressPng } = await import("@/lib/compression/png-engine");
+        const result = await compressPng(file, { mode: pngMode, quality: q });
+        setCompressedImage(result);
+        return;
+      }
+
       const initialQuality = q / 100;
 
       const options = {
@@ -232,6 +242,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
     originalSize > 0 && compressedSize > 0
       ? Math.round(((originalSize - compressedSize) / originalSize) * 100)
       : 0;
+  const isPngTarget = format === "image/png" || (format === "original" && activeImage?.type === "image/png");
 
   const ContainerTag = isEmbed ? "div" : "main";
   const containerClasses = isEmbed
@@ -271,7 +282,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
             Image Compressor
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Compress Images Without Losing Quality
+            Compress Images, Keep the Quality You Choose
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
             {t("tools.compressor.intro")}
@@ -487,7 +498,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                       Target Quality
                     </span>
                     <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 font-extrabold">
-                      {quality}%
+                      {isPngTarget && pngMode === "lossless" ? "Lossless" : `${quality}%`}
                     </span>
                   </div>
                   <input
@@ -496,20 +507,27 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                     max="100"
                     value={quality}
                     onChange={(e) => setQuality(Number(e.target.value))}
-                    disabled={isCompressing}
+                    disabled={isCompressing || (isPngTarget && pngMode === "lossless")}
                     className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <div className="flex justify-between text-[10px] text-muted-foreground font-semibold">
-                    <span>Max Compression</span>
-                    <span>Best Quality</span>
+                    <span>
+                      {isPngTarget && pngMode === "lossless" ? "N/A" : "Max Compression"}
+                    </span>
+                    <span>
+                      {isPngTarget && pngMode === "lossless" ? "N/A" : "Best Quality"}
+                    </span>
                   </div>
                 </div>
 
                 {/* Output Format Dropdown */}
                 <div className="space-y-1.5 sm:space-y-2">
-                  <label className="text-xs font-bold text-foreground block">
-                    Output Format
-                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-xs font-bold text-foreground">
+                      Output Format
+                    </label>
+                    <HintBubble text={t("tools.compressor.hintBubble")} />
+                  </div>
                   <select
                     value={format}
                     onChange={(e) => setFormat(e.target.value)}
@@ -522,6 +540,39 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                     <option value="image/webp">Convert to WebP</option>
                   </select>
                 </div>
+
+                {/* PNG Compression Mode Selection */}
+                {isPngTarget && (
+                  <div className="space-y-2 animate-fade-in">
+                    <label className="text-xs font-bold text-foreground block">
+                      PNG Compression Mode
+                    </label>
+                    <div className="grid grid-cols-2 gap-2 p-1 bg-secondary rounded-xl border border-border">
+                      <button
+                        type="button"
+                        onClick={() => setPngMode("lossy")}
+                        className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
+                          pngMode === "lossy"
+                            ? "bg-background text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        Lossy
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPngMode("lossless")}
+                        className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
+                          pngMode === "lossless"
+                            ? "bg-background text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        Lossless (Pixel-Perfect)
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Savings Summary & Action Button */}
