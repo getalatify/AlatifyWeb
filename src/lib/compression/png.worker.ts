@@ -14,8 +14,24 @@ self.onmessage = async (e: MessageEvent) => {
     let out: ArrayBuffer;
 
     if (mode === "lossless") {
+      let level = 3;
+      try {
+        if (buffer && buffer.byteLength >= 24) {
+          const view = new DataView(buffer);
+          const width = view.getUint32(16, false);
+          const height = view.getUint32(20, false);
+          const megapixels = (width * height) / 1_000_000;
+          if (megapixels > 24) {
+            level = 1;
+          } else if (megapixels > 8) {
+            level = 2;
+          }
+        }
+      } catch {
+        // Fallback to level 3 silently on any IHDR parsing error
+      }
       const { optimise } = await import("@jsquash/oxipng");
-      out = await optimise(buffer, { level: 3 });
+      out = await optimise(buffer, { level });
     } else {
       let img: { width: number; height: number } | null = UPNG.decode(buffer);
       if (!img) {
