@@ -331,4 +331,20 @@ export const TOOLS: ToolEntry[] = [
       "atur halaman pdf", "edit halaman pdf",
     ],
   },
+  {
+    id: "html-to-markdown",
+    name: "HTML to Markdown",
+    route: "/tools/html-to-markdown",
+    category: "document",
+    description: "Convert HTML source or .html files into clean Markdown, on-device.",
+    keywords: [
+      // === ENGLISH ===
+      "html to markdown", "html to md", "convert html to markdown", "html converter",
+      "html to text", "html export", "webpage to markdown", "html parser",
+      "convert html", "html markdown converter", "htm to markdown",
+      // === BAHASA INDONESIA ===
+      "html ke markdown", "html ke md", "konversi html ke markdown",
+      "ubah html ke markdown", "konverter html", "html ke teks markdown",
+    ],
+  },
 ];
