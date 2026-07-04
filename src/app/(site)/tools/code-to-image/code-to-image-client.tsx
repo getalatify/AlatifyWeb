@@ -15,6 +15,7 @@ import {
   Copy,
   Check,
   CheckCircle2,
+  HelpCircle,
   RefreshCw,
   ImageIcon,
   Minimize2,
@@ -24,7 +25,7 @@ import {
 import { detectLanguage, type SupportedLang } from "./lib/detect-language";
 import { highlightCode, THEME_OPTIONS, type ThemeId } from "./lib/highlighter";
 import { PreviewFrame, type PaddingPreset } from "./components/preview-frame";
-import { capturePng, captureSvg, downloadBlob, downloadSvg } from "./lib/export-image";
+import { capturePng, captureSvg, downloadBlob } from "./lib/export-image";
 
 const sampleCode = `// Turn your code into a share-ready image
 export async function greet(name: string): Promise<string> {
@@ -175,9 +176,9 @@ export default function CodeToImageClient() {
     if (!previewRef.current || !code.trim()) return;
     setIsExporting(true);
     try {
-      const svg = await captureSvg(previewRef.current);
+      const blob = await captureSvg(previewRef.current);
       const svgFileName = outputFileName.replace(/\.png$/, ".svg");
-      downloadSvg(svg, svgFileName);
+      downloadBlob(blob, svgFileName);
       toast.success("SVG downloaded!");
     } catch (err: unknown) {
       console.error(err);
@@ -207,6 +208,9 @@ export default function CodeToImageClient() {
   };
 
   const langSelectValue = languageMode === "auto" ? "auto" : manualLang;
+  const exportDisabled = !code.trim() || !highlightedHtml || isHighlighting || isExporting;
+  const exportBtnClass =
+    "text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5 disabled:opacity-40";
 
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 overflow-x-clip">
@@ -264,7 +268,7 @@ export default function CodeToImageClient() {
 
             <div className="flex flex-wrap items-center gap-3 p-3 rounded-xl bg-card border border-border/40">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground shrink-0">
-                Style
+                Options
               </span>
               <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                 <span className="text-muted-foreground">Language</span>
@@ -313,14 +317,11 @@ export default function CodeToImageClient() {
                   <option className={optionClassName} value="compact">Compact</option>
                 </select>
               </label>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-4 p-3 rounded-xl bg-card border border-border/40">
               <label className="flex items-center gap-2 text-xs font-semibold text-foreground cursor-pointer">
                 <Switch checked={showChrome} onCheckedChange={setShowChrome} aria-label="Window chrome" />
                 <span>Window chrome</span>
               </label>
-              <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground flex-1 min-w-[140px]">
+              <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground min-w-[140px]">
                 <span className="text-muted-foreground shrink-0">Filename</span>
                 <input
                   type="text"
@@ -336,67 +337,88 @@ export default function CodeToImageClient() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Paste your code here..."
-              className="w-full h-[400px] p-5 rounded-2xl bg-card border border-border/40 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-sm font-mono leading-relaxed outline-none resize-none transition-all shadow-inner placeholder:text-muted-foreground/60"
+              className="w-full h-[450px] p-5 rounded-2xl bg-card border border-border/40 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-sm font-mono leading-relaxed outline-none resize-none transition-all shadow-inner placeholder:text-muted-foreground/60"
             />
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between h-8">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Preview
               </span>
-              {isHighlighting && (
-                <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-semibold">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  Highlighting…
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {isHighlighting && (
+                  <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin" />
+                )}
+                <Button
+                  onClick={() => void handleCopyImage()}
+                  disabled={exportDisabled}
+                  variant="outline"
+                  size="sm"
+                  className={exportBtnClass}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-green-500" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      Copy Image
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={() => void handleDownloadSvg()}
+                  disabled={exportDisabled}
+                  variant="outline"
+                  size="sm"
+                  className={exportBtnClass}
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download SVG
+                </Button>
+                <Button
+                  onClick={() => void handleDownloadPng()}
+                  disabled={exportDisabled}
+                  variant="outline"
+                  size="sm"
+                  className={exportBtnClass}
+                >
+                  {isExporting ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Download className="w-3.5 h-3.5" />
+                  )}
+                  Download PNG
+                </Button>
+              </div>
             </div>
 
-            <div className="min-h-[400px] p-6 rounded-2xl bg-card border border-border/40 flex items-start justify-center overflow-auto">
+            <div className="relative w-full h-[514px]">
               {code.trim() && highlightedHtml ? (
-                <PreviewFrame
-                  ref={previewRef}
-                  highlightedHtml={highlightedHtml}
-                  theme={theme}
-                  showChrome={showChrome}
-                  fileName={fileName}
-                  padding={padding}
-                />
+                <div className="w-full h-full p-6 rounded-2xl bg-card border border-border/40 flex items-start justify-center overflow-auto">
+                  <PreviewFrame
+                    ref={previewRef}
+                    highlightedHtml={highlightedHtml}
+                    theme={theme}
+                    showChrome={showChrome}
+                    fileName={fileName}
+                    padding={padding}
+                  />
+                </div>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full min-h-[320px] text-center text-muted-foreground/60 gap-3">
-                  <ImageIcon className="w-10 h-10 opacity-40" />
-                  <p className="text-sm font-medium">Paste code to see a live preview</p>
+                <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 bg-card border border-border/40 rounded-2xl border-dashed">
+                  <ImageIcon className="w-12 h-12 text-muted-foreground/40 stroke-[1.5] mb-3 animate-pulse" />
+                  <p className="text-xs font-extrabold uppercase tracking-widest text-foreground">
+                    Preview Empty
+                  </p>
+                  <p className="text-[11px] text-muted-foreground max-w-xs mt-1 leading-normal">
+                    Paste code to see a live syntax-highlighted preview.
+                  </p>
                 </div>
               )}
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={() => void handleDownloadPng()}
-                disabled={!code.trim() || !highlightedHtml || isHighlighting || isExporting}
-                className="flex-1 min-w-[120px] font-bold text-xs h-10 rounded-xl"
-              >
-                {isExporting ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Download className="w-4 h-4 mr-1.5" />}
-                Download PNG
-              </Button>
-              <Button
-                onClick={() => void handleDownloadSvg()}
-                disabled={!code.trim() || !highlightedHtml || isHighlighting || isExporting}
-                variant="outline"
-                className="flex-1 min-w-[120px] font-bold text-xs h-10 rounded-xl"
-              >
-                Download SVG
-              </Button>
-              <Button
-                onClick={() => void handleCopyImage()}
-                disabled={!code.trim() || !highlightedHtml || isHighlighting || isExporting}
-                variant="outline"
-                className="flex-1 min-w-[120px] font-bold text-xs h-10 rounded-xl"
-              >
-                {copied ? <Check className="w-4 h-4 mr-1.5" /> : <Copy className="w-4 h-4 mr-1.5" />}
-                Copy Image
-              </Button>
             </div>
 
             {outputBlob && (
@@ -411,40 +433,80 @@ export default function CodeToImageClient() {
           </div>
         </section>
 
-        <section className="max-w-5xl mx-auto w-full space-y-6">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
-          <h2 className="text-lg font-extrabold text-foreground">How It Works</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {(["step1", "step2", "step3", "step4"] as const).map((step, idx) => (
-              <div key={step} className="flex gap-3 p-4 rounded-xl bg-card border border-border/40">
-                <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary text-xs font-black shrink-0">
-                  {idx + 1}
+        <PrivacyNotice>
+          <p>{t("tools.code-to-image.privacyNotice")}</p>
+        </PrivacyNotice>
+
+        <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              How It Works
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              { step: "01", title: "Paste Code", text: t("tools.code-to-image.howItWorks.step1") },
+              { step: "02", title: "Highlight", text: t("tools.code-to-image.howItWorks.step2") },
+              { step: "03", title: "Style", text: t("tools.code-to-image.howItWorks.step3") },
+              { step: "04", title: "Export", text: t("tools.code-to-image.howItWorks.step4") },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative flex flex-col gap-2.5"
+              >
+                <span className="text-2xl font-black text-primary/25 absolute top-4 right-5 font-mono">
+                  {item.step}
                 </span>
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {item.title}
+                </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  {t(`tools.code-to-image.howItWorks.${step}`)}
+                  {item.text}
                 </p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="max-w-5xl mx-auto w-full space-y-6">
-          <h2 className="text-lg font-extrabold text-foreground">Use Cases</h2>
-          <p className="text-xs text-muted-foreground">{t("tools.code-to-image.useCases.subtitle")}</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {(["case1", "case2", "case3", "case4"] as const).map((c) => (
-              <div key={c} className="p-4 rounded-xl bg-card border border-border/40">
+        <section className="max-w-5xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              What You Can Use It For
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              {t("tools.code-to-image.useCases.subtitle")}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { title: "Dev Social Posts", text: t("tools.code-to-image.useCases.case1") },
+              { title: "Blog & README Visuals", text: t("tools.code-to-image.useCases.case2") },
+              { title: "Slides & Tutorials", text: t("tools.code-to-image.useCases.case3") },
+              { title: "Image Tool Chaining", text: t("tools.code-to-image.useCases.case4") },
+            ].map((useCase, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-card border border-border/40 shadow-sm flex flex-col gap-2"
+              >
+                <h3 className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  {useCase.title}
+                </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  {t(`tools.code-to-image.useCases.${c}`)}
+                  {useCase.text}
                 </p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="max-w-5xl mx-auto w-full space-y-6">
-          <h2 className="text-lg font-extrabold text-foreground">FAQ</h2>
-          <div className="space-y-4">
+        <section className="max-w-5xl mx-auto w-full space-y-6 pt-2">
+          <div className="text-center sm:text-left flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {(["q1", "q2", "q3", "q4", "q5"] as const).map((q) => (
               <div key={q} className="space-y-1.5 p-1">
                 <h3 className="text-xs sm:text-sm font-extrabold text-foreground flex gap-1.5 items-start">
@@ -459,10 +521,6 @@ export default function CodeToImageClient() {
           </div>
         </section>
 
-        <PrivacyNotice>
-          <p>{t("tools.code-to-image.privacyNotice")}</p>
-        </PrivacyNotice>
-
         <section className="max-w-5xl mx-auto w-full space-y-4 pt-4">
           <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-2" />
           <h3 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground text-center sm:text-left">
@@ -471,7 +529,7 @@ export default function CodeToImageClient() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Link
               href="/tools/compressor"
-              className="flex flex-col justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+              className="flex flex-col justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group animate-fade-in"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors shrink-0">
@@ -489,7 +547,7 @@ export default function CodeToImageClient() {
             </Link>
             <Link
               href="/tools/converter"
-              className="flex flex-col justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+              className="flex flex-col justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group animate-fade-in"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors shrink-0">
@@ -507,7 +565,7 @@ export default function CodeToImageClient() {
             </Link>
             <Link
               href="/tools/html-to-markdown"
-              className="flex flex-col justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group"
+              className="flex flex-col justify-between p-4 rounded-xl bg-card border border-border/40 hover:border-primary/45 transition-all shadow-sm group animate-fade-in"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border text-muted-foreground group-hover:text-primary transition-colors shrink-0">

@@ -523,7 +523,7 @@ export const id = {
       "downloadMd": "Unduh .md"
     },
     "code-to-image": {
-      "intro": "Ubah kode Anda menjadi gambar siap bagikan untuk Twitter, blog, dan dokumentasi — dengan tema untuk developer dan tipografi Geist Mono yang tajam. Gaya cuplikan kode, ekspor PNG atau SVG, dan lanjutkan ke alat gambar lainnya. Berjalan sepenuhnya di browser Anda.",
+      "intro": "Ubah kode Anda menjadi gambar siap bagikan untuk Twitter, blog, dan dokumentasi — dengan tema untuk developer dan tipografi Geist Mono yang tajam. Gaya cuplikan kode, ekspor PNG atau SVG, dan lanjutkan ke alat gambar lainnya.",
       "howItWorks": {
         "step1": "Tempel kode sumber ke editor, atau muat contoh cuplikan untuk memulai.",
         "step2": "Shiki menyorot kode Anda secara lokal dengan deteksi bahasa otomatis atau override manual.",
@@ -549,7 +549,7 @@ export const id = {
         "q5": "Apakah alat ini gratis?",
         "a5": "Ya. Seperti semua alat Alatify, Code to Image sepenuhnya gratis tanpa akun, tanpa batas, dan tanpa watermark pada ekspor Anda."
       },
-      "privacyNotice": "Alatify menyorot dan merender kode Anda sepenuhnya di dalam browser menggunakan Shiki dan modern-screenshot. Kode sumber Anda tidak pernah diunggah ke server mana pun. Ekspor gambar langsung di perangkat Anda sendiri."
+      "privacyNotice": "Penyorotan dan ekspor gambar berjalan secara lokal di tab browser Anda menggunakan Shiki dan modern-screenshot."
     },
     "markdown-to-pdf": {
       "intro": "Konversi file Markdown atau teks biasa menjadi dokumen PDF dengan format indah yang diproses sepenuhnya secara lokal. Tanpa unggah server, tanpa konfigurasi, dan tanpa registrasi. Catatan dan dokumentasi pribadi Anda tidak pernah meninggalkan perangkat Anda.",

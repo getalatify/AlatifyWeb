@@ -523,7 +523,7 @@ export const en = {
       "downloadMd": "Download .md"
     },
     "code-to-image": {
-      "intro": "Turn your code into polished, share-ready images for Twitter, blogs, and docs — with developer-focused themes and crisp Geist Mono typography. Style your snippets, export PNG or SVG, and hand off to other image tools. Runs entirely in your browser.",
+      "intro": "Turn your code into polished, share-ready images for Twitter, blogs, and docs — with developer-focused themes and crisp Geist Mono typography. Style your snippets, export PNG or SVG, and hand off to other image tools.",
       "howItWorks": {
         "step1": "Paste your source code into the editor, or load the example snippet to get started.",
         "step2": "Shiki highlights your code locally with auto-detected language or a manual override.",
@@ -549,7 +549,7 @@ export const en = {
         "q5": "Is this tool free?",
         "a5": "Yes. Like all Alatify tools, Code to Image is completely free with no account, no limits, and no watermarks on your exports."
       },
-      "privacyNotice": "Alatify highlights and renders your code entirely inside your browser using Shiki and modern-screenshot. Your source code is never uploaded to any server. Export images directly on your own device."
+      "privacyNotice": "Highlighting and image export run locally in your browser tab using Shiki and modern-screenshot."
     },
     "markdown-to-pdf": {
       "intro": "Convert Markdown files or raw text into beautifully formatted PDF documents completely locally. No server uploads, no configuration, and zero registration required. Your private notes and documentation never leave your device.",

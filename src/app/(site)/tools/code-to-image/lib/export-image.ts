@@ -29,11 +29,23 @@ export async function capturePng(node: HTMLElement): Promise<Blob> {
   return dataUrlToBlob(dataUrl);
 }
 
-export async function captureSvg(node: HTMLElement): Promise<string> {
+async function svgStringToBlob(result: string): Promise<Blob> {
+  const trimmed = result.trim();
+  if (trimmed.startsWith("data:")) {
+    return (await fetch(trimmed)).blob();
+  }
+  if (trimmed.startsWith("<")) {
+    return new Blob([result], { type: "image/svg+xml;charset=utf-8" });
+  }
+  throw new Error("Unexpected SVG export format from domToSvg.");
+}
+
+export async function captureSvg(node: HTMLElement): Promise<Blob> {
   await ensureFontsLoaded();
-  return domToSvg(node, {
+  const result = await domToSvg(node, {
     font: FONT_OPTIONS,
   });
+  return svgStringToBlob(result);
 }
 
 export function downloadBlob(blob: Blob, fileName: string): void {
@@ -47,7 +59,3 @@ export function downloadBlob(blob: Blob, fileName: string): void {
   URL.revokeObjectURL(url);
 }
 
-export function downloadSvg(svg: string, fileName: string): void {
-  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-  downloadBlob(blob, fileName);
-}
