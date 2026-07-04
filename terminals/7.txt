@@ -1,0 +1,74 @@
+---
+pid: 18576
+cwd: "C:\Users\Lenovo\Claude\Projects\Tools\Alatify-Jules"
+command: "cd C:\\Users\\Lenovo\\Claude\\Projects\\Tools\\Alatify-Jules; npm run build"
+started_at: 2026-07-04T12:19:33.406Z
+running_for_ms: 5560005  
+---
+
+> alatify@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+
+   Creating an optimized production build ...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for client (static)...
+ ○ (pwa) Service worker: C:\Users\Lenovo\Claude\Projects\Tools\Alatify-Jules\public\sw.js
+ ○ (pwa)   URL: /sw.js
+ ○ (pwa)   Scope: /
+ ○ (pwa) Custom runtimeCaching array found, using it instead of the default one.
+   Linting and checking validity of types ...
+ ⚠ Compiled with warnings
+
+./node_modules/onnxruntime-web/dist/ort.bundle.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.bundle.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+Circular dependency between chunks with runtime (webpack, 4034, 7121)
+This prevents using hashes of each other and should be avoided.
+
+./node_modules/onnxruntime-web/dist/ort.node.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.node.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+Circular dependency between chunks with runtime (2939, 6084, webpack-runtime)
+This prevents using hashes of each other and should be avoided.
+
+Failed to compile.
+
+./src/app/(site)/tools/code-to-image/lib/highlighter.ts:2:24
+Type error: Cannot find module 'shiki/langs/javascript' or its corresponding type declarations.
+
+  1 | import { getSingletonHighlighter, type Highlighter } from "shiki";
+> 2 | import javascript from "shiki/langs/javascript";
+    |                        ^
+  3 | import typescript from "shiki/langs/typescript";
+  4 | import tsx from "shiki/langs/tsx";
+  5 | import python from "shiki/langs/python";
+Next.js build worker exited with code: 1 and signal: null

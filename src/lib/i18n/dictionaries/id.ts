@@ -522,6 +522,35 @@ export const id = {
       "placeholder": "Tempel HTML atau unggah file .html untuk melihat output Markdown yang dikonversi di sini.",
       "downloadMd": "Unduh .md"
     },
+    "code-to-image": {
+      "intro": "Ubah kode Anda menjadi gambar siap bagikan untuk Twitter, blog, dan dokumentasi — dengan tema untuk developer dan tipografi Geist Mono yang tajam. Gaya cuplikan kode, ekspor PNG atau SVG, dan lanjutkan ke alat gambar lainnya.",
+      "howItWorks": {
+        "step1": "Tempel kode sumber ke editor, atau muat contoh cuplikan untuk memulai.",
+        "step2": "Shiki menyorot kode Anda secara lokal dengan deteksi bahasa otomatis atau override manual.",
+        "step3": "Pilih tema — Geist Monokrom, Dark, atau Light — dan aktifkan window chrome serta padding.",
+        "step4": "Unduh PNG atau SVG, salin ke clipboard, atau lanjutkan ke compressor, resizer, converter, atau watermark."
+      },
+      "useCases": {
+        "subtitle": "Buat visual kode yang indah untuk posting sosial, dokumentasi, dan presentasi.",
+        "case1": "Bagikan cuplikan kode dengan syntax highlight di dev Twitter, Mastodon, atau LinkedIn tanpa screenshot buram.",
+        "case2": "Tambahkan blok kode yang rapi ke posting blog, README, dan dokumentasi teknis.",
+        "case3": "Buat visual slide konferensi dan grafik tutorial dengan tipografi monospace yang konsisten.",
+        "case4": "Hasilkan gambar kode dan lanjutkan ke compressor atau converter untuk pengiriman yang dioptimalkan."
+      },
+      "faq": {
+        "q1": "Tema apa saja yang tersedia?",
+        "a1": "Tiga tema: Geist Monokrom (monokrom signature dengan Geist Mono), Dark (gaya GitHub Dark), dan Light Minimal (GitHub Light). Window chrome dengan traffic-light dots berfungsi di semua tema.",
+        "q2": "Bahasa pemrograman apa saja yang didukung?",
+        "a2": "JavaScript, TypeScript, JSX/TSX, Python, HTML, CSS, JSON, Bash, Go, Rust, SQL, Markdown, dan teks polos. Auto-detect memilih yang terbaik, atau override manual dari dropdown.",
+        "q3": "Format ekspor apa saja yang tersedia?",
+        "a3": "PNG (utama, dapat di-chain), SVG (vektor), dan salin ke clipboard sebagai PNG. PNG adalah format yang digunakan saat melanjutkan ke alat gambar Alatify lainnya.",
+        "q4": "Bisakah menyalin gambar ke clipboard?",
+        "a4": "Ya. Klik Copy Image untuk menempel PNG ke Slack, Discord, atau aplikasi yang menerima gambar clipboard. Beberapa browser mungkin memblokir — toast akan memberi tahu jika gagal.",
+        "q5": "Apakah alat ini gratis?",
+        "a5": "Ya. Seperti semua alat Alatify, Code to Image sepenuhnya gratis tanpa akun, tanpa batas, dan tanpa watermark pada ekspor Anda."
+      },
+      "privacyNotice": "Penyorotan dan ekspor gambar berjalan secara lokal di tab browser Anda menggunakan Shiki dan modern-screenshot."
+    },
     "markdown-to-pdf": {
       "intro": "Konversi file Markdown atau teks biasa menjadi dokumen PDF dengan format indah yang diproses sepenuhnya secara lokal. Tanpa unggah server, tanpa konfigurasi, dan tanpa registrasi. Catatan dan dokumentasi pribadi Anda tidak pernah meninggalkan perangkat Anda.",
       "howItWorks": {

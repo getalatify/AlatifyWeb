@@ -7,4 +7,5 @@ export const CHAIN_MAP: Record<string, string[]> = {
   "cropper":          ["compressor", "resizer", "watermark", "converter"],
   "watermark":        ["compressor", "converter"],
   "converter":        ["compressor", "resizer"],
+  "code-to-image":    ["compressor", "resizer", "converter", "watermark"],
 };
