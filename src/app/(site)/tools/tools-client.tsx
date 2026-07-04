@@ -25,6 +25,7 @@ import {
   Binary,
   QrCode,
   FileText,
+  FileCode
   FileImage,
   Files
 } from "lucide-react";
@@ -43,6 +44,7 @@ const TOOL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
   "steganography": Binary,
   "qr-toolkit": QrCode,
   "stock-finder": Search,
+  "html-to-markdown": FileCode,
   "markdown-to-pdf": FileText,
   "pdf-to-markdown": FileText,
   "pdf-pages": FileText,

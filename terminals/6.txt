@@ -1,0 +1,129 @@
+---
+pid: 25828
+cwd: "C:\Users\Lenovo\Claude\Projects\Tools\Alatify-Grok"
+command: "Set-Location \"C:\\Users\\Lenovo\\Claude\\Projects\\Tools\\Alatify-Grok\"; npm run build"
+started_at: 2026-07-03T15:52:46.113Z
+running_for_ms: 329975   
+---
+
+> alatify@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+
+   Creating an optimized production build ...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for client (static)...
+ ○ (pwa) Service worker: C:\Users\Lenovo\Claude\Projects\Tools\Alatify-Grok\public\sw.js
+ ○ (pwa)   URL: /sw.js
+ ○ (pwa)   Scope: /
+ ○ (pwa) Custom runtimeCaching array found, using it instead of the default one.
+   Linting and checking validity of types ...
+ ⚠ Compiled with warnings
+
+./node_modules/onnxruntime-web/dist/ort.bundle.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.bundle.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+Circular dependency between chunks with runtime (webpack, 4034, 7121)
+This prevents using hashes of each other and should be avoided.
+
+./node_modules/onnxruntime-web/dist/ort.node.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.node.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs
+./src/workers/upscaler.worker.ts
+./src/app/(site)/tools/upscaler/upscaler-client.tsx
+
+Circular dependency between chunks with runtime (2939, 6084, webpack-runtime)
+This prevents using hashes of each other and should be avoided.
+
+   Collecting page data ...
+ ⚠ Using edge runtime on a page currently disables static generation for that page
+   Generating static pages (0/46) ...
+   Generating static pages (11/46) 
+   Generating static pages (22/46) 
+   Generating static pages (34/46) 
+ ✓ Generating static pages (46/46)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                Size     First Load JS
+┌ ○ /                                      2.45 kB         185 kB
+├ ○ /_not-found                            880 B          91.1 kB
+├ ○ /about                                 2.36 kB         185 kB
+├ ƒ /android-chrome-192                    0 B                0 B
+├ ƒ /android-chrome-512                    0 B                0 B
+├ ƒ /api/fetch-image                       0 B                0 B
+├ ƒ /api/ping                              0 B                0 B
+├ ƒ /api/stock-download-trigger            0 B                0 B
+├ ƒ /api/stock-search                      0 B                0 B
+├ ○ /apple-icon.png                        0 B                0 B
+├ ○ /blur-face-in-photo-without-uploading  264 B           183 kB
+├ ○ /dev/components                        2.16 kB         184 kB
+├ ○ /embed                                 5.01 kB         213 kB
+├ ○ /embed/bg-remover                      155 B           227 kB
+├ ○ /embed/compressor                      155 B           215 kB
+├ ○ /embed/qr-toolkit                      156 B           275 kB
+├ ○ /embed/resizer                         152 B           197 kB
+├ ○ /icon.png                              0 B                0 B
+├ ○ /icon.svg                              0 B                0 B
+├ ƒ /opengraph-image                       0 B                0 B
+├ ○ /privacy                               2.58 kB         185 kB
+├ ○ /remove-background-without-uploading   264 B           183 kB
+├ ○ /remove-exif-metadata-online           264 B           183 kB
+├ ○ /robots.txt                            0 B                0 B
+├ ○ /sitemap.xml                           0 B                0 B
+├ ○ /support                               3.9 kB          186 kB
+├ ○ /terms                                 2.5 kB          185 kB
+├ ○ /tools                                 148 B           188 kB
+├ ○ /tools/bg-remover                      154 B           227 kB
+├ ○ /tools/blur                            50.2 kB         262 kB
+├ ○ /tools/compressor                      155 B           215 kB
+├ ○ /tools/converter                       16.2 kB         203 kB
+├ ○ /tools/cropper                         14.5 kB         201 kB
+├ ○ /tools/document                        148 B           188 kB
+├ ○ /tools/exif-cleaner                    9.89 kB         196 kB
+├ ○ /tools/html-to-markdown                5.56 kB         188 kB
+├ ○ /tools/id-protector                    14.7 kB         197 kB
+├ ○ /tools/image                           147 B           188 kB
+├ ○ /tools/markdown-to-pdf                 53.7 kB         236 kB
+├ ○ /tools/pdf-pages                       208 kB          390 kB
+├ ○ /tools/pdf-to-markdown                 6.54 kB         189 kB
+├ ○ /tools/qr-toolkit                      156 B           275 kB
+├ ○ /tools/resizer                         152 B           197 kB
+├ ○ /tools/steganography                   9.03 kB         191 kB
+├ ○ /tools/stock-finder                    7.85 kB         190 kB
+├ ○ /tools/upscaler                        8.94 kB         225 kB
+└ ○ /tools/watermark                       14.2 kB         196 kB
++ First Load JS shared by all              90.3 kB
+  ├ chunks/6997-d76924318e0e2e8e.js        34.1 kB
+  ├ chunks/fd9d1056-7a0fb48080d9735f.js    53.6 kB
+  └ other shared chunks (total)            2.52 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
