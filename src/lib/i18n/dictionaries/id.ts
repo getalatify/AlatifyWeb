@@ -491,6 +491,37 @@ export const id = {
         "a5": "Tiga pustaka stok gratis terbesar: Unsplash, Pexels, dan Pixabay."
       }
     },
+    "html-to-markdown": {
+      "intro": "Konversi kode sumber HTML atau file .html menjadi Markdown yang bersih dan mudah dibaca — sepenuhnya di browser Anda. Tempel markup atau unggah file, lalu salin atau unduh hasilnya. Tanpa unggah server, tanpa akun, dan konten Anda tidak pernah meninggalkan perangkat.",
+      "howItWorks": {
+        "step1": "Tempel HTML ke editor atau unggah file .html lokal dari perangkat Anda.",
+        "step2": "Konverter mengurai markup Anda secara lokal menggunakan Turndown di dalam sandbox browser.",
+        "step3": "Heading, daftar, tautan, tebal/miring, blockquote, dan blok kode dipetakan ke Markdown.",
+        "step4": "Salin output ke clipboard atau unduh sebagai file .md secara instan."
+      },
+      "useCases": {
+        "subtitle": "Ubah halaman web, ekspor, dan cuplikan HTML menjadi draf Markdown yang dapat diedit.",
+        "case1": "Migrasikan posting blog, landing page, atau ekspor CMS ke Markdown untuk static site generator.",
+        "case2": "Konversi halaman wiki internal, dokumen bantuan, atau basis pengetahuan HTML menjadi file .md portabel.",
+        "case3": "Arsipkan HTML newsletter atau email secara lokal dan format ulang menjadi Markdown berbasis teks.",
+        "case4": "Ubah sumber halaman web tersimpan menjadi catatan Markdown untuk Obsidian, Notion, atau GitHub."
+      },
+      "faq": {
+        "q1": "Apakah HTML saya diunggah ke server?",
+        "a1": "Tidak. Semua parsing dan konversi berjalan di dalam browser Anda. Kode sumber HTML tidak pernah dikirim ke backend atau layanan pihak ketiga mana pun.",
+        "q2": "Elemen HTML apa saja yang didukung?",
+        "a2": "Elemen umum seperti heading, paragraf, tebal/miring, tautan, daftar berurutan dan tak berurutan, blockquote, blok kode, dan garis horizontal dikonversi. Tata letak kompleks mungkin disederhanakan menjadi Markdown linear.",
+        "q3": "Bisakah mengunggah file halaman web lengkap?",
+        "a3": "Ya. Unggah file .html atau .htm apa pun dan alat ini membacanya secara lokal, lalu mengonversi seluruh sumber dokumen ke Markdown.",
+        "q4": "Apakah tabel akan dikonversi ke sintaks tabel Markdown?",
+        "a4": "Turndown standar tidak menyertakan plugin tabel GFM. Tabel HTML menggunakan perilaku default Turndown — tidak dapat diandalkan untuk dikonversi ke sintaks tabel pipa Markdown. Tabel kompleks atau bersarang mungkin menjadi teks polos atau output yang disederhanakan. Tinjau hasilnya jika struktur tabel penting.",
+        "q5": "Apakah saya harus membayar atau membuat akun?",
+        "a5": "Tidak. Seperti semua alat di Alatify, konverter ini sepenuhnya gratis, tanpa batas pemakaian, dan tidak memerlukan pendaftaran."
+      },
+      "privacyNotice": "Alatify memproses file HTML Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah kode sumber atau konten pribadi Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Konversi HTML ke Markdown secara aman langsung di perangkat Anda sendiri.",
+      "placeholder": "Tempel HTML atau unggah file .html untuk melihat output Markdown yang dikonversi di sini.",
+      "downloadMd": "Unduh .md"
+    },
     "markdown-to-pdf": {
       "intro": "Konversi file Markdown atau teks biasa menjadi dokumen PDF dengan format indah yang diproses sepenuhnya secara lokal. Tanpa unggah server, tanpa konfigurasi, dan tanpa registrasi. Catatan dan dokumentasi pribadi Anda tidak pernah meninggalkan perangkat Anda.",
       "howItWorks": {

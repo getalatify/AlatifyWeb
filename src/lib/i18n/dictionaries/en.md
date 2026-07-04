@@ -487,6 +487,36 @@ export const en = {
         "a5": "Three of the largest free stock libraries: Unsplash, Pexels, and Pixabay."
       }
     },
+    "html-to-markdown": {
+      "intro": "Convert HTML source code or .html files into clean, readable Markdown — entirely in your browser. Paste markup or upload a file, then copy or download the result. No server uploads, no account, and your content never leaves your device.",
+      "howItWorks": {
+        "step1": "Paste HTML into the editor or upload a local .html file from your device.",
+        "step2": "The converter parses your markup locally using Turndown inside the browser sandbox.",
+        "step3": "Headings, lists, links, bold/italic, blockquotes, and code blocks are mapped to Markdown.",
+        "step4": "Copy the output to your clipboard or download it as a .md file instantly."
+      },
+      "useCases": {
+        "subtitle": "Turn web pages, exports, and HTML snippets into editable Markdown drafts.",
+        "case1": "Migrate blog posts, landing pages, or CMS exports into Markdown for static site generators.",
+        "case2": "Convert internal wiki pages, help docs, or knowledge-base HTML into portable .md files.",
+        "case3": "Archive newsletter or email HTML locally and reformat it into clean text-based Markdown.",
+        "case4": "Transform saved webpage source into Markdown notes for Obsidian, Notion, or GitHub."
+      },
+      "faq": {
+        "q1": "Is my HTML uploaded to a server?",
+        "a1": "No. All parsing and conversion runs inside your browser. Your HTML source is never sent to any backend or third-party service.",
+        "q2": "What HTML elements are supported?",
+        "a2": "Common elements like headings, paragraphs, bold/italic, links, ordered and unordered lists, blockquotes, code blocks, and horizontal rules are converted. Complex layouts may simplify to linear Markdown.",
+        "q3": "Can I upload a full webpage file?",
+        "a3": "Yes. Upload any .html or .htm file and the tool reads it locally, then converts the full document source to Markdown.",
+        "q4": "Will tables convert to Markdown table syntax?",
+        "a4": "Plain Turndown does not include a GFM table plugin. HTML tables use Turndown's default behavior — they are not reliably converted to Markdown pipe-table syntax. Complex or nested tables may become plain text or simplified output. Review the result if table structure matters.",
+        "q5": "Do I need to pay or create an account?",
+        "a5": "No. Like all tools on Alatify, this converter is completely free, has no caps or limits, and requires no registration."
+      },
+      "privacyNotice": "Alatify processes your HTML files completely locally using sandbox APIs inside your browser tab. We never upload any of your source code or private content to external clouds, making the tool 100% immune to leaks or server-side logging. Convert HTML to Markdown directly on your own device.",
+      "placeholder": "Paste HTML or upload a .html file to see the converted Markdown output here.",
+      "downloadMd": "Download .md"
     "pdf-to-image": {
       "intro": "Convert PDF pages into high-quality JPG or PNG images directly in your browser. Select specific pages or ranges, adjust the resolution scale, and download individual pages or a combined ZIP archive. No uploads, no sign-ups — 100% private.",
       "howItWorks": {
