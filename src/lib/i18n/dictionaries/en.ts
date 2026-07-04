@@ -522,6 +522,35 @@ export const en = {
       "placeholder": "Paste HTML or upload a .html file to see the converted Markdown output here.",
       "downloadMd": "Download .md"
     },
+    "code-to-image": {
+      "intro": "Turn your code into polished, share-ready images for Twitter, blogs, and docs — with developer-focused themes and crisp Geist Mono typography. Style your snippets, export PNG or SVG, and hand off to other image tools.",
+      "howItWorks": {
+        "step1": "Paste your source code into the editor, or load the example snippet to get started.",
+        "step2": "Shiki highlights your code locally with auto-detected language or a manual override.",
+        "step3": "Pick a theme — Geist Monokrom, Dark, or Light — and toggle window chrome and padding.",
+        "step4": "Download PNG or SVG, copy to clipboard, or continue to compressor, resizer, converter, or watermark."
+      },
+      "useCases": {
+        "subtitle": "Create beautiful code visuals for social posts, documentation, and presentations.",
+        "case1": "Share syntax-highlighted snippets on dev Twitter, Mastodon, or LinkedIn without ugly screenshots.",
+        "case2": "Add polished code blocks to blog posts, README files, and technical documentation.",
+        "case3": "Create conference slide visuals and tutorial graphics with consistent monospace typography.",
+        "case4": "Generate code images and chain them into the compressor or converter for optimized delivery."
+      },
+      "faq": {
+        "q1": "What themes are available?",
+        "a1": "Three themes: Geist Monokrom (signature monochrome with Geist Mono), Dark (GitHub Dark style), and Light Minimal (GitHub Light). Window chrome with traffic-light dots works on any theme.",
+        "q2": "Which programming languages are supported?",
+        "a2": "JavaScript, TypeScript, JSX/TSX, Python, HTML, CSS, JSON, Bash, Go, Rust, SQL, Markdown, and plain text. Auto-detect picks the best match, or override manually from the dropdown.",
+        "q3": "What export formats are available?",
+        "a3": "PNG (primary, chainable), SVG (vector), and copy-to-clipboard as PNG. PNG is the format used when continuing to other Alatify image tools.",
+        "q4": "Can I copy the image to my clipboard?",
+        "a4": "Yes. Click Copy Image to paste the PNG into Slack, Discord, or any app that accepts clipboard images. Some browsers may block this — a toast will notify you if it fails.",
+        "q5": "Is this tool free?",
+        "a5": "Yes. Like all Alatify tools, Code to Image is completely free with no account, no limits, and no watermarks on your exports."
+      },
+      "privacyNotice": "Highlighting and image export run locally in your browser tab using Shiki and modern-screenshot."
+    },
     "markdown-to-pdf": {
       "intro": "Convert Markdown files or raw text into beautifully formatted PDF documents completely locally. No server uploads, no configuration, and zero registration required. Your private notes and documentation never leave your device.",
       "howItWorks": {
