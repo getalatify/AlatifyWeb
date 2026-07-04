@@ -78,7 +78,7 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@imgly/background-removal', 'onnxruntime-web', '@jsquash/oxipng'],
+  transpilePackages: ['@imgly/background-removal', 'onnxruntime-web', '@jsquash/oxipng', 'shiki'],
   async headers() {
     return [
       {
