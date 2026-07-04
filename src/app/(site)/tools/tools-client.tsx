@@ -25,7 +25,7 @@ import {
   Binary,
   QrCode,
   FileText,
-  FileCode
+  FileCode,
   FileImage,
   Files
 } from "lucide-react";
