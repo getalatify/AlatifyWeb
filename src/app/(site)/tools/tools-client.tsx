@@ -24,7 +24,9 @@ import {
   Type,
   Binary,
   QrCode,
-  FileText
+  FileText,
+  FileImage,
+  Files
 } from "lucide-react";
 
 const TOOL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -44,6 +46,8 @@ const TOOL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
   "markdown-to-pdf": FileText,
   "pdf-to-markdown": FileText,
   "pdf-pages": FileText,
+  "pdf-to-image": FileImage,
+  "image-to-pdf": Files,
 };
 
 const mapToolToCard = (t: ToolEntry) => ({
