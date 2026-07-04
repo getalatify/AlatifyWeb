@@ -345,6 +345,9 @@ export const TOOLS: ToolEntry[] = [
       // === BAHASA INDONESIA ===
       "html ke markdown", "html ke md", "konversi html ke markdown",
       "ubah html ke markdown", "konverter html", "html ke teks markdown",
+    ],
+  },
+  {
     id: "pdf-to-image",
     name: "PDF to Image Converter",
     route: "/tools/pdf-to-image",
