@@ -377,5 +377,23 @@ export const TOOLS: ToolEntry[] = [
       "konversi gambar ke pdf", "buat pdf dari gambar"
     ],
   },
+  {
+    id: "code-to-image",
+    name: "Code to Image",
+    route: "/tools/code-to-image",
+    category: "image",
+    description: "Turn code snippets into styled, share-ready PNG images for social posts.",
+    keywords: [
+      // === ENGLISH ===
+      "code to image", "code screenshot", "syntax highlight image", "code snippet image",
+      "share code image", "dev twitter", "carbon alternative", "ray.so alternative",
+      "code png", "syntax highlighting export", "programming screenshot", "code share image",
+      "snippet to image", "code beautifier image", "highlighted code png",
+      // === BAHASA INDONESIA ===
+      "kode ke gambar", "screenshot kode", "cuplikan kode ke gambar", "syntax highlight",
+      "gambar kode program", "export kode ke png", "kode ke png", "cuplikan kode png",
+      "highlight kode", "bagikan kode gambar",
+    ],
+  },
 ];
 

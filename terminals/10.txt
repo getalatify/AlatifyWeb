@@ -1,0 +1,37 @@
+---
+pid: 26420
+cwd: "C:\Users\Lenovo\Claude\Projects\Tools\Alatify-Jules"
+command: "cd C:\\Users\\Lenovo\\Claude\\Projects\\Tools\\Alatify-Jules; npm run build 2>&1 | Select-Object -Last 30"
+started_at: 2026-07-04T12:34:48.407Z
+running_for_ms: 704956   
+---
+├ ○ /tools/blur                            50.2 kB         271 kB
+├ ○ /tools/code-to-image                   178 kB          372 kB
+├ ○ /tools/compressor                      155 B           224 kB
+├ ○ /tools/converter                       16.2 kB         211 kB
+├ ○ /tools/cropper                         14.5 kB         210 kB
+├ ○ /tools/document                        148 B           197 kB
+├ ○ /tools/exif-cleaner                    9.89 kB         205 kB
+├ ○ /tools/html-to-markdown                5.56 kB         197 kB
+├ ○ /tools/id-protector                    13.4 kB         208 kB
+├ ○ /tools/image                           148 B           197 kB
+├ ○ /tools/image-to-pdf                    6.53 kB         198 kB
+├ ○ /tools/markdown-to-pdf                 53.7 kB         245 kB
+├ ○ /tools/pdf-pages                       208 kB          399 kB
+├ ○ /tools/pdf-to-image                    6.29 kB         197 kB
+├ ○ /tools/pdf-to-markdown                 6.54 kB         198 kB
+├ ○ /tools/qr-toolkit                      155 B           284 kB
+├ ○ /tools/resizer                         152 B           205 kB
+├ ○ /tools/steganography                   9.03 kB         200 kB
+├ ○ /tools/stock-finder                    7.85 kB         199 kB
+├ ○ /tools/upscaler                        8.94 kB         234 kB
+└ ○ /tools/watermark                       14.2 kB         205 kB
++ First Load JS shared by all              94.4 kB
+  ├ chunks/6997-d76924318e0e2e8e.js        34.1 kB
+  ├ chunks/fd9d1056-7a0fb48080d9735f.js    53.6 kB
+  └ other shared chunks (total)            6.62 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
