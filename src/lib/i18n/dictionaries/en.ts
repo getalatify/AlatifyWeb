@@ -616,6 +616,66 @@ export const en = {
       "exportAllExplanation": "Export all pages as one PDF, in the order shown above.",
       "exportSelectedPlaceholder": "Select pages first.",
       "exportSelectedExplanation": "Only checked pages are exported."
+    },
+    "pdf-to-image": {
+      "intro": "Convert PDF pages into high-quality JPG or PNG images directly in your browser. Select specific pages or ranges, adjust the resolution scale, and download individual pages or a combined ZIP archive. No uploads, no sign-ups — 100% private.",
+      "howItWorks": {
+        "step1": "Upload your PDF document by dragging it in or browsing your files.",
+        "step2": "Choose PNG (keeps transparency) or JPG (flats to white) and set the render scale.",
+        "step3": "Select all pages or specify a custom subset/range of pages to extract.",
+        "step4": "Click Convert and download your image or a ZIP containing all pages."
+      },
+      "useCases": {
+        "case1": "Convert presentation slides or document pages into images for embedding in web pages or slides.",
+        "case2": "Extract photos, receipts, or single-page diagrams from a PDF as clean image assets.",
+        "case3": "Turn documents into social media images or inline graphics that don't require a PDF reader.",
+        "case4": "Convert sensitive financial sheets locally on-device without passing through third-party servers."
+      },
+      "faq": {
+        "q1": "Is my PDF uploaded to a server for conversion?",
+        "a1": "No. Everything runs inside your browser sandbox. The PDF pages are rendered directly to a canvas element locally, keeping your files completely secure.",
+        "q2": "What formats can I save pages as?",
+        "a2": "You can export pages as PNG (best for lossless graphics) or JPEG (high-resolution compressed format, default white background).",
+        "q3": "What does the render scale setting do?",
+        "a3": "It controls the resolution of the output images. 1x matches the default PDF page dimensions, while 2x and 3x multiply the pixels for crisper, print-quality text and graphics.",
+        "q4": "Can I convert just a subset of pages?",
+        "a4": "Yes. You can select all pages, pick specific pages from the visual checklist, or specify a custom range (e.g. 1-3, 5).",
+        "q5": "Does the tool support password-protected files?",
+        "a5": "Protected or encrypted PDFs cannot be rendered in the browser. You must remove password protection first before uploading."
+      },
+      "privacyNotice": "Alatify processes your PDF files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging.",
+      "scaleStandard": "1x (Standard)",
+      "scaleHigh": "2x (High)",
+      "scaleMaximum": "3x (Maximum)",
+      "scaleHelper": "Higher scale = sharper images, but larger files and slower processing."
+    },
+    "image-to-pdf": {
+      "intro": "Combine multiple JPG, PNG, or WebP images into a single, beautifully organized PDF document. Rearrange pages with drag-and-drop or shift buttons, set page dimensions, margins, and orientation — all computed locally on-device.",
+      "howItWorks": {
+        "step1": "Add one or more images (drag-and-drop or browse multiple files).",
+        "step2": "Reorder pages by dragging thumbnails or using the Move Up/Down buttons.",
+        "step3": "Configure page size (fit to image, A4, or Letter), orientation, and margins.",
+        "step4": "Generate and download the compiled, multi-page PDF document instantly."
+      },
+      "useCases": {
+        "case1": "Merge scanned images, receipts, or sketches into a single PDF document for submission or archiving.",
+        "case2": "Create digital portfolios, photo compilations, or slide decks from separate design files.",
+        "case3": "Convert a sequence of photos into a structured multi-page document for easy reading.",
+        "case4": "Assemble sensitive records, contracts, or IDs locally and privately without risking data leaks."
+      },
+      "faq": {
+        "q1": "Are my images uploaded to any server?",
+        "a1": "No. The PDF generation is done entirely on the client-side using jsPDF in your browser tab. Your files never leave your device.",
+        "q2": "Can I arrange the order of the pages?",
+        "a2": "Yes. You can drag the page thumbnails to reorder them, or use the explicit Move Up and Move Down buttons (designed to work reliably on mobile/touch screens).",
+        "q3": "What page size options do I have?",
+        "a3": "You can select 'Fit Page to Image' to create pages matching each image's exact dimensions, or choose standard sizes like A4 and Letter with the image scaled to fit.",
+        "q4": "Are my images compressed when compiling?",
+        "a4": "The tool embeds images directly into the PDF. For optimal file size, you can compress your source images using our Image Compressor before compiling.",
+        "q5": "How many images can I add at once?",
+        "a5": "There is no strict limit, but compiling dozens of high-resolution images may consume significant memory. The tool handles standard sets smoothly."
+      },
+      "privacyNotice": "Alatify compiles your images into a PDF completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging."
     }
   },
   "toolsPage": {
