@@ -206,23 +206,22 @@ export const id = {
       "autoDetectHelp": "⚡ Deteksi wajah lokal. Bekerja paling baik pada wajah yang jelas dan menghadap depan. Penyesuaian manual tersedia."
     },
     "converter": {
-      "intro": "Konversi gambar di antara sembilan format — termasuk favorit web seperti WebP, format desain seperti SVG dan TIFF, serta format khusus seperti ICO (favicon) dan PDF — sepenuhnya di browser Anda. Seret beberapa file sekaligus, pilih format output, dan konversi dalam satu klik. Tanpa unggah, tanpa pendaftaran, tanpa watermark — file Anda tidak pernah meninggalkan perangkat Anda.",
+      "intro": "Konversi gambar di antara delapan format — termasuk favorit web seperti WebP, format desain seperti SVG dan TIFF, serta format khusus seperti ICO (favicon) — sepenuhnya di browser Anda. Seret beberapa file sekaligus, pilih format output, dan konversi dalam satu klik. Tanpa unggah, tanpa pendaftaran, tanpa watermark — file Anda tidak pernah meninggalkan perangkat Anda.",
       "howItWorks": {
         "step1": "Tambahkan satu atau banyak gambar (seret-lepas atau pemilih file).",
-        "step2": "Pilih output Anda: JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, atau GIF.",
+        "step2": "Pilih output Anda: JPG, PNG, WebP, ICO, SVG, TIFF, BMP, atau GIF.",
         "step3": "Proses semuanya sekaligus, secara instan, di perangkat Anda.",
         "step4": "Simpan satu per satu, atau ambil semuanya sebagai ZIP."
       },
       "useCases": {
         "case1": "Perkecil gambar untuk situs web yang memuat lebih cepat tanpa kehilangan kualitas.",
         "case2": "Buat favicon untuk situs web Anda dalam format yang benar.",
-        "case3": "Gabungkan beberapa gambar menjadi satu PDF multi-halaman.",
         "case4": "Lacak gambar raster menjadi grafik vektor yang dapat diskalakan.",
         "case5": "Konversi foto iPhone menjadi JPG yang kompatibel secara universal."
       },
       "faq": {
         "q1": "Format apa saja yang bisa saya konversi?",
-        "a1": "JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, dan GIF — ditambah input HEIC dari iPhone.",
+        "a1": "JPG, PNG, WebP, ICO, SVG, TIFF, BMP, dan GIF — ditambah input HEIC dari iPhone.",
         "q2": "Apakah alat ini mengunggah file saya ke server?",
         "a2": "Tidak. Konversi berjalan sepenuhnya di browser Anda; file Anda tidak pernah meninggalkan perangkat Anda.",
         "q3": "Dapatkah saya mengonversi banyak gambar sekaligus?",
@@ -232,9 +231,11 @@ export const id = {
         "q5": "Dapatkah saya mengonversi foto HEIC dari iPhone saya?",
         "a5": "Ya. Tambahkan file HEIC Anda dan konversi ke JPG atau PNG secara instan."
       },
-      "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Konversi gambar antara format JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, dan GIF secara instan dan privat di perangkat Anda sendiri.",
+      "privacyNotice": "Alatify memproses file grafis Anda sepenuhnya secara lokal menggunakan sandbox APIs di dalam tab browser Anda. Kami tidak pernah mengunggah file atau koordinat privat Anda ke cloud eksternal, membuat alat ini 100% kebal terhadap kebocoran atau pencatatan di sisi server. Konversi gambar antara format JPG, PNG, WebP, ICO, SVG, TIFF, BMP, dan GIF secara instan dan privat di perangkat Anda sendiri.",
       "svgTooLarge": "Gambar terlalu besar untuk tracing SVG (maks. 1000 × 1000 didukung). Ubah ukuran gambar terlebih dahulu dengan alat Resizer kami, atau gunakan PNG/WebP untuk foto.",
-      "alphaBackdropHelp": "Format target yang dipilih tidak sepenuhnya menjamin rendering alpha channel native. Isi piksel transparan:"
+      "alphaBackdropHelp": "Format target yang dipilih tidak sepenuhnya menjamin rendering alpha channel native. Isi piksel transparan:",
+      "combinePdfPointer": "Butuh menggabungkan beberapa gambar menjadi PDF?",
+      "combinePdfPointerLink": "Gunakan alat khusus kami →"
     },
     "cropper": {
       "intro": "Potong ke rasio tetap atau secara bebas dengan pegangan yang dapat diseret, lalu luruskan dengan rotasi presisi — semuanya dengan pratinjau real-time di browser Anda. Tanpa unggah, tanpa pendaftaran — foto Anda tidak pernah meninggalkan perangkat Anda.",

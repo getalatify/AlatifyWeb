@@ -206,23 +206,22 @@ export const en = {
       "autoDetectHelp": "⚡ Local face detection. Works best on clear, front-facing faces. Manual touch-up is available."
     },
     "converter": {
-      "intro": "Convert images between nine formats — including web favorites like WebP, design formats like SVG and TIFF, and specialty formats like ICO (favicons) and PDF — entirely in your browser. Drag in multiple files, pick an output format, and convert in one click. No upload, no sign-up, no watermark — your files never leave your device.",
+      "intro": "Convert images between eight formats — including web favorites like WebP, design formats like SVG and TIFF, and specialty formats like ICO (favicons) — entirely in your browser. Drag in multiple files, pick an output format, and convert in one click. No upload, no sign-up, no watermark — your files never leave your device.",
       "howItWorks": {
         "step1": "Add one or many images (drag-drop or file picker).",
-        "step2": "Pick your output: JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, or GIF.",
+        "step2": "Pick your output: JPG, PNG, WebP, ICO, SVG, TIFF, BMP, or GIF.",
         "step3": "Process them all at once, instantly, on your device.",
         "step4": "Save individually, or grab everything as a ZIP."
       },
       "useCases": {
         "case1": "Shrink images for faster-loading websites without quality loss.",
         "case2": "Create favicons for your website in the correct format.",
-        "case3": "Combine several images into a single multi-page PDF.",
         "case4": "Trace raster images into scalable vector graphics.",
         "case5": "Convert iPhone photos into universally compatible JPGs."
       },
       "faq": {
         "q1": "Which formats can I convert between?",
-        "a1": "JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, and GIF — plus HEIC input from iPhones.",
+        "a1": "JPG, PNG, WebP, ICO, SVG, TIFF, BMP, and GIF — plus HEIC input from iPhones.",
         "q2": "Does it upload my files to a server?",
         "a2": "No. Conversion runs entirely in your browser; your files never leave your device.",
         "q3": "Can I convert many images at once?",
@@ -232,9 +231,11 @@ export const en = {
         "q5": "Can I convert HEIC photos from my iPhone?",
         "a5": "Yes. Add your HEIC files and convert them to JPG or PNG instantly."
       },
-      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Convert images between JPG, PNG, WebP, PDF, ICO, SVG, TIFF, BMP, and GIF formats instantly and privately on your own device.",
+      "privacyNotice": "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Convert images between JPG, PNG, WebP, ICO, SVG, TIFF, BMP, and GIF formats instantly and privately on your own device.",
       "svgTooLarge": "Image too large for SVG tracing (max 1000 × 1000 supported). Resize image first using our Resizer tool, or use PNG/WebP for photos.",
-      "alphaBackdropHelp": "Selected target format does not fully guarantee native alpha channel rendering. Fill transparent pixels:"
+      "alphaBackdropHelp": "Selected target format does not fully guarantee native alpha channel rendering. Fill transparent pixels:",
+      "combinePdfPointer": "Need to combine images into a PDF?",
+      "combinePdfPointerLink": "Use the dedicated tool →"
     },
     "cropper": {
       "intro": "Crop to a fixed ratio or freely with draggable handles, then straighten with precise rotation — all with real-time preview in your browser. No upload, no sign-up — your photo never leaves your device.",
