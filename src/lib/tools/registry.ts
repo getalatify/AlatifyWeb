@@ -110,18 +110,18 @@ export const TOOLS: ToolEntry[] = [
     name: "Format Converter",
     route: "/tools/converter",
     category: "image",
-    description: "Convert images between 9 formats including JPG, PNG, WebP, and PDF.",
+    description: "Convert images between 8 formats including JPG, PNG, WebP, and SVG.",
     keywords: [
       // === ENGLISH ===
       "convert image", "image converter", "format converter", "file converter",
       "jpg to png", "png to jpg", "convert to webp", "webp converter",
-      "heic to jpg", "image to pdf", "png to pdf", "change image format",
+      "heic to jpg", "change image format",
       "convert jpeg", "bmp", "ico", "gif", "tiff", "svg converter",
       "image format changer", "heic converter", "webp to jpg", "batch convert image",
       // === BAHASA INDONESIA ===
       "konversi gambar", "ubah format foto", "jpg ke png", "png ke jpg",
-      "heic ke jpg", "gambar ke pdf", "konverter webp", "ubah jpg ke png",
-      "konversi format gambar", "png ke pdf", "webp ke jpg", "ubah ke webp",
+      "heic ke jpg", "konverter webp", "ubah jpg ke png",
+      "konversi format gambar", "webp ke jpg", "ubah ke webp",
       "konversi heic", "gambar ke format lain",
     ],
   },

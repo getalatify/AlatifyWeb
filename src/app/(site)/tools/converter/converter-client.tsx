@@ -53,7 +53,7 @@ export default function FormatConverterPage() {
     total: number;
     current: number;
     filename: string;
-    stage: 'idle' | 'converting' | 'pdf' | 'zip' | 'done';
+    stage: 'idle' | 'converting' | 'zip' | 'done';
   }>({
     total: 0,
     current: 0,
@@ -885,45 +885,7 @@ export default function FormatConverterPage() {
     const sourceUrl = sourcePreviewUrl || activeImageUrl;
 
     try {
-      // PDF Exporter
-      if (activeFormat === "application/pdf") {
-        const { jsPDF } = await import("jspdf");
-        const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-          const tempImg = new Image();
-          tempImg.onload = () => resolve(tempImg);
-          tempImg.onerror = () => reject(new Error("Failed to load source graphics layer."));
-          tempImg.src = sourceUrl!;
-        });
 
-        const canvas = document.createElement("canvas");
-        canvas.width = originalDimensions.width;
-        canvas.height = originalDimensions.height;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) throw new Error("Failed to initialize PDF renderer.");
-        
-        ctx.fillStyle = activeFill === "white" ? "#ffffff" : activeColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
-        const jpegUrl = canvas.toDataURL("image/jpeg", activeQuality / 100);
-        const doc = new jsPDF({
-          orientation: originalDimensions.width > originalDimensions.height ? "landscape" : "portrait",
-          unit: "px",
-          format: [originalDimensions.width, originalDimensions.height]
-        });
-        
-        doc.addImage(jpegUrl, "JPEG", 0, 0, originalDimensions.width, originalDimensions.height, undefined, "FAST");
-        const pdfBlob = doc.output("blob");
-        
-        const baseName = (activeImage as File).name.replace(/\.[^/.]+$/, "");
-        const fileObj = new File([pdfBlob], `${baseName}.pdf`, {
-          type: "application/pdf"
-        });
-        
-        setConvertedImage(fileObj);
-        setIsConverting(false);
-        return;
-      }
 
       // Other formats
       const blob = await convertImageToBlob(
@@ -983,135 +945,67 @@ export default function FormatConverterPage() {
     });
 
     try {
-      if (targetFormat === "application/pdf") {
-        // PDF compilation
-        const { jsPDF } = await import("jspdf");
-        let doc: InstanceType<typeof jsPDF> | null = null;
+      // ZIP bundling
+      const JSZip = (await import("jszip")).default;
+      const zip = new JSZip();
+      const usedFilenames = new Set<string>();
+
+      for (let i = 0; i < readyItems.length; i++) {
+        const item = readyItems[i];
+        setConversionProgress(prev => ({
+          ...prev,
+          current: i,
+          filename: item.file.name,
+          stage: 'converting'
+        }));
+
+        const sourceUrl = item.sourcePreviewUrl || item.previewUrl;
+        const blob = await convertImageToBlob(
+          item.file,
+          sourceUrl,
+          item.width,
+          item.height,
+          item.hasTransparency,
+          targetFormat,
+          quality,
+          transparencyFill,
+          customFillColor
+        );
+
+        const ext = targetFormat === "image/jpeg" ? "jpg" : 
+                    targetFormat === "image/png" ? "png" : 
+                    targetFormat === "image/webp" ? "webp" : 
+                    targetFormat === "image/x-icon" ? "ico" : 
+                    targetFormat === "image/bmp" ? "bmp" : 
+                    targetFormat === "image/gif" ? "gif" : 
+                    targetFormat === "image/tiff" ? "tiff" : 
+                    targetFormat === "image/svg+xml" ? "svg" : "bin";
+
+        const baseName = item.file.name.replace(/\.[^/.]+$/, "");
+        let newFilename = `${baseName}.${ext}`;
         
-        for (let i = 0; i < readyItems.length; i++) {
-          const item = readyItems[i];
-          setConversionProgress(prev => ({
-            ...prev,
-            current: i,
-            filename: item.file.name,
-            stage: 'converting'
-          }));
-
-          const sourceUrl = item.sourcePreviewUrl || item.previewUrl;
-          const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-            const tempImg = new Image();
-            tempImg.onload = () => resolve(tempImg);
-            tempImg.onerror = () => reject(new Error(`Failed to load ${item.file.name}`));
-            tempImg.src = sourceUrl;
-          });
-
-          const canvas = document.createElement("canvas");
-          canvas.width = item.width;
-          canvas.height = item.height;
-          const ctx = canvas.getContext("2d");
-          if (!ctx) throw new Error("Failed to initialize PDF renderer.");
-          
-          ctx.fillStyle = transparencyFill === "white" ? "#ffffff" : customFillColor;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          
-          const jpegUrl = canvas.toDataURL("image/jpeg", quality / 100);
-          const orientation = item.width > item.height ? "landscape" : "portrait";
-          
-          if (i === 0) {
-            doc = new jsPDF({
-              orientation,
-              unit: "px",
-              format: [item.width, item.height]
-            });
-          } else if (doc) {
-            doc.addPage([item.width, item.height], orientation);
-          }
-          
-          if (doc) {
-            doc.addImage(jpegUrl, "JPEG", 0, 0, item.width, item.height, undefined, "FAST");
-          }
+        let counter = 1;
+        while (usedFilenames.has(newFilename)) {
+          newFilename = `${baseName}_${counter}.${ext}`;
+          counter++;
         }
+        usedFilenames.add(newFilename);
 
-        if (!doc) {
-          throw new Error("PDF document was not initialized.");
-        }
-
-        setConversionProgress(prev => ({
-          ...prev,
-          current: readyItems.length,
-          stage: 'pdf'
-        }));
-
-        const pdfBlob = doc.output("blob");
-        const fileObj = new File([pdfBlob], "converted.pdf", {
-          type: "application/pdf"
-        });
-
-        setConvertedImage(fileObj);
-      } else {
-        // ZIP bundling
-        const JSZip = (await import("jszip")).default;
-        const zip = new JSZip();
-        const usedFilenames = new Set<string>();
-
-        for (let i = 0; i < readyItems.length; i++) {
-          const item = readyItems[i];
-          setConversionProgress(prev => ({
-            ...prev,
-            current: i,
-            filename: item.file.name,
-            stage: 'converting'
-          }));
-
-          const sourceUrl = item.sourcePreviewUrl || item.previewUrl;
-          const blob = await convertImageToBlob(
-            item.file,
-            sourceUrl,
-            item.width,
-            item.height,
-            item.hasTransparency,
-            targetFormat,
-            quality,
-            transparencyFill,
-            customFillColor
-          );
-
-          const ext = targetFormat === "image/jpeg" ? "jpg" : 
-                      targetFormat === "image/png" ? "png" : 
-                      targetFormat === "image/webp" ? "webp" : 
-                      targetFormat === "image/x-icon" ? "ico" : 
-                      targetFormat === "image/bmp" ? "bmp" : 
-                      targetFormat === "image/gif" ? "gif" : 
-                      targetFormat === "image/tiff" ? "tiff" : 
-                      targetFormat === "image/svg+xml" ? "svg" : "bin";
-
-          const baseName = item.file.name.replace(/\.[^/.]+$/, "");
-          let newFilename = `${baseName}.${ext}`;
-          
-          let counter = 1;
-          while (usedFilenames.has(newFilename)) {
-            newFilename = `${baseName}_${counter}.${ext}`;
-            counter++;
-          }
-          usedFilenames.add(newFilename);
-
-          zip.file(newFilename, blob);
-        }
-
-        setConversionProgress(prev => ({
-          ...prev,
-          current: readyItems.length,
-          stage: 'zip'
-        }));
-
-        const zipBlob = await zip.generateAsync({ type: "blob" });
-        const fileObj = new File([zipBlob], "converted-images.zip", {
-          type: "application/zip"
-        });
-
-        setConvertedImage(fileObj);
+        zip.file(newFilename, blob);
       }
+
+      setConversionProgress(prev => ({
+        ...prev,
+        current: readyItems.length,
+        stage: 'zip'
+      }));
+
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const fileObj = new File([zipBlob], "converted-images.zip", {
+        type: "application/zip"
+      });
+
+      setConvertedImage(fileObj);
 
       setConversionProgress(prev => ({
         ...prev,
@@ -1183,17 +1077,16 @@ export default function FormatConverterPage() {
 
   const convertedFormatStr = convertedImage ? getFormatDisplay(convertedImage.type) : "";
 
-  const isLossyFormat = targetFormat === "image/jpeg" || targetFormat === "image/webp" || targetFormat === "application/pdf";
+  const isLossyFormat = targetFormat === "image/jpeg" || targetFormat === "image/webp";
   const showTransparencyPanel = hasTransparency && (
     targetFormat === "image/jpeg" || 
     targetFormat === "image/bmp" || 
-    targetFormat === "image/x-icon" || 
-    targetFormat === "application/pdf"
+    targetFormat === "image/x-icon"
   );
 
   const getProgressPercentage = () => {
     if (conversionProgress.stage === 'idle') return 0;
-    if (conversionProgress.stage === 'pdf' || conversionProgress.stage === 'zip' || conversionProgress.stage === 'done') return 100;
+    if (conversionProgress.stage === 'zip' || conversionProgress.stage === 'done') return 100;
     if (conversionProgress.total === 0) return 0;
     return Math.round((conversionProgress.current / conversionProgress.total) * 100);
   };
@@ -1202,8 +1095,6 @@ export default function FormatConverterPage() {
     switch (conversionProgress.stage) {
       case 'converting':
         return `Converting image ${conversionProgress.current + 1} of ${conversionProgress.total}: ${conversionProgress.filename}`;
-      case 'pdf':
-        return "Generating PDF...";
       case 'zip':
         return "Bundling ZIP...";
       case 'done':
@@ -1453,19 +1344,6 @@ export default function FormatConverterPage() {
                           </Button>
                         </div>
                       </div>
-                    ) : targetFormat === "application/pdf" && convertedImageUrl ? (
-                      /* Display document icon / details if output is PDF */
-                      <div className="flex flex-col items-center justify-center text-center gap-3 p-4 select-none animate-fade-in">
-                        <div className="w-16 h-16 rounded-2xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center justify-center shadow-sm">
-                          <FileText className="w-10 h-10 animate-pulse" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <span className="text-xs font-bold text-foreground block">PDF Document Ready</span>
-                          <span className="text-[10px] text-muted-foreground font-medium block">
-                            High-res layout compiled offline.
-                          </span>
-                        </div>
-                      </div>
                     ) : convertedImageUrl ? (
                       <img
                         src={convertedImageUrl}
@@ -1559,9 +1437,6 @@ export default function FormatConverterPage() {
                     <optgroup label="Vector">
                       <option value="image/svg+xml">Convert to SVG (Tracing)</option>
                     </optgroup>
-                    <optgroup label="Document">
-                      <option value="application/pdf">Convert to PDF (High Resolution)</option>
-                    </optgroup>
                     <optgroup label="Legacy">
                       <option value="image/bmp">Convert to BMP (32-bit Alpha)</option>
                       <option value="image/tiff">Convert to TIFF (Uncompressed)</option>
@@ -1571,6 +1446,13 @@ export default function FormatConverterPage() {
                       <option value="image/x-icon">Convert to Favicon (ICO Multi-size)</option>
                     </optgroup>
                   </select>
+
+                  <p className="text-[11px] text-muted-foreground leading-relaxed mt-1.5 pl-1">
+                    {t("tools.converter.combinePdfPointer")}{" "}
+                    <Link href="/tools/image-to-pdf" className="text-primary hover:underline font-bold">
+                      {t("tools.converter.combinePdfPointerLink")}
+                    </Link>
+                  </p>
 
                   {/* SVG Permanent Tracing Warning Banner */}
                   {targetFormat === "image/svg+xml" && (
@@ -1981,9 +1863,6 @@ export default function FormatConverterPage() {
                     <optgroup label="Vector">
                       <option value="image/svg+xml">Convert to SVG (Tracing)</option>
                     </optgroup>
-                    <optgroup label="Document">
-                      <option value="application/pdf">Convert to PDF (High Resolution)</option>
-                    </optgroup>
                     <optgroup label="Legacy">
                       <option value="image/bmp">Convert to BMP (32-bit Alpha)</option>
                       <option value="image/tiff">Convert to TIFF (Uncompressed)</option>
@@ -1993,6 +1872,13 @@ export default function FormatConverterPage() {
                       <option value="image/x-icon">Convert to Favicon (ICO Multi-size)</option>
                     </optgroup>
                   </select>
+
+                  <p className="text-[11px] text-muted-foreground leading-relaxed mt-1.5 pl-1">
+                    {t("tools.converter.combinePdfPointer")}{" "}
+                    <Link href="/tools/image-to-pdf" className="text-primary hover:underline font-bold">
+                      {t("tools.converter.combinePdfPointerLink")}
+                    </Link>
+                  </p>
 
                   {/* SVG Permanent Tracing Warning Banner */}
                   {targetFormat === "image/svg+xml" && (
@@ -2148,9 +2034,7 @@ export default function FormatConverterPage() {
                   <div className="p-3 sm:p-4 rounded-xl bg-success/5 border border-success/15 text-[10px] text-muted-foreground leading-relaxed animate-fade-in flex gap-2">
                     <CheckCircle2 className="w-4 h-4 text-success shrink-0 mt-0.5" />
                     <span>
-                      {targetFormat === "application/pdf" 
-                        ? "Successfully compiled all images into a single multi-page PDF."
-                        : `Successfully converted all images and bundled into a ZIP archive.`}
+                      Successfully converted all images and bundled into a ZIP archive.
                     </span>
                   </div>
                 )}
@@ -2182,11 +2066,11 @@ export default function FormatConverterPage() {
 
                 <DownloadButton
                   file={convertedImage}
-                  originalFilename={targetFormat === "application/pdf" ? "converted.pdf" : "converted-images.zip"}
+                  originalFilename="converted-images.zip"
                   disabled={isConverting || !convertedImage}
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                 >
-                  {targetFormat === "application/pdf" ? "Download Combined PDF" : "Download ZIP Archive"}
+                  Download ZIP Archive
                 </DownloadButton>
               </div>
 
@@ -2267,10 +2151,7 @@ export default function FormatConverterPage() {
                 title: "Image to ICO",
                 text: t("tools.converter.useCases.case2"),
               },
-              {
-                title: "Image to PDF",
-                text: t("tools.converter.useCases.case3"),
-              },
+
               {
                 title: "Image to SVG",
                 text: t("tools.converter.useCases.case4"),
