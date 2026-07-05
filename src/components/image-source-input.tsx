@@ -6,6 +6,7 @@ import { Upload, Link as LinkIcon, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useT } from '@/lib/i18n/useT';
 
 interface ImageSourceInputProps {
   onImageReady?: (file: File) => void;
@@ -53,6 +54,7 @@ export function ImageSourceInput({
   maxSizeMB = 4,
   className
 }: ImageSourceInputProps) {
+  const t = useT();
   const [activeTab, setActiveTab] = useState<'upload' | 'url'>('upload');
   const [url, setUrl] = useState('');
   const [fetching, setFetching] = useState(false);
@@ -60,7 +62,7 @@ export function ImageSourceInput({
 
   const handleImageReady = (file: File) => {
     if (file.type === 'image/gif') {
-      toast.warning("Animated GIFs will be processed as a single frame.");
+      toast.warning(t("imageSourceInput.toast.gifWarning"));
     }
     if (multiple && onImagesReady) {
       onImagesReady([file]);
@@ -72,7 +74,7 @@ export function ImageSourceInput({
   const handleImagesReady = (files: File[]) => {
     const hasGif = files.some(f => f.type === 'image/gif');
     if (hasGif) {
-      toast.warning("Animated GIFs will be processed as a single frame.");
+      toast.warning(t("imageSourceInput.toast.gifWarning"));
     }
     if (multiple && onImagesReady) {
       onImagesReady(files);
@@ -83,7 +85,7 @@ export function ImageSourceInput({
   
   const handleUrlFetch = async () => {
     if (!url.trim()) {
-      setError('Please enter a URL');
+      setError(t("imageSourceInput.error.emptyUrl"));
       return;
     }
     
@@ -99,7 +101,7 @@ export function ImageSourceInput({
       
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Failed to fetch image');
+        throw new Error(data.error || t("imageSourceInput.error.failedFetch"));
       }
       
       const blob = await res.blob();
@@ -110,7 +112,7 @@ export function ImageSourceInput({
       handleImageReady(file);
       setUrl('');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to fetch image';
+      const message = err instanceof Error ? err.message : t("imageSourceInput.error.failedFetch");
       setError(message);
     } finally {
       setFetching(false);
@@ -132,7 +134,7 @@ export function ImageSourceInput({
           )}
         >
           <Upload className="w-3.5 h-3.5" />
-          Upload File
+          {t("imageSourceInput.uploadFile")}
         </button>
         <button
           type="button"
@@ -145,7 +147,7 @@ export function ImageSourceInput({
           )}
         >
           <LinkIcon className="w-3.5 h-3.5" />
-          Paste URL
+          {t("imageSourceInput.pasteUrl")}
         </button>
       </div>
 
@@ -166,7 +168,7 @@ export function ImageSourceInput({
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="url"
-              placeholder="Paste any image URL or webpage URL"
+              placeholder={t("imageSourceInput.placeholder")}
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !fetching && handleUrlFetch()}
@@ -181,18 +183,18 @@ export function ImageSourceInput({
               {fetching ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Fetching...
+                  {t("imageSourceInput.fetching")}
                 </>
               ) : (
-                'Fetch Image'
+                t("imageSourceInput.fetchImage")
               )}
             </Button>
           </div>
           
           <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 text-xs text-muted-foreground leading-relaxed">
-            <p className="font-semibold text-foreground mb-1">🛡 Privacy Policy Note</p>
+            <p className="font-semibold text-foreground mb-1">{t("imageSourceInput.privacyNote.title")}</p>
             <p>
-              We fetch the URL on your behalf. If you paste a webpage URL, we&apos;ll automatically find the main image on that page. All processing then happens entirely in your browser. Max image file size is {maxSizeMB}MB.
+              {t("imageSourceInput.privacyNote.text", { maxSizeMB })}
             </p>
           </div>
         </div>
@@ -208,7 +210,7 @@ export function ImageSourceInput({
               onClick={() => document.getElementById('url-help-section')?.scrollIntoView({ behavior: 'smooth' })}
               className="text-[10px] font-bold underline mt-1.5 hover:no-underline block text-left"
             >
-              Need help finding the right URL? ↓
+              {t("imageSourceInput.needHelp")}
             </button>
           </div>
         </div>

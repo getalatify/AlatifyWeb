@@ -3,8 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { Logo } from "./logo";
+import { useT } from "@/lib/i18n/useT";
 
 export function Footer() {
+  const t = useT();
+
   return (
     <footer className="w-full border-t border-border/40 bg-card transition-colors duration-300 py-12 px-6 mt-auto">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
@@ -17,60 +20,60 @@ export function Footer() {
             </span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
-            Privacy-first image tools that run entirely in your browser. No server uploads, absolute confidentiality.
+            {t("footer.tagline")}
           </p>
           <p className="text-[10px] text-muted-foreground/60 font-semibold pt-1">
-            &copy; 2026 Alatify. Built with care.
+            {t("footer.builtWithCare")}
           </p>
         </div>
 
         {/* Column 2 - Product Links */}
         <div className="flex flex-col gap-2.5">
           <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block mb-1">
-            Product
+            {t("footer.product")}
           </span>
           <Link
             href="/tools"
             className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
           >
-            All Tools
+            {t("footer.allTools")}
           </Link>
           <Link
             href="/embed"
             className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
           >
-            Embed Widgets
+            {t("footer.embedWidgets")}
           </Link>
           <Link
             href="/privacy"
             className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
           >
-            Privacy Policy
+            {t("footer.privacyPolicy")}
           </Link>
           <Link
             href="/terms"
             className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
           >
-            Terms of Service
+            {t("footer.termsOfService")}
           </Link>
           <Link
             href="/about"
             className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
           >
-            About
+            {t("footer.about")}
           </Link>
           <Link
             href="/support"
             className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
           >
-            Support Us
+            {t("footer.supportUs")}
           </Link>
         </div>
 
         {/* Column 3 - Connect Info */}
         <div className="flex flex-col gap-2.5">
           <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block mb-1">
-            Connect
+            {t("footer.connect")}
           </span>
           <a
             href="https://github.com/getalatify"
@@ -105,7 +108,7 @@ export function Footer() {
             Product Hunt
           </a>
           <span className="text-[10px] text-muted-foreground font-semibold pt-1">
-            Made in Indonesia 🇮🇩
+            {t("footer.madeIn")}
           </span>
         </div>
       </div>

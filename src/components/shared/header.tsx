@@ -7,6 +7,7 @@ import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageToggle } from "./language-toggle";
 import { ToolSearch } from "@/components/ToolSearch";
+import { useT } from "@/lib/i18n/useT";
 
 interface HeaderProps {
   showBackToTools?: boolean;
@@ -19,6 +20,8 @@ export function Header({
   showToolsLink = false,
   showSupportLink = false,
 }: HeaderProps) {
+  const t = useT();
+
   return (
     <div className="w-full flex flex-col items-start gap-3 max-w-7xl mx-auto shrink-0 z-10">
       <header className="glass-header rounded-2xl flex items-center justify-between p-4 sm:p-6 w-full border-b border-border/40">
@@ -36,7 +39,7 @@ export function Header({
               href="/tools"
               className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
             >
-              Tools
+              {t("header.tools")}
             </Link>
           )}
           {showSupportLink && (
@@ -44,7 +47,7 @@ export function Header({
               href="/support"
               className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
             >
-              Support Us
+              {t("header.support")}
             </Link>
           )}
           <div className="flex items-center gap-2">
@@ -60,7 +63,7 @@ export function Header({
           className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group px-4 sm:px-6"
         >
           <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-          Back to tools
+          {t("header.backToTools")}
         </Link>
       )}
     </div>

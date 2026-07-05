@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useT } from "@/lib/i18n/useT";
 
 interface DownloadButtonProps {
   file: Blob | File | null;
@@ -27,6 +28,7 @@ export function DownloadButton({
   className,
   disabled,
 }: DownloadButtonProps) {
+  const t = useT();
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
@@ -107,10 +109,10 @@ export function DownloadButton({
       URL.revokeObjectURL(url);
       
       setIsSuccess(true);
-      toast.success("File downloaded successfully");
+      toast.success(t("download.success"));
     } catch (err) {
       console.error("Failed to trigger local file download", err);
-      toast.error("Something went wrong. Please try again");
+      toast.error(t("download.error"));
     }
   };
 
@@ -130,7 +132,7 @@ export function DownloadButton({
       ) : (
         !children && <Download className="h-4 w-4 shrink-0" />
       )}
-      {children || "Download"}
+      {children || t("download.label")}
     </Button>
   );
 }

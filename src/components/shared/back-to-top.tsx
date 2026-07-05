@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/useT";
 
 export function BackToTop() {
+  const t = useT();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -36,8 +38,8 @@ export function BackToTop() {
         "shadow-lg hover:shadow-primary/5 hover:scale-105 active:scale-95 transition-all duration-300",
         isVisible ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-75 pointer-events-none"
       )}
-      aria-label="Back to top"
-      title="Back to top"
+      aria-label={t("backToTop.label")}
+      title={t("backToTop.label")}
     >
       <ArrowUp className="w-5 h-5" />
     </button>

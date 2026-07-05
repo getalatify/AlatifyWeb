@@ -706,10 +706,25 @@ export const id = {
         "a5": "Tidak ada batisan ketat, tetapi menyusun lusinan gambar resolusi tinggi dapat memakan memori yang signifikan. Alat ini menangani set standar dengan lancar."
       },
       "privacyNotice": "Alatify menyusun gambar Anda ke dalam PDF sepenuhnya secara lokal menggunakan API sandbox di dalam tab browser Anda. Kami tidak pernah mengunggah file Anda ke cloud eksternal, membuat alat ini 100% aman dari kebocoran data."
+    },
+    "status": {
+      "available": "Tersedia"
     }
   },
   "toolsPage": {
-    "intro": "Koleksi pilihan alat gambar yang mengutamakan privasi dan berjalan sepenuhnya di browser Anda — tanpa unggah, tanpa daftar akun, sepenuhnya privat. Mulai dari Background Remover dan Image Compressor hingga konversi format, pengubahan ukuran, dan lainnya, setiap alat memproses gambar Anda langsung di perangkat."
+    "intro": "Koleksi pilihan alat gambar yang mengutamakan privasi dan berjalan sepenuhnya di browser Anda — tanpa unggah, tanpa daftar akun, sepenuhnya privat. Mulai dari Background Remover dan Image Compressor hingga konversi format, pengubahan ukuran, dan lainnya, setiap alat memproses gambar Anda langsung di perangkat.",
+    "backToHome": "Kembali ke beranda",
+    "title": "Alat",
+    "scrollExplore": "Gulir untuk menjelajah",
+    "stockFinder": {
+      "badge": "Belum punya gambar?",
+      "description": "Mulai dari nol — cari foto stok gratis dan edit dalam satu klik.",
+      "button": "Jelajahi Foto Stok"
+    },
+    "section": {
+      "title": "Alat kami",
+      "subtitle": "Setiap alat berjalan 100% lokal di browser Anda — tidak ada yang meninggalkan perangkat Anda."
+    }
   },
   "tools-image": {
     "intro": "",
@@ -721,5 +736,144 @@ export const id = {
   },
   "tools-all": {
     "nav": ""
+  },
+  "header": {
+    "tools": "Alat",
+    "support": "Dukung Kami",
+    "backToTools": "Kembali ke alat"
+  },
+  "footer": {
+    "tagline": "Alat gambar yang mengutamakan privasi dan berjalan sepenuhnya di browser Anda. Tanpa unggahan ke server, kerahasiaan mutlak.",
+    "builtWithCare": "© 2026 Alatify. Dibuat dengan sepenuh hati.",
+    "product": "Produk",
+    "allTools": "Semua Alat",
+    "embedWidgets": "Widget Sematan",
+    "privacyPolicy": "Kebijakan Privasi",
+    "termsOfService": "Ketentuan Layanan",
+    "about": "Tentang",
+    "supportUs": "Dukung Kami",
+    "connect": "Terhubung",
+    "madeIn": "Dibuat di Indonesia 🇮🇩"
+  },
+  "backToTop": {
+    "label": "Kembali ke atas"
+  },
+  "download": {
+    "success": "Berkas berhasil diunduh",
+    "error": "Terjadi kesalahan. Silakan coba lagi",
+    "label": "Unduh"
+  },
+  "embed": {
+    "attribution": {
+      "private": "100% privat — berjalan di browser Anda",
+      "poweredBy": "Didukung oleh"
+    },
+    "brandHeader": {
+      "back": "Kembali"
+    },
+    "helpBubble": {
+      "openFull": "Baru di sini? Buka alat lengkapnya"
+    }
+  },
+  "imagePreview": {
+    "alt": "Pratinjau",
+    "replace": "Ganti",
+    "remove": "Hapus"
+  },
+  "imageUploader": {
+    "error": {
+      "failedRead": "Gagal membaca berkas gambar.",
+      "unsupportedType": "Tipe berkas tidak didukung. Silakan unggah PNG, JPG, WebP, GIF, AVIF, BMP, HEIC, TIFF, atau SVG.",
+      "tooLarge": "Berkas terlalu besar. Ukuran maksimum yang diizinkan adalah 50MB.",
+      "invalidSelection": "Pemilihan berkas tidak valid."
+    },
+    "reading": "Membaca berkas gambar...",
+    "dropImages": "Letakkan gambar Anda di sini",
+    "dropImage": "Letakkan gambar Anda di sini",
+    "unsupportedTypeTitle": "Tipe berkas tidak didukung",
+    "dragAndDropMultiple": "Seret dan letakkan gambar di sini, atau klik untuk memilih",
+    "dragAndDropSingle": "Seret dan letakkan gambar di sini, atau klik untuk memilih",
+    "checkFile": "Silakan periksa format atau ukuran berkas",
+    "specsMultiple": "Hingga 50MB per berkas · JPG, PNG, WebP, HEIC, TIFF, SVG",
+    "specsSingle": "Hingga 50MB · JPG, PNG, WebP, HEIC, TIFF, SVG"
+  },
+  "requiresInternet": {
+    "toast": {
+      "restored": "Koneksi pulih! Anda sekarang dapat menggunakan alat ini.",
+      "stillOffline": "Masih offline. Silakan periksa koneksi internet Anda."
+    },
+    "title": "Koneksi Diperlukan",
+    "desc": "Alat {toolName} memerlukan koneksi internet aktif untuk mengunduh bobot AI atau mengambil basis data eksternal.",
+    "checking": "Memeriksa...",
+    "checkButton": "Periksa Koneksi"
+  },
+  "languageToggle": {
+    "ariaLabel": "Ganti bahasa"
+  },
+  "themeToggle": {
+    "ariaLabel": "Ganti tema"
+  },
+  "imageSourceInput": {
+    "toast": {
+      "gifWarning": "GIF animasi akan diproses sebagai satu bingkai."
+    },
+    "error": {
+      "emptyUrl": "Silakan masukkan URL",
+      "failedFetch": "Gagal mengambil gambar"
+    },
+    "uploadFile": "Unggah Berkas",
+    "pasteUrl": "Tempel URL",
+    "placeholder": "Tempel URL gambar atau URL halaman web apa pun",
+    "fetching": "Mengambil...",
+    "fetchImage": "Ambil Gambar",
+    "privacyNote": {
+      "title": "🛡 Catatan Kebijakan Privasi",
+      "text": "Kami mengambil URL atas nama Anda. Jika Anda menempel URL halaman web, kami akan otomatis menemukan gambar utama di halaman itu. Semua pemrosesan kemudian terjadi sepenuhnya di browser Anda. Ukuran berkas gambar maksimum adalah {maxSizeMB}MB."
+    },
+    "needHelp": "Butuh bantuan menemukan URL yang tepat? ↓"
+  },
+  "processingOverlay": {
+    "default": {
+      "title": "Menghapus latar belakang...",
+      "description": "Biasanya butuh 30-60 detik. Mohon jangan tutup tab ini."
+    },
+    "downloading": {
+      "title": "Mengunduh model AI (pengaturan sekali saja)…",
+      "description": "Mengunduh bobot neural {modelSize}. Berkas ini disimpan secara lokal sehingga proses berikutnya dimuat seketika."
+    },
+    "initializing": {
+      "title": "Menyiapkan mesin AI…",
+      "description": "Menginisialisasi lingkungan eksekusi..."
+    },
+    "compiling": {
+      "description": "Mengompilasi shader WebGPU untuk akselerasi perangkat keras..."
+    },
+    "processing": {
+      "description": "Menjalankan ekstraksi subjek lokal pada perangkat keras perangkat Anda."
+    },
+    "downloadingLabel": "Mengunduh...",
+    "upscalingTiles": "Meningkatkan skala… {done} / {total} ubin",
+    "elapsedPrefix": "Berlalu: ",
+    "cancelButton": "Batal",
+    "noCancelNotice": "Pemrosesan tidak dapat dibatalkan setelah dimulai"
+  },
+  "landing": {
+    "comparison": {
+      "title": "Perbandingannya",
+      "localLabel": "Lokal",
+      "othersLabel": "Alat berbasis unggahan"
+    },
+    "faq": {
+      "title": "Pertanyaan yang Sering Diajukan"
+    },
+    "cta": {
+      "title": "Siap mencoba Alatify?",
+      "subtitle": "Proses gambar Anda dengan aman dan seketika. Tanpa unggahan, tanpa batasan, tanpa jebakan."
+    }
+  },
+  "hintBubble": {
+    "toggleTip": "Alihkan tip",
+    "ariaToggleTip": "Alihkan tip petunjuk",
+    "dismiss": "Tutup petunjuk"
   }
 };

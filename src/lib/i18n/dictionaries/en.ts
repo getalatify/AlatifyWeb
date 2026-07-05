@@ -706,10 +706,25 @@ export const en = {
         "a5": "There is no strict limit, but compiling dozens of high-resolution images may consume significant memory. The tool handles standard sets smoothly."
       },
       "privacyNotice": "Alatify compiles your images into a PDF completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging."
+    },
+    "status": {
+      "available": "Available"
     }
   },
   "toolsPage": {
-    "intro": "A curated collection of privacy-first image tools that run entirely in your browser — no uploads, no sign-up, fully private. From Background Remover and Image Compressor to format conversion, resizing, and more, every tool processes your images right on your device."
+    "intro": "A curated collection of privacy-first image tools that run entirely in your browser — no uploads, no sign-up, fully private. From Background Remover and Image Compressor to format conversion, resizing, and more, every tool processes your images right on your device.",
+    "backToHome": "Back to home",
+    "title": "Tools",
+    "scrollExplore": "Scroll to explore",
+    "stockFinder": {
+      "badge": "No image to start with?",
+      "description": "Start from scratch — search free stock photos and edit them in one click.",
+      "button": "Browse Stock Photos"
+    },
+    "section": {
+      "title": "Our tools",
+      "subtitle": "Every tool runs 100% locally in your browser — nothing leaves your device."
+    }
   },
   "tools-image": {
     "intro": "Browse our privacy-first tools for image editing, optimization, and conversion. Everything runs locally in your browser sandbox.",
@@ -721,5 +736,144 @@ export const en = {
   },
   "tools-all": {
     "nav": "All"
+  },
+  "header": {
+    "tools": "Tools",
+    "support": "Support Us",
+    "backToTools": "Back to tools"
+  },
+  "footer": {
+    "tagline": "Privacy-first image tools that run entirely in your browser. No server uploads, absolute confidentiality.",
+    "builtWithCare": "© 2026 Alatify. Built with care.",
+    "product": "Product",
+    "allTools": "All Tools",
+    "embedWidgets": "Embed Widgets",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "about": "About",
+    "supportUs": "Support Us",
+    "connect": "Connect",
+    "madeIn": "Made in Indonesia 🇮🇩"
+  },
+  "backToTop": {
+    "label": "Back to top"
+  },
+  "download": {
+    "success": "File downloaded successfully",
+    "error": "Something went wrong. Please try again",
+    "label": "Download"
+  },
+  "embed": {
+    "attribution": {
+      "private": "100% private — runs in your browser",
+      "poweredBy": "Powered by"
+    },
+    "brandHeader": {
+      "back": "Back"
+    },
+    "helpBubble": {
+      "openFull": "New here? Open the full tool"
+    }
+  },
+  "imagePreview": {
+    "alt": "Preview",
+    "replace": "Replace",
+    "remove": "Remove"
+  },
+  "imageUploader": {
+    "error": {
+      "failedRead": "Failed to read image file.",
+      "unsupportedType": "Unsupported file type. Please upload a PNG, JPG, WebP, GIF, AVIF, BMP, HEIC, TIFF, or SVG.",
+      "tooLarge": "File is too large. Maximum size allowed is 50MB.",
+      "invalidSelection": "Invalid file selection."
+    },
+    "reading": "Reading image file...",
+    "dropImages": "Drop your images here",
+    "dropImage": "Drop your image here",
+    "unsupportedTypeTitle": "Unsupported file type",
+    "dragAndDropMultiple": "Drag and drop images here, or click to select",
+    "dragAndDropSingle": "Drag and drop image here, or click to select",
+    "checkFile": "Please check file format or size",
+    "specsMultiple": "Up to 50MB per file · JPG, PNG, WebP, HEIC, TIFF, SVG",
+    "specsSingle": "Up to 50MB · JPG, PNG, WebP, HEIC, TIFF, SVG"
+  },
+  "requiresInternet": {
+    "toast": {
+      "restored": "Connection restored! You can now use the tool.",
+      "stillOffline": "Still offline. Please check your internet connection."
+    },
+    "title": "Connection Required",
+    "desc": "The {toolName} tool requires an active internet connection to download AI weights or fetch external databases.",
+    "checking": "Checking...",
+    "checkButton": "Check Connection"
+  },
+  "languageToggle": {
+    "ariaLabel": "Toggle language"
+  },
+  "themeToggle": {
+    "ariaLabel": "Toggle theme"
+  },
+  "imageSourceInput": {
+    "toast": {
+      "gifWarning": "Animated GIFs will be processed as a single frame."
+    },
+    "error": {
+      "emptyUrl": "Please enter a URL",
+      "failedFetch": "Failed to fetch image"
+    },
+    "uploadFile": "Upload File",
+    "pasteUrl": "Paste URL",
+    "placeholder": "Paste any image URL or webpage URL",
+    "fetching": "Fetching...",
+    "fetchImage": "Fetch Image",
+    "privacyNote": {
+      "title": "🛡 Privacy Policy Note",
+      "text": "We fetch the URL on your behalf. If you paste a webpage URL, we'll automatically find the main image on that page. All processing then happens entirely in your browser. Max image file size is {maxSizeMB}MB."
+    },
+    "needHelp": "Need help finding the right URL? ↓"
+  },
+  "processingOverlay": {
+    "default": {
+      "title": "Removing background...",
+      "description": "This usually takes 30-60 seconds. Please don't close this tab."
+    },
+    "downloading": {
+      "title": "Downloading AI model (one-time setup)…",
+      "description": "Downloading neural weights {modelSize}. This file is cached locally so future runs load instantly."
+    },
+    "initializing": {
+      "title": "Setting up AI engine…",
+      "description": "Initializing execution environment..."
+    },
+    "compiling": {
+      "description": "Compiling WebGPU shaders for hardware acceleration..."
+    },
+    "processing": {
+      "description": "Running local subject extraction on your device's hardware."
+    },
+    "downloadingLabel": "Downloading...",
+    "upscalingTiles": "Upscaling… {done} / {total} tiles",
+    "elapsedPrefix": "Elapsed: ",
+    "cancelButton": "Cancel",
+    "noCancelNotice": "Processing cannot be cancelled once started"
+  },
+  "landing": {
+    "comparison": {
+      "title": "How it compares",
+      "localLabel": "Local",
+      "othersLabel": "Upload-based tools"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions"
+    },
+    "cta": {
+      "title": "Ready to try Alatify?",
+      "subtitle": "Process your images safely and instantly. No uploads, no limits, no catches."
+    }
+  },
+  "hintBubble": {
+    "toggleTip": "Toggle tip",
+    "ariaToggleTip": "Toggle hint tip",
+    "dismiss": "Dismiss hint"
   }
 };

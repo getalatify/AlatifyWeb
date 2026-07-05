@@ -52,10 +52,10 @@ const TOOL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
   "image-to-pdf": Files,
 };
 
-const mapToolToCard = (t: ToolEntry) => ({
+const mapToolToCard = (t: ToolEntry, translate: (key: string) => string) => ({
   name: t.name,
   description: t.description,
-  status: "Available",
+  status: translate("tools.status.available"),
   statusColor: "bg-success/10 text-success border-success/20",
   icon: TOOL_ICONS[t.id] ?? FileText,
   href: t.route,
@@ -72,12 +72,12 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
 
   const displayTools = React.useMemo(() => {
     if (categoryFilter === "document") {
-      return TOOLS.filter(t => t.category === "document").map(mapToolToCard);
+      return TOOLS.filter(t => t.category === "document").map(tool => mapToolToCard(tool, t));
     } else if (categoryFilter === "image") {
-      return TOOLS.filter(t => t.category !== "document" && t.id !== "stock-finder").map(mapToolToCard);
+      return TOOLS.filter(t => t.category !== "document" && t.id !== "stock-finder").map(tool => mapToolToCard(tool, t));
     }
-    return TOOLS.filter(t => t.id !== "stock-finder").map(mapToolToCard);
-  }, [categoryFilter]);
+    return TOOLS.filter(t => t.id !== "stock-finder").map(tool => mapToolToCard(tool, t));
+  }, [categoryFilter, t]);
 
   const introText = React.useMemo(() => {
     if (categoryFilter === "image") return t("tools-image.intro");
@@ -107,7 +107,7 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
           className="inline-flex items-center gap-1.5 pl-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
         >
           <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-          Back to home
+          {t("toolsPage.backToHome")}
         </Link>
       </div>
 
@@ -122,7 +122,7 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
 
           {/* Heading */}
           <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-foreground bg-clip-text">
-            Tools
+            {t("toolsPage.title")}
           </h1>
 
           {/* Subtext - Blending the empty-state copy elegantly */}
@@ -131,10 +131,10 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
           </p>
 
           {/* Category Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-secondary/50 backdrop-blur-md border border-border/60 rounded-xl mt-4">
+          <div className="flex items-center gap-1 p-1 bg-secondary/50 backdrop-blur-md border border-border/60 rounded-xl mt-4 sm:gap-1.5">
             <Link href="/tools">
               <span className={cn(
-                "px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 cursor-pointer block select-none",
+                "px-2.5 py-1.5 text-[11px] sm:px-4 sm:py-2 sm:text-sm font-bold rounded-lg transition-all duration-200 cursor-pointer block select-none",
                 pathname === "/tools" 
                   ? "bg-background text-primary shadow-sm border border-border/40" 
                   : "text-muted-foreground hover:text-foreground"
@@ -144,7 +144,7 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
             </Link>
             <Link href="/tools/image">
               <span className={cn(
-                "px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 cursor-pointer block select-none",
+                "px-2.5 py-1.5 text-[11px] sm:px-4 sm:py-2 sm:text-sm font-bold rounded-lg transition-all duration-200 cursor-pointer block select-none",
                 pathname === "/tools/image" 
                   ? "bg-background text-primary shadow-sm border border-border/40" 
                   : "text-muted-foreground hover:text-foreground"
@@ -154,7 +154,7 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
             </Link>
             <Link href="/tools/document">
               <span className={cn(
-                "px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-200 cursor-pointer block select-none",
+                "px-2.5 py-1.5 text-[11px] sm:px-4 sm:py-2 sm:text-sm font-bold rounded-lg transition-all duration-200 cursor-pointer block select-none",
                 pathname === "/tools/document" 
                   ? "bg-background text-primary shadow-sm border border-border/40" 
                   : "text-muted-foreground hover:text-foreground"
@@ -168,10 +168,10 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
         {/* Floating Scroll Indicator */}
         <div 
           onClick={handleScrollToPipeline}
-          className="absolute bottom-16 flex flex-col items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity animate-fade-in group"
+          className="relative mt-12 md:absolute md:bottom-16 md:mt-0 flex flex-col items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity animate-fade-in group"
         >
           <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest transition-colors group-hover:text-primary">
-            Scroll to explore
+            {t("toolsPage.scrollExplore")}
           </span>
           <ArrowDown className="w-4 h-4 text-primary animate-bounce" />
         </div>
@@ -196,13 +196,13 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
                 </div>
                 <div className="space-y-1">
                   <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-primary/15 text-primary border border-primary/20 tracking-wider uppercase">
-                    No image to start with?
+                    {t("toolsPage.stockFinder.badge")}
                   </div>
                   <h3 className="text-base sm:text-lg font-extrabold tracking-tight text-foreground transition-colors group-hover:text-primary">
                     Stock Image Finder
                   </h3>
                   <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium">
-                    Start from scratch — search free stock photos and edit them in one click.
+                    {t("toolsPage.stockFinder.description")}
                   </p>
                 </div>
               </div>
@@ -211,7 +211,7 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
               <div className="w-full md:w-auto shrink-0 z-10">
                 <Link href="/tools/stock-finder" className="w-full md:w-auto block">
                   <Button className="w-full md:w-auto h-11 px-6 text-sm font-extrabold rounded-xl bg-gradient-to-r from-primary/95 to-primary hover:from-primary hover:to-primary-hover text-primary-foreground shadow-md shadow-primary/20 dark:shadow-primary/15 hover:shadow-lg hover:shadow-primary/35 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 gap-2 flex items-center justify-center group/btn">
-                    <span>Browse Stock Photos</span>
+                    <span>{t("toolsPage.stockFinder.button")}</span>
                     <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" />
                   </Button>
                 </Link>
@@ -224,14 +224,13 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
         <div className="w-full max-w-5xl flex flex-col items-center gap-10 mt-2">
           {/* Divider Line */}
           <div className="w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
-          
-          {/* Section Header */}
+                    {/* Section Header */}
           <div className="text-center space-y-2">
             <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-              Our tools
+              {t("toolsPage.section.title")}
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-              Every tool runs 100% locally in your browser — nothing leaves your device.
+              {t("toolsPage.section.subtitle")}
             </p>
           </div>
 
@@ -304,12 +303,12 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
         <div className="pt-8">
           <Link href="/">
             <Button className="px-8 py-5 text-sm font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 hover:shadow-primary/20 active:scale-95 transition-all duration-150 gap-2">
-              Back to home
+              {t("toolsPage.backToHome")}
             </Button>
           </Link>
         </div>
-        </div>
-      </section>
+      </div>
+    </section>
     </main>
   );
 }
