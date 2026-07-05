@@ -132,7 +132,7 @@ export default async function Image() {
               { name: '⚡ Image Compressor', desc: 'Reduce file sizes up to 90%' },
               { name: '✨ Background Remover', desc: 'AI-powered local extraction' },
               { name: '📐 Image Resizer', desc: 'Scale by dimensions or presets' },
-              { name: '🔄 Format Converter', desc: 'Convert PNG, JPG, WebP, SVG, PDF' },
+              { name: '🔄 Format Converter', desc: 'Convert PNG, JPG, WebP, SVG' },
               { name: '✂️ Image Cropper', desc: 'Free aspect ratios & locks' },
             ].map((t) => (
               <div
