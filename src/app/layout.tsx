@@ -91,6 +91,7 @@ export const metadata: Metadata = {
 
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { WorkingImageProvider } from "@/lib/chaining/WorkingImageProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function RootLayout({
   children,
@@ -115,7 +116,9 @@ export default function RootLayout({
         >
           <LanguageProvider>
             <WorkingImageProvider>
-              {children}
+              <TooltipProvider delayDuration={300}>
+                {children}
+              </TooltipProvider>
             </WorkingImageProvider>
             <Toaster richColors position="top-right" />
           </LanguageProvider>

@@ -360,7 +360,6 @@ export default function PdfPagesClient() {
                   >
                     <PageActionTooltip label="Drag to reorder">
                       <span
-                        title="Drag to reorder"
                         aria-label="Drag to reorder"
                         className="inline-flex shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground"
                       >
@@ -400,7 +399,6 @@ export default function PdfPagesClient() {
                         size="icon"
                         className="h-8 w-8 shrink-0"
                         onClick={() => handleRotate(page.id)}
-                        title="Rotate 90°"
                         aria-label="Rotate 90°"
                       >
                         <RotateCw className="h-3.5 w-3.5" />
@@ -413,7 +411,6 @@ export default function PdfPagesClient() {
                         size="icon"
                         className="h-8 w-8 shrink-0"
                         onClick={() => handleDelete(page.id)}
-                        title="Delete page"
                         aria-label="Delete page"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

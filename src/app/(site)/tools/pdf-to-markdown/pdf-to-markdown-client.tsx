@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import {
   FileText,
@@ -493,17 +494,23 @@ export default function PdfToMarkdownClient() {
                     </div>
                   </div>
                   
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleRemoveFile}
-                    disabled={isConverting}
-                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg border-border/50 shrink-0"
-                    title="Remove file"
-                    aria-label="Remove file"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleRemoveFile}
+                        disabled={isConverting}
+                        className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg border-border/50 shrink-0"
+                        aria-label="Remove file"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Remove file
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
 
                 <Button
