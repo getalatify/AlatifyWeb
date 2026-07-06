@@ -3,10 +3,10 @@ import { JsonLd } from "@/components/json-ld";
 import HtmlToMarkdownClient from "./html-to-markdown-client";
 
 export const metadata: Metadata = {
-  title: "Free HTML to Markdown Converter — No Signup, 100% Private | Alatify",
+  title: "Free HTML to Markdown Converter: No Signup, 100% Private | Alatify",
   description: "Convert HTML source code or .html files into clean Markdown inside your browser. No server uploads, no limits, completely secure.",
   openGraph: {
-    title: "Free HTML to Markdown Converter — No Signup, 100% Private | Alatify",
+    title: "Free HTML to Markdown Converter: No Signup, 100% Private | Alatify",
     description: "Convert HTML source code or .html files into clean Markdown inside your browser. No server uploads, no limits, completely secure.",
   },
 };
@@ -16,7 +16,7 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "HTML to Markdown Converter — Alatify",
+      "name": "HTML to Markdown Converter: Alatify",
       "url": "https://getalatify.com/tools/html-to-markdown",
       "description": "Convert HTML source code or .html files into clean Markdown inside your browser. No server uploads, no limits, completely secure.",
       "applicationCategory": "DocumentApplication",

@@ -42,14 +42,14 @@ export const MODELS: Record<UpscaleFactor, ModelConfig> = {
     // Real-ESRGAN x2plus (dynamic input shape), FP16 ~33MB.
     file: "/models/upscaler/realesrgan-x2.onnx",
     approxSizeMB: 33,
-    label: "2x — Faster",
+    label: "2x · Faster",
   },
   4: {
     scale: 4,
     // Real-ESRGAN x4plus, FP16 ~33MB (dynamic input shape — works with tiling).
     file: "/models/upscaler/realesrgan-x4.onnx",
     approxSizeMB: 33,
-    label: "4x — Sharper",
+    label: "4x · Sharper",
   },
 };
 

@@ -5,11 +5,11 @@ import { JsonLd } from "@/components/json-ld";
 const StockFinderClient = dynamic(() => import("./stock-finder-client"));
 
 export const metadata: Metadata = {
-  title: "Free Stock Photos, Illustrations & Vectors — Search & Edit | Alatify",
-  description: "Search millions of free stock photos, illustrations, and vectors from Unsplash, Pexels, and Pixabay in one place — then edit them instantly with Alatify's browser tools. No sign-up.",
+  title: "Free Stock Photos, Illustrations & Vectors: Search & Edit | Alatify",
+  description: "Search millions of free stock photos, illustrations, and vectors from Unsplash, Pexels, and Pixabay in one place: then edit them instantly with Alatify's browser tools. No sign-up.",
   openGraph: {
-    title: "Free Stock Photos, Illustrations & Vectors — Search & Edit | Alatify",
-    description: "Search millions of free stock photos, illustrations, and vectors from Unsplash, Pexels, and Pixabay in one place — then edit them instantly with Alatify's browser tools. No sign-up.",
+    title: "Free Stock Photos, Illustrations & Vectors: Search & Edit | Alatify",
+    description: "Search millions of free stock photos, illustrations, and vectors from Unsplash, Pexels, and Pixabay in one place: then edit them instantly with Alatify's browser tools. No sign-up.",
   },
 };
 
@@ -18,9 +18,9 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Stock Image Finder — Alatify",
+      "name": "Stock Image Finder: Alatify",
       "url": "https://getalatify.com/tools/stock-finder",
-      "description": "Search millions of free stock photos, illustrations, and vectors from Unsplash, Pexels, and Pixabay in one place — then edit them instantly with Alatify's browser tools. No sign-up.",
+      "description": "Search millions of free stock photos, illustrations, and vectors from Unsplash, Pexels, and Pixabay in one place: then edit them instantly with Alatify's browser tools. No sign-up.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "browserRequirements": "Requires a modern web browser",

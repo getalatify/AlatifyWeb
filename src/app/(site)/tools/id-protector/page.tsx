@@ -5,10 +5,10 @@ import { JsonLd } from "@/components/json-ld";
 const IdProtectorClient = dynamic(() => import("./id-protector-client"));
 
 export const metadata: Metadata = {
-  title: "ID Privacy Shield — Redact & Watermark Locally | Alatify",
+  title: "ID Privacy Shield: Redact & Watermark Locally | Alatify",
   description: "Redact and watermark sensitive documents entirely on your device. Zero server uploads, 100% private.",
   openGraph: {
-    title: "ID Privacy Shield — Redact & Watermark Locally | Alatify",
+    title: "ID Privacy Shield: Redact & Watermark Locally | Alatify",
     description: "Redact and watermark sensitive documents entirely on your device. Zero server uploads, 100% private.",
   },
 };
@@ -18,7 +18,7 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "ID Privacy Shield — Alatify",
+      "name": "ID Privacy Shield: Alatify",
       "url": "https://getalatify.com/tools/id-protector",
       "description": "Redact and watermark sensitive documents entirely on your device. Zero server uploads, 100% private.",
       "applicationCategory": "MultimediaApplication",

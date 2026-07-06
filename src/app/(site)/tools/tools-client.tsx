@@ -100,7 +100,7 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
       {/* Header Bar */}
       <Header showSupportLink />
 
-      {/* Back to home — placed BELOW the header box, aligned with the logo */}
+      {/* Back to home, placed BELOW the header box, aligned with the logo */}
       <div className="max-w-7xl mx-auto w-full px-6 mt-3 z-10 shrink-0">
         <Link
           href="/"

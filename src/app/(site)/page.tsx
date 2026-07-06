@@ -22,12 +22,12 @@ export default function Home() {
 
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 text-foreground select-none overflow-x-clip">
-      {/* Top Header Bar — mark + wordmark lockup */}
+      {/* Top Header Bar: mark + wordmark lockup */}
       <Header showToolsLink showSupportLink />
 
       {/* Hero Section */}
       <div className="max-w-2xl text-center space-y-6 pt-16 md:pt-24 z-10 flex flex-col items-center shrink-0">
-        {/* Status Badge — neutral pill */}
+        {/* Status Badge: neutral pill */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-secondary text-muted-foreground border border-border animate-fade-in">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-foreground opacity-75"></span>
@@ -46,7 +46,7 @@ export default function Home() {
           {t("home.hero.tagline")}
         </p>
 
-        {/* CTA Buttons — contrast-based */}
+        {/* CTA Buttons, contrast-based */}
         <div className="pt-4 flex flex-col sm:flex-row items-center gap-4 justify-center w-full max-w-md">
           <Link href="/tools" className="w-full sm:w-auto">
             <Button className="cta-glass w-full px-8 py-6 text-base font-semibold rounded-xl hover:-translate-y-0.5 active:scale-[0.98] group gap-2">

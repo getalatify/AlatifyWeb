@@ -5,11 +5,11 @@ import { JsonLd } from "@/components/json-ld";
 const CompressorClient = dynamic(() => import("./compressor-client"));
 
 export const metadata: Metadata = {
-  title: "Free Image Compressor — Reduce File Size, No Upload | Alatify",
-  description: "Compress JPG, PNG, and WebP images to a smaller size in your browser — lossy or lossless, batch processing, no upload, no sign-up. Shrink files while keeping quality.",
+  title: "Free Image Compressor: Reduce File Size, No Upload | Alatify",
+  description: "Compress JPG, PNG, and WebP images to a smaller size in your browser: lossy or lossless, batch processing, no upload, no sign-up. Shrink files while keeping quality.",
   openGraph: {
-    title: "Free Image Compressor — Reduce File Size, No Upload | Alatify",
-    description: "Compress JPG, PNG, and WebP images to a smaller size in your browser — lossy or lossless, batch processing, no upload, no sign-up. Shrink files while keeping quality.",
+    title: "Free Image Compressor: Reduce File Size, No Upload | Alatify",
+    description: "Compress JPG, PNG, and WebP images to a smaller size in your browser: lossy or lossless, batch processing, no upload, no sign-up. Shrink files while keeping quality.",
   },
 };
 
@@ -18,9 +18,9 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Image Compressor — Alatify",
+      "name": "Image Compressor: Alatify",
       "url": "https://getalatify.com/tools/compressor",
-      "description": "Compress JPG, PNG, and WebP images to a smaller size in your browser — lossy or lossless, batch processing, no upload, no sign-up. Shrink files while keeping quality.",
+      "description": "Compress JPG, PNG, and WebP images to a smaller size in your browser: lossy or lossless, batch processing, no upload, no sign-up. Shrink files while keeping quality.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "browserRequirements": "Requires a modern web browser",

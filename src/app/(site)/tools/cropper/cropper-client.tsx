@@ -800,8 +800,8 @@ export default function CropperClient() {
                         onChange={(e) => setExportFormat(e.target.value as "image/png" | "image/jpeg")}
                         className="w-full bg-card border border-border hover:border-primary/50 text-foreground text-xs rounded-xl p-2 outline-none transition-all duration-200 cursor-pointer"
                       >
-                        <option value="image/png">PNG — Lossless (Preserves transparency)</option>
-                        <option value="image/jpeg">JPEG — Optimized (Smaller file size)</option>
+                        <option value="image/png">PNG, Lossless (Preserves transparency)</option>
+                        <option value="image/jpeg">JPEG, Optimized (Smaller file size)</option>
                       </select>
                     </div>
 

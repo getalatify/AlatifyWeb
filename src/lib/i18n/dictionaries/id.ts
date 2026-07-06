@@ -998,6 +998,30 @@ export const id = {
     helpBubble: {
       openFull: "Baru di sini? Buka alat lengkapnya",
     },
+    generator: {
+      "toastCopied": "Tersalin ke clipboard!",
+      "toastCopiedDesc": "Snippet embed siap kamu paste ke website kamu.",
+      "toastCopyFailed": "Gagal menyalin snippet kode.",
+      "backHome": "Kembali ke beranda",
+      "badge": "Kode Embed buat Developer",
+      "title": "Embed Tools Alatify",
+      "intro": "Distribusikan widget privacy-first, 100% client-side kami ke blog, app, atau website kamu sendiri. Semuanya jalan sepenuhnya di dalam browser pengguna, tanpa perlu bandwidth server atau sign-up.",
+      "selectLabel": "Pilih Tool yang Mau Di-embed",
+      "selectPlaceholder": "Pilih tool",
+      "snippetLabel": "Snippet Embed HTML",
+      "copied": "Tersalin!",
+      "copyCode": "Salin Kode",
+      "featuresTitle": "Cara Kerja & Fitur",
+      "feature1Title": "Nol Beban Server",
+      "feature1Desc": "Widget-nya menjalankan model AI dan utilitas sepenuhnya client-side di browser pengguna. Pakai akselerasi WebGPU kalau tersedia, dan otomatis fallback ke CPU dengan mulus.",
+      "feature2Title": "Integrasi Privacy-First",
+      "feature2Desc": "File nggak pernah menyentuh server kami maupun server kamu. Seluruh operasinya bisa di-sandbox, artinya privasi mutlak buat pengguna situs kamu.",
+      "previewTitle": "Preview Interaktif Langsung",
+      "openFull": "Buka preview penuh ↗",
+      "previewToolTitle": "Preview {name}",
+      "previewPrompt": "Klik di bawah buat memuat preview widget-nya. Ini mencegah widget dimuat sebelum kamu siap mengetesnya.",
+      "loadPreview": "Muat Preview Langsung"
+    }
   },
   imagePreview: {
     alt: "Pratinjau",

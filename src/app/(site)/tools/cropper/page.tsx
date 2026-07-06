@@ -5,11 +5,11 @@ import { JsonLd } from "@/components/json-ld";
 const CropperClient = dynamic(() => import("./cropper-client"));
 
 export const metadata: Metadata = {
-  title: "Free Image Cropper — Crop & Straighten Online, No Upload | Alatify",
-  description: "Crop images to any ratio, adjust freely with draggable handles, and straighten with rotation — in your browser. No upload, no sign-up. Your photo stays on your device.",
+  title: "Free Image Cropper: Crop & Straighten Online, No Upload | Alatify",
+  description: "Crop images to any ratio, adjust freely with draggable handles, and straighten with rotation: in your browser. No upload, no sign-up. Your photo stays on your device.",
   openGraph: {
-    title: "Free Image Cropper — Crop & Straighten Online, No Upload | Alatify",
-    description: "Crop images to any ratio, adjust freely with draggable handles, and straighten with rotation — in your browser. No upload, no sign-up. Your photo stays on your device.",
+    title: "Free Image Cropper: Crop & Straighten Online, No Upload | Alatify",
+    description: "Crop images to any ratio, adjust freely with draggable handles, and straighten with rotation: in your browser. No upload, no sign-up. Your photo stays on your device.",
   },
 };
 
@@ -18,9 +18,9 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Image Cropper — Alatify",
+      "name": "Image Cropper: Alatify",
       "url": "https://getalatify.com/tools/cropper",
-      "description": "Crop images to any ratio, adjust freely with draggable handles, and straighten with rotation — in your browser. No upload, no sign-up. Your photo stays on your device.",
+      "description": "Crop images to any ratio, adjust freely with draggable handles, and straighten with rotation: in your browser. No upload, no sign-up. Your photo stays on your device.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "browserRequirements": "Requires a modern web browser",

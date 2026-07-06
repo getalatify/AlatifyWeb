@@ -53,7 +53,7 @@ export default function PdfPagesClient() {
         return;
       }
       if (files.length > pdfFiles.length) {
-        toast.warning("Some files were skipped — only .pdf files are supported.");
+        toast.warning("Some files were skipped, only .pdf files are supported.");
       }
 
       setIsLoading(true);
@@ -626,7 +626,7 @@ export default function PdfPagesClient() {
                     Format Converter
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Convert images between PNG, JPEG, WebP, PDF, and more —
+                    Convert images between PNG, JPEG, WebP, PDF, and more, 
                     entirely offline.
                   </p>
                 </div>

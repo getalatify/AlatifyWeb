@@ -27,9 +27,9 @@ const sampleHtml = `<!DOCTYPE html>
 
   <h2>Key Features</h2>
   <ul>
-    <li><strong>100% Client-Side</strong> — no document uploads.</li>
-    <li><strong>Clean Output</strong> — headings, lists, links, and code blocks.</li>
-    <li><em>Private by design</em> — your HTML never leaves the browser.</li>
+    <li><strong>100% Client-Side</strong>, no document uploads.</li>
+    <li><strong>Clean Output</strong>, headings, lists, links, and code blocks.</li>
+    <li><em>Private by design</em>, your HTML never leaves the browser.</li>
   </ul>
 
   <h2>Task Checklist</h2>

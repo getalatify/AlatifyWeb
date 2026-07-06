@@ -61,7 +61,7 @@ export default function SupportClient() {
       {/* Header Bar */}
       <Header  />
 
-      {/* Back to tools — placed BELOW the header box, aligned with the logo */}
+      {/* Back to tools, placed BELOW the header box, aligned with the logo */}
       <div className="max-w-7xl mx-auto w-full px-6 mt-3 z-10 shrink-0">
         <Link
           href="/tools"
