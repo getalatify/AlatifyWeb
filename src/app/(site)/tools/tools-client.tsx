@@ -112,7 +112,7 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
       </div>
 
       {/* Hero Section - Shipped UP and sized dynamically so scroll cue is visible above fold */}
-      <section className="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-start text-center px-4 min-h-[calc(100svh-130px)] pt-6 sm:pt-10 md:pt-14 z-10">
+      <section className="relative w-full max-w-4xl mx-auto flex flex-col items-center justify-between text-center px-4 min-h-[calc(100svh-130px)] pt-6 sm:pt-10 md:pt-14 pb-8 sm:pb-12 z-10">
         <div className="space-y-6 flex flex-col items-center py-6 sm:py-8">
           {/* Top Announcement Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
@@ -168,7 +168,7 @@ export default function ToolsHubPage({ categoryFilter }: { categoryFilter?: "ima
         {/* Floating Scroll Indicator */}
         <div 
           onClick={handleScrollToPipeline}
-          className="relative mt-12 md:absolute md:bottom-16 md:mt-0 flex flex-col items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity animate-fade-in group"
+          className="relative flex flex-col items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity animate-fade-in group"
         >
           <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest transition-colors group-hover:text-primary">
             {t("toolsPage.scrollExplore")}
