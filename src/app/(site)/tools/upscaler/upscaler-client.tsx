@@ -405,7 +405,7 @@ export default function UpscalerClient() {
           workerRef.current = null;
           setStage("gpu-failed");
           setError(
-            "WebGPU couldn't start on this device. Please reload the page — it will automatically switch to the slower (but reliable) CPU mode.",
+            "WebGPU couldn't start on this device. Please reload the page, it will automatically switch to the slower (but reliable) CPU mode.",
           );
           return;
         case "success": {
@@ -468,7 +468,7 @@ export default function UpscalerClient() {
         scale,
         device,
       },
-      [buffer], // transfer ownership — no copy
+      [buffer], // transfer ownership, no copy
     );
   }, [
     activeImage,
@@ -528,7 +528,7 @@ export default function UpscalerClient() {
             AI Image Upscaler
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Upscale Images 2x &amp; 4x — Private, On-Device AI
+            Upscale Images 2x &amp; 4x: Private, On-Device AI
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
             {t("tools.upscaler.intro")}

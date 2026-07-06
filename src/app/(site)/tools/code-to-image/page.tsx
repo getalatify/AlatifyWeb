@@ -5,11 +5,11 @@ import { JsonLd } from "@/components/json-ld";
 const CodeToImageClient = dynamic(() => import("./code-to-image-client"));
 
 export const metadata: Metadata = {
-  title: "Free Code to Image — Syntax-Highlighted Snippets for Social | Alatify",
+  title: "Free Code to Image: Syntax-Highlighted Snippets for Social | Alatify",
   description:
     "Turn code snippets into polished, share-ready PNG images with developer-focused themes and crisp Geist Mono typography. Runs entirely in your browser.",
   openGraph: {
-    title: "Free Code to Image — Syntax-Highlighted Snippets for Social | Alatify",
+    title: "Free Code to Image: Syntax-Highlighted Snippets for Social | Alatify",
     description:
       "Turn code snippets into polished, share-ready PNG images with developer-focused themes and crisp Geist Mono typography. Runs entirely in your browser.",
   },
@@ -20,7 +20,7 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      name: "Code to Image — Alatify",
+      name: "Code to Image: Alatify",
       url: "https://getalatify.com/tools/code-to-image",
       description:
         "Turn code snippets into polished, share-ready PNG images with developer-focused themes and crisp Geist Mono typography.",

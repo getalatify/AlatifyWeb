@@ -69,8 +69,8 @@ interface WatermarkSettings {
   };
   marginPercent: number;
   tileSpacingPercent: number;
-  positionX: number;   // 0–100, % of image WIDTH — horizontal position of watermark CENTER, default 50
-  positionY: number;   // 0–100, % of image HEIGHT — vertical position of watermark CENTER, default 50
+  positionX: number;   // 0-100, % of image WIDTH, horizontal position of watermark CENTER, default 50
+  positionY: number;   // 0-100, % of image HEIGHT, vertical position of watermark CENTER, default 50
 
   // output settings
   outputFormat: 'original' | 'image/jpeg' | 'image/png' | 'image/webp';
@@ -744,7 +744,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
       
       triggerPreviewUpdate();
     } catch {
-      toast.error("Couldn't read that logo — try a transparent PNG image.");
+      toast.error("Couldn't read that logo, try a transparent PNG image.");
     }
   };
 

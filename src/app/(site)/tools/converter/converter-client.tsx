@@ -382,7 +382,7 @@ export default function FormatConverterPage() {
         const ifds = UTIF.decode(buffer);
         let warning = null;
         if (ifds.length > 1) {
-          warning = "Multi-page TIFF detected — converting first page only";
+          warning = "Multi-page TIFF detected, converting first page only";
         }
         
         UTIF.decodeImage(buffer, ifds[0]);

@@ -50,14 +50,14 @@ const SECTIONS = [
   {
     heading: "Where your photo goes with most tools",
     body: [
-      "Popular background removers send your image to a cloud server, run their model there, and return the result. Your original photo — whatever it contains — has been transmitted to and processed on someone else's infrastructure.",
+      "Popular background removers send your image to a cloud server, run their model there, and return the result. Your original photo, whatever it contains, has been transmitted to and processed on someone else's infrastructure.",
       "For a product shot that might be fine. For a photo of a person, a document, or anything private, it's a real exposure you didn't sign up for."
     ]
   },
   {
     heading: "How Alatify is different",
     body: [
-      "Alatify runs the background-removal model directly in your browser using your device's own hardware. The AI model file downloads once from a CDN the first time you use the tool, and after that it's cached. The important part: your photo itself is never uploaded — only the reusable model comes down, and only once.",
+      "Alatify runs the background-removal model directly in your browser using your device's own hardware. The AI model file downloads once from a CDN the first time you use the tool, and after that it's cached. The important part: your photo itself is never uploaded, only the reusable model comes down, and only once.",
       "So the honest claim is precise: the tool fetches its model over the network once, then every image you process stays on your device."
     ]
   },
@@ -70,7 +70,7 @@ const SECTIONS = [
   {
     heading: "How to remove a background",
     body: [
-      "Open the Background Remover, drop in your image, and let it process on your device. Download the result as a transparent PNG at full resolution — no watermark, no sign-up, no limit."
+      "Open the Background Remover, drop in your image, and let it process on your device. Download the result as a transparent PNG at full resolution, no watermark, no sign-up, no limit."
     ]
   }
 ];
@@ -93,7 +93,7 @@ const COMPARISON = {
 const FAQS = [
   {
     q: "Is my photo really not uploaded?",
-    a: "Correct. The AI model downloads once from a CDN, then all processing runs in your browser. Your image is never sent to a server — you can confirm this in the Network tab after the initial model load."
+    a: "Correct. The AI model downloads once from a CDN, then all processing runs in your browser. Your image is never sent to a server, you can confirm this in the Network tab after the initial model load."
   },
   {
     q: "Why does it download something the first time?",
@@ -114,7 +114,7 @@ export default function RemoveBackgroundPage() {
         <LandingPageLayout
           eyebrow="Privacy-first · AI runs on your device"
           h1="Remove Image Background Without Uploading Your Photo"
-          heroSubtext="Most background removers upload your image to their servers to process it. Alatify doesn't. The AI runs on your own device, so your photo never leaves your computer — and you can prove it."
+          heroSubtext="Most background removers upload your image to their servers to process it. Alatify doesn't. The AI runs on your own device, so your photo never leaves your computer, and you can prove it."
           ctaLabel="Open the Background Remover →"
           ctaHref={pageConfig.targetToolPath}
           sections={SECTIONS}

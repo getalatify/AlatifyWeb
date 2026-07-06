@@ -15,11 +15,11 @@ export const en = {
   about: {
     intro: "Image tools should respect your privacy.",
     why: {
-      p1: "Most online image tools require uploading your files to their servers. That means your images — possibly containing personal moments, business assets, or sensitive content — pass through someone else's infrastructure.",
+      p1: "Most online image tools require uploading your files to their servers. That means your images, possibly containing personal moments, business assets, or sensitive content, pass through someone else's infrastructure.",
       p2: "Alatify is different: every tool runs entirely in your browser, using your own device's resources. Your files never leave your device. We believe in providing fast, powerful, and absolutely private utilities that respect user autonomy.",
     },
     offer: {
-      li1: "A full browser suite — Background Remover, Image Compressor, Format Converter, Resizer, Cropper, EXIF Cleaner, Watermark, QR Toolkit, and more — all running locally in your browser.",
+      li1: "A full browser suite, Background Remover, Image Compressor, Format Converter, Resizer, Cropper, EXIF Cleaner, Watermark, QR Toolkit, and more, all running locally in your browser.",
       li2: "No user registration, no server-side uploads, and no analytics cookies.",
       li3: "Process files of any size without registration, credit cards, or hidden limits.",
       li4: "Transparent, offline-capable code execution using standard web containers.",
@@ -29,7 +29,7 @@ export const en = {
       p2: "Our tech stack features Next.js, WebAssembly, and Tailwind CSS, with hosting and static asset delivery provided by Vercel. If you find Alatify useful, please share it with others who value privacy!",
     },
     road: {
-      p1: "Alatify is built to keep growing. The suite now spans background removal, compression, format conversion, resizing, cropping, EXIF cleaning, watermarking, and AI upscaling — all running locally in your browser, with new privacy-first tools added over time.",
+      p1: "Alatify is built to keep growing. The suite now spans background removal, compression, format conversion, resizing, cropping, EXIF cleaning, watermarking, and AI upscaling, all running locally in your browser, with new privacy-first tools added over time.",
       p2_start:
         "Your feedback is invaluable. If you have suggestions, feature requests, or bugs to report, reach out to us at",
       p2_end: ".",
@@ -125,11 +125,11 @@ export const en = {
   tools: {
     compressor: {
       intro:
-        "Reduce image file sizes with full control. Choose lossy compression for the smallest size, or lossless to preserve every single pixel — running entirely in your browser without uploads.",
+        "Reduce image file sizes with full control. Choose lossy compression for the smallest size, or lossless to preserve every single pixel, running entirely in your browser without uploads.",
       hintBubble:
         "Tip: for the smallest files, export photos as JPEG. Choose PNG when you need transparency.",
       alreadyOptimised:
-        "Already optimized — this file can't be shrunk further.",
+        "Already optimized, this file can't be shrunk further.",
       losslessConvertDisabled:
         "Lossless is only available when recompressing an original PNG.",
       pngLargerNudge:
@@ -155,7 +155,7 @@ export const en = {
         q3: "What's the difference between lossy and lossless?",
         a3: "Lossy gives the smallest size by discarding some invisible detail; lossless keeps every pixel and still reduces size. You choose.",
         q4: "Can I compress many images at once?",
-        a4: "Yes — batch-compress and download them all as a ZIP.",
+        a4: "Yes, batch-compress and download them all as a ZIP.",
         q5: "Which formats are supported?",
         a5: "JPG, PNG, and WebP.",
       },
@@ -169,7 +169,7 @@ export const en = {
         isnet: "~170 MB",
       },
       intro:
-        "Most free background removers upload your image to their servers — and many quietly use it to train their AI or cap free downloads at low resolution. Alatify's runs entirely in your browser using GPU-accelerated on-device AI. Your photo never leaves your device. No sign-up, no watermark, no resolution limit, and no cap on how many you process — full quality, fully private, unlimited.",
+        "Most free background removers upload your image to their servers, and many quietly use it to train their AI or cap free downloads at low resolution. Alatify's runs entirely in your browser using GPU-accelerated on-device AI. Your photo never leaves your device. No sign-up, no watermark, no resolution limit, and no cap on how many you process, full quality, fully private, unlimited.",
       howItWorks: {
         step1: "Drop your image. It stays on your device.",
         step2:
@@ -189,24 +189,24 @@ export const en = {
       },
       faq: {
         q1: "Is it really free and unlimited?",
-        a1: "Yes — no sign-up, no watermark, no daily limit, and no resolution cap. It runs on your own device, so there's nothing for us to meter.",
+        a1: "Yes, no sign-up, no watermark, no daily limit, and no resolution cap. It runs on your own device, so there's nothing for us to meter.",
         q2: "Does it upload my image to a server?",
-        a2: "No. Unlike most free removers that process server-side — and some that use your uploads to train their AI — Alatify runs the AI entirely in your browser. Your image never leaves your device.",
+        a2: "No. Unlike most free removers that process server-side, and some that use your uploads to train their AI, Alatify runs the AI entirely in your browser. Your image never leaves your device.",
         q3: "Do I get the full resolution?",
         a3: "Yes. Many free tools cap downloads at low resolution and charge for HD. Alatify gives you the full-resolution cutout for free.",
         q4: "How does it work without uploading?",
-        a4: "It uses on-device AI (via WebGPU/WebAssembly) that runs locally in your browser — your own device does the processing.",
+        a4: "It uses on-device AI (via WebGPU/WebAssembly) that runs locally in your browser. Your own device does the processing.",
         q5: "What can I use the result for?",
-        a5: "Product photos, transparent PNGs for design, profile pictures, social posts, and marketplace listings — anywhere you need a clean cutout.",
+        a5: "Product photos, transparent PNGs for design, profile pictures, social posts, and marketplace listings, anywhere you need a clean cutout.",
       },
       privacyNotice:
-        "Alatify removes image backgrounds entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, full-resolution, watermark-free transparent PNGs, processed privately on your own device.",
+        "Alatify removes image backgrounds entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged, making the tool 100% immune to leaks or server-side data retention. Get unlimited, full-resolution, watermark-free transparent PNGs, processed privately on your own device.",
       onnxNotice:
         "Alatify AI background extraction runs a highly optimized neural network on your browser sandbox using ONNX runtime WebAssembly.",
       modelNotice:
         "GPU models are faster on supported devices; the Lite (CPU) model is best for devices without GPU acceleration.",
       runtimeNotice:
-        "First use also downloads the AI runtime (~33 MB) once. Everything is then cached offline — later uses load instantly.",
+        "First use also downloads the AI runtime (~33 MB) once. Everything is then cached offline. Later uses load instantly.",
     },
     blur: {
       intro:
@@ -238,7 +238,7 @@ export const en = {
     },
     converter: {
       intro:
-        "Convert images between eight formats — including web favorites like WebP, design formats like SVG and TIFF, and specialty formats like ICO (favicons) — entirely in your browser. Drag in multiple files, pick an output format, and convert in one click. No upload, no sign-up, no watermark — your files never leave your device.",
+        "Convert images between eight formats, including web favorites like WebP, design formats like SVG and TIFF, and specialty formats like ICO (favicons), entirely in your browser. Drag in multiple files, pick an output format, and convert in one click. No upload, no sign-up, no watermark. Your files never leave your device.",
       howItWorks: {
         step1: "Add one or many images (drag-drop or file picker).",
         step2: "Pick your output: JPG, PNG, WebP, ICO, SVG, TIFF, BMP, or GIF.",
@@ -254,13 +254,13 @@ export const en = {
       },
       faq: {
         q1: "Which formats can I convert between?",
-        a1: "JPG, PNG, WebP, ICO, SVG, TIFF, BMP, and GIF — plus HEIC input from iPhones.",
+        a1: "JPG, PNG, WebP, ICO, SVG, TIFF, BMP, and GIF, plus HEIC input from iPhones.",
         q2: "Does it upload my files to a server?",
         a2: "No. Conversion runs entirely in your browser; your files never leave your device.",
         q3: "Can I convert many images at once?",
-        a3: "Yes — drag in multiple files, convert them all in one click, and download as a ZIP.",
+        a3: "Yes, drag in multiple files, convert them all in one click, and download as a ZIP.",
         q4: "How do I convert a PNG to an ICO favicon?",
-        a4: "Upload the PNG, choose ICO as the output format, and download — ready to use as a site favicon.",
+        a4: "Upload the PNG, choose ICO as the output format, and download, ready to use as a site favicon.",
         q5: "Can I convert HEIC photos from my iPhone?",
         a5: "Yes. Add your HEIC files and convert them to JPG or PNG instantly.",
       },
@@ -275,7 +275,7 @@ export const en = {
     },
     cropper: {
       intro:
-        "Crop to a fixed ratio or freely with draggable handles, then straighten with precise rotation — all with real-time preview in your browser. No upload, no sign-up — your photo never leaves your device.",
+        "Crop to a fixed ratio or freely with draggable handles, then straighten with precise rotation, all with real-time preview in your browser. No upload, no sign-up. Your photo never leaves your device.",
       howItWorks: {
         step1: "Drop your image. It stays on your device.",
         step2:
@@ -285,7 +285,7 @@ export const en = {
       },
       useCases: {
         case1:
-          "Crop to the exact ratios platforms use — 1:1 squares, 16:9 banners, story sizes.",
+          "Crop to the exact ratios platforms use, 1:1 squares, 16:9 banners, story sizes.",
         case2: "Frame your headshot perfectly for any profile or avatar.",
         case3:
           "Crop tight, attention-grabbing thumbnails for videos and articles.",
@@ -293,22 +293,22 @@ export const en = {
       },
       faq: {
         q1: "Can I crop to a specific ratio?",
-        a1: "Yes — choose common ratios like 1:1, 4:3, or 16:9, or drag the handles for a completely free crop.",
+        a1: "Yes, choose common ratios like 1:1, 4:3, or 16:9, or drag the handles for a completely free crop.",
         q2: "Does it upload my photo to a server?",
         a2: "No. Cropping runs entirely in your browser; your photo never leaves your device.",
         q3: "Can I straighten a crooked photo?",
-        a3: "Yes — use rotation to level a tilted horizon or align your subject before cropping.",
+        a3: "Yes, use rotation to level a tilted horizon or align your subject before cropping.",
         q4: "Will cropping reduce my image quality?",
-        a4: "No — cropping keeps the original pixels within the selected area at full quality.",
+        a4: "No, cropping keeps the original pixels within the selected area at full quality.",
         q5: "Can I do a free-form crop instead of a fixed ratio?",
-        a5: "Yes — drag the handles to any size and position you like.",
+        a5: "Yes, drag the handles to any size and position you like.",
       },
       privacyNotice:
         "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side logging. Crop and rotate images instantly and privately on your own device.",
     },
     "exif-cleaner": {
       intro:
-        "Every photo your phone takes carries hidden EXIF metadata — GPS coordinates, camera model, date, and device details — that travels with the file when you share it. Alatify shows you exactly what's hidden inside, then strips it clean. Everything runs in your browser: your photo is never uploaded, and the cleaning is fully lossless, so only the metadata is removed — your image quality stays untouched.",
+        "Every photo your phone takes carries hidden EXIF metadata (GPS coordinates, camera model, date, and device details) that travels with the file when you share it. Alatify shows you exactly what's hidden inside, then strips it clean. Everything runs in your browser: your photo is never uploaded, and the cleaning is fully lossless, so only the metadata is removed. Your image quality stays untouched.",
       howItWorks: {
         step1:
           "Drag and drop your photo, or pick a file. It stays on your device.",
@@ -330,13 +330,13 @@ export const en = {
       },
       faq: {
         q1: "Doesn't Instagram or Facebook already remove EXIF data?",
-        a1: "Public posts on most platforms strip EXIF — but they keep the original internally, and many sharing methods (sending the file directly, cloud storage, some platforms) keep the metadata intact. Cleaning it yourself first is the only way to be sure.",
+        a1: "Public posts on most platforms strip EXIF, but they keep the original internally, and many sharing methods (sending the file directly, cloud storage, some platforms) keep the metadata intact. Cleaning it yourself first is the only way to be sure.",
         q2: "How do I remove GPS location before selling something online?",
-        a2: "Upload the photo, check the GPS warning, strip the metadata, and download the clean copy to post — no location data attached.",
+        a2: "Upload the photo, check the GPS warning, strip the metadata, and download the clean copy to post, no location data attached.",
         q3: "Will removing metadata reduce my photo's quality?",
-        a3: "No. Alatify removes metadata losslessly by editing the file's binary structure directly — your pixels are never re-compressed, so quality is identical.",
+        a3: "No. Alatify removes metadata losslessly by editing the file's binary structure directly. Your pixels are never re-compressed, so quality is identical.",
         q4: "Can I see what metadata my photo contains first?",
-        a4: "Yes. Before cleaning, Alatify displays all detected metadata — GPS coordinates, camera model, date, and device info — so you know exactly what you're removing.",
+        a4: "Yes. Before cleaning, Alatify displays all detected metadata (GPS coordinates, camera model, date, and device info), so you know exactly what you're removing.",
         q5: "Is my photo uploaded to a server?",
         a5: "No. Detection and cleaning run entirely in your browser. Your photo never leaves your device.",
       },
@@ -413,7 +413,7 @@ export const en = {
     },
     resizer: {
       intro:
-        "Resize images by exact pixels, by percentage, or with a locked aspect ratio — all in your browser. High-quality resampling keeps edges crisp, and you can resize a whole batch at once. No upload, no sign-up — your images never leave your device.",
+        "Resize images by exact pixels, by percentage, or with a locked aspect ratio, all in your browser. High-quality resampling keeps edges crisp, and you can resize a whole batch at once. No upload, no sign-up. Your images never leave your device.",
       howItWorks: {
         step1: "Add one or many images.",
         step2:
@@ -423,7 +423,7 @@ export const en = {
       },
       useCases: {
         case1:
-          "Resize to the exact dimensions platforms expect — square posts, stories, banners, and profile pictures.",
+          "Resize to the exact dimensions platforms expect, square posts, stories, banners, and profile pictures.",
         case2: "Shrink oversized photos to load faster and fit upload limits.",
         case3:
           "Resize an entire folder of images to the same dimensions in one go.",
@@ -431,13 +431,13 @@ export const en = {
       },
       faq: {
         q1: "Can I resize to exact pixel dimensions?",
-        a1: "Yes — enter exact width and height in pixels, scale by percentage, or lock the aspect ratio to avoid stretching.",
+        a1: "Yes, enter exact width and height in pixels, scale by percentage, or lock the aspect ratio to avoid stretching.",
         q2: "Does it upload my images to a server?",
         a2: "No. Resizing runs entirely in your browser; your files never leave your device.",
         q3: "Will resizing stretch or distort my image?",
-        a3: "Not if you keep the aspect ratio locked — it scales proportionally. You can also unlock it for a free resize.",
+        a3: "Not if you keep the aspect ratio locked, it scales proportionally. You can also unlock it for a free resize.",
         q4: "Can I resize many images at once?",
-        a4: "Yes — batch-resize them all to the same dimensions and download as a ZIP.",
+        a4: "Yes, batch-resize them all to the same dimensions and download as a ZIP.",
         q5: "Will resizing reduce quality?",
         a5: "Alatify uses high-quality resampling to keep results as crisp as possible when scaling.",
       },
@@ -478,7 +478,7 @@ export const en = {
     },
     upscaler: {
       intro:
-        "Sharpen and enlarge your photos with a Real-ESRGAN neural network that runs entirely in your browser. Runs 100% in your browser — your image never leaves your device.",
+        "Sharpen and enlarge your photos with a Real-ESRGAN neural network that runs entirely in your browser. Runs 100% in your browser. Your image never leaves your device.",
       howItWorks: {
         step1: "Drop your image. It stays on your device.",
         step2: "Pick 2x for speed or 4x for maximum detail.",
@@ -502,13 +502,13 @@ export const en = {
       },
       faq: {
         q1: "Are my images uploaded to a server?",
-        a1: "No. All processing happens locally in your browser — your images never leave your device.",
+        a1: "No. All processing happens locally in your browser. Your images never leave your device.",
         q2: "How does the AI upscaler work?",
         a2: "It uses a Real-ESRGAN neural network that reconstructs detail and sharpens edges, running on your device's GPU via WebGPU (with a CPU fallback).",
         q3: "What's the difference between 2x and 4x?",
         a3: "2x is faster and good for moderate enlargement; 4x produces a larger, sharper result but takes longer.",
         q4: "Is it free?",
-        a4: "Yes — completely free, no account or sign-up.",
+        a4: "Yes, completely free, no account or sign-up.",
         q5: "Which formats are supported?",
         a5: "JPG, PNG, and WebP; output is a lossless PNG.",
         q6: "Why does the first run take a moment?",
@@ -516,20 +516,20 @@ export const en = {
         q7: "Is there a size limit?",
         a7: "Very large images are scaled down before upscaling to stay reliable on phones and mid-range devices.",
         q8: "Does it work offline?",
-        a8: "Yes — once the model is cached, your browser can upscale with no internet connection.",
+        a8: "Yes, once the model is cached, your browser can upscale with no internet connection.",
       },
       privacyNotice:
-        "Alatify upscales images entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged — making the tool 100% immune to leaks or server-side data retention. Get unlimited, high-resolution, watermark-free upscaled images, processed privately on your own device.",
+        "Alatify upscales images entirely inside your browser tab using GPU-accelerated on-device AI. Your photo is never uploaded to a server, never used to train a model, and never logged, making the tool 100% immune to leaks or server-side data retention. Get unlimited, high-resolution, watermark-free upscaled images, processed privately on your own device.",
       fasterOptionDesc: "Double the resolution · quicker",
       sharperOptionDesc: "Quadruple the resolution · slower",
       gpuWarning:
-        "Runs 100% in your browser — your image never leaves your device.",
+        "Runs 100% in your browser. Your image never leaves your device.",
       localWarning:
-        "Processing happens locally and can take a while for large images or slower devices — keep this tab open.",
+        "Processing happens locally and can take a while for large images or slower devices. Keep this tab open.",
     },
     watermark: {
       intro:
-        "Protect and brand your images with text or logo watermarks — entirely in your browser. Drag the watermark exactly where you want it, tile it diagonally across the whole image, rotate it, and tune the opacity for the look you want. Watermark a single image or a whole batch at once. No upload, no sign-up — your images and logo never leave your device.",
+        "Protect and brand your images with text or logo watermarks, entirely in your browser. Drag the watermark exactly where you want it, tile it diagonally across the whole image, rotate it, and tune the opacity for the look you want. Watermark a single image or a whole batch at once. No upload, no sign-up. Your images and logo never leave your device.",
       howItWorks: {
         step1: "Add one or many images (up to 30).",
         step2:
@@ -550,7 +550,7 @@ export const en = {
         q1: "Does it upload my images or logo?",
         a1: "No. Everything runs in your browser; your images and logo never leave your device.",
         q2: "Can I watermark many images at once?",
-        a2: "Yes — add up to 30 images and download them all as a ZIP with the same watermark applied.",
+        a2: "Yes, add up to 30 images and download them all as a ZIP with the same watermark applied.",
         q3: "Can I use my own logo?",
         a3: "Yes. Upload a PNG (transparency supported) and adjust its size and opacity.",
         q4: "Will the watermark look the same across different image sizes?",
@@ -567,7 +567,7 @@ export const en = {
     },
     "stock-finder": {
       intro:
-        "Search across Unsplash, Pexels, and Pixabay at once — and unlike most stock finders that only show photos, Alatify also surfaces illustrations and vectors. Find the perfect image, then jump straight into Alatify's editing tools to remove its background, compress it, or convert it — all free, no sign-up.",
+        "Search across Unsplash, Pexels, and Pixabay at once, and unlike most stock finders that only show photos, Alatify also surfaces illustrations and vectors. Find the perfect image, then jump straight into Alatify's editing tools to remove its background, compress it, or convert it, all free, no sign-up.",
       howItWorks: {
         step1:
           "Type a keyword to search free stock across Unsplash, Pexels, and Pixabay at once.",
@@ -581,18 +581,18 @@ export const en = {
         case1:
           "High-quality, royalty-free photography for blogs, articles, and social posts.",
         case2:
-          "Scalable graphics for presentations, designs, and thumbnails — not just photos.",
+          "Scalable graphics for presentations, designs, and thumbnails, not just photos.",
         case3: "Wide, high-resolution shots for websites and headers.",
         case4:
           "Send any result straight into Alatify to cut out the background, compress, or convert.",
       },
       faq: {
         q1: "Are the images free to use?",
-        a1: "Yes — results come from Unsplash, Pexels, and Pixabay, which offer free-to-use images. Some sources ask for attribution to the photographer, shown alongside each image.",
+        a1: "Yes, results come from Unsplash, Pexels, and Pixabay, which offer free-to-use images. Some sources ask for attribution to the photographer, shown alongside each image.",
         q2: "Can I find illustrations and vectors, not just photos?",
-        a2: "Yes. Most stock finders only show photos — Alatify also surfaces illustrations and vectors, so you can search by content type.",
+        a2: "Yes. Most stock finders only show photos. Alatify also surfaces illustrations and vectors, so you can search by content type.",
         q3: "Can I edit an image right after finding it?",
-        a3: "Yes — open any result in one click in Alatify's browser tools to remove its background, compress it, convert it, and more.",
+        a3: "Yes, open any result in one click in Alatify's browser tools to remove its background, compress it, convert it, and more.",
         q4: "Do I need to sign up?",
         a4: "No. Search and edit freely, no account required.",
         q5: "Where do the images come from?",
@@ -601,7 +601,7 @@ export const en = {
     },
     "html-to-markdown": {
       intro:
-        "Convert HTML source code or .html files into clean, readable Markdown — entirely in your browser. Paste markup or upload a file, then copy or download the result. No server uploads, no account, and your content never leaves your device.",
+        "Convert HTML source code or .html files into clean, readable Markdown, entirely in your browser. Paste markup or upload a file, then copy or download the result. No server uploads, no account, and your content never leaves your device.",
       howItWorks: {
         step1:
           "Paste HTML into the editor or upload a local .html file from your device.",
@@ -632,7 +632,7 @@ export const en = {
         q3: "Can I upload a full webpage file?",
         a3: "Yes. Upload any .html or .htm file and the tool reads it locally, then converts the full document source to Markdown.",
         q4: "Will tables convert to Markdown table syntax?",
-        a4: "Plain Turndown does not include a GFM table plugin. HTML tables use Turndown's default behavior — they are not reliably converted to Markdown pipe-table syntax. Complex or nested tables may become plain text or simplified output. Review the result if table structure matters.",
+        a4: "Plain Turndown does not include a GFM table plugin. HTML tables use Turndown's default behavior. They are not reliably converted to Markdown pipe-table syntax. Complex or nested tables may become plain text or simplified output. Review the result if table structure matters.",
         q5: "Do I need to pay or create an account?",
         a5: "No. Like all tools on Alatify, this converter is completely free, has no caps or limits, and requires no registration.",
       },
@@ -644,14 +644,14 @@ export const en = {
     },
     "code-to-image": {
       intro:
-        "Turn your code into polished, share-ready images for Twitter, blogs, and docs — with developer-focused themes and crisp Geist Mono typography. Style your snippets, export PNG or SVG, and hand off to other image tools.",
+        "Turn your code into polished, share-ready images for Twitter, blogs, and docs, with developer-focused themes and crisp Geist Mono typography. Style your snippets, export PNG or SVG, and hand off to other image tools.",
       howItWorks: {
         step1:
           "Paste your source code into the editor, or load the example snippet to get started.",
         step2:
           "Shiki highlights your code locally with auto-detected language or a manual override.",
         step3:
-          "Pick a theme — Geist Monokrom, Dark, or Light — and toggle window chrome and padding.",
+          "Pick a theme, Geist Monokrom, Dark, or Light, and toggle window chrome and padding.",
         step4:
           "Download PNG or SVG, copy to clipboard, or continue to compressor, resizer, converter, or watermark.",
       },
@@ -675,7 +675,7 @@ export const en = {
         q3: "What export formats are available?",
         a3: "PNG (primary, chainable), SVG (vector), and copy-to-clipboard as PNG. PNG is the format used when continuing to other Alatify image tools.",
         q4: "Can I copy the image to my clipboard?",
-        a4: "Yes. Click Copy Image to paste the PNG into Slack, Discord, or any app that accepts clipboard images. Some browsers may block this — a toast will notify you if it fails.",
+        a4: "Yes. Click Copy Image to paste the PNG into Slack, Discord, or any app that accepts clipboard images. Some browsers may block this. A toast will notify you if it fails.",
         q5: "Is this tool free?",
         a5: "Yes. Like all Alatify tools, Code to Image is completely free with no account, no limits, and no watermarks on your exports.",
       },
@@ -722,7 +722,7 @@ export const en = {
     },
     "pdf-to-markdown": {
       intro:
-        "Extract text layers from PDF documents and format them into readable Markdown — entirely in your browser. Your files never leave your device.",
+        "Extract text layers from PDF documents and format them into readable Markdown, entirely in your browser. Your files never leave your device.",
       howItWorks: {
         step1:
           "Choose or drag in a standard PDF document containing selectable text layers.",
@@ -772,16 +772,16 @@ export const en = {
     },
     "pdf-pages": {
       intro:
-        "Load one or more PDFs, rearrange pages with drag-and-drop, rotate or remove individual pages, and export a new PDF — entirely in your browser. Loading multiple files merges them in order. Select pages to extract a subset. No upload, no account, no data leaves your device.",
+        "Load one or more PDFs, rearrange pages with drag-and-drop, rotate or remove individual pages, and export a new PDF, entirely in your browser. Loading multiple files merges them in order. Select pages to extract a subset. No upload, no account, no data leaves your device.",
       howItWorks: {
         step1:
-          "Drop one or more PDF files. Pages from every file appear in a single list, in load order — that is your merge.",
+          "Drop one or more PDF files. Pages from every file appear in a single list, in load order, that is your merge.",
         step2:
           "Drag rows to reorder, rotate individual pages 90°, delete unwanted pages, or select pages for extraction.",
         step3:
           "Click Merge & Export All Pages for the full working set, or Export selected pages to split out only the pages you checked.",
         step4:
-          "pdf-lib copies original page objects into a new file — no rasterization, so quality and text selectability are preserved.",
+          "pdf-lib copies original page objects into a new file, no rasterization, so quality and text selectability are preserved.",
       },
       useCases: {
         subtitle:
@@ -789,7 +789,7 @@ export const en = {
         case1:
           "Combine invoices, contracts, or scanned pages from multiple files into one ordered document.",
         case2:
-          "Select only the pages you need and export a smaller PDF — useful for sharing one section of a large file.",
+          "Select only the pages you need and export a smaller PDF, useful for sharing one section of a large file.",
         case3:
           "Reorder pages after a bad scan or a mixed export without re-printing or re-scanning.",
         case4:
@@ -816,7 +816,7 @@ export const en = {
     },
     "pdf-to-image": {
       intro:
-        "Convert PDF pages into high-quality JPG or PNG images directly in your browser. Select specific pages or ranges, adjust the resolution scale, and download individual pages or a combined ZIP archive. No uploads, no sign-ups — 100% private.",
+        "Convert PDF pages into high-quality JPG or PNG images directly in your browser. Select specific pages or ranges, adjust the resolution scale, and download individual pages or a combined ZIP archive. No uploads, no sign-ups, 100% private.",
       howItWorks: {
         step1:
           "Upload your PDF document by dragging it in or browsing your files.",
@@ -859,7 +859,7 @@ export const en = {
     },
     "image-to-pdf": {
       intro:
-        "Combine multiple JPG, PNG, or WebP images into a single, beautifully organized PDF document. Rearrange pages with drag-and-drop or shift buttons, set page dimensions, margins, and orientation — all computed locally on-device.",
+        "Combine multiple JPG, PNG, or WebP images into a single, beautifully organized PDF document. Rearrange pages with drag-and-drop or shift buttons, set page dimensions, margins, and orientation, all computed locally on-device.",
       howItWorks: {
         step1:
           "Add one or more images (drag-and-drop or browse multiple files).",
@@ -901,20 +901,20 @@ export const en = {
   },
   toolsPage: {
     intro:
-      "A curated collection of privacy-first image tools that run entirely in your browser — no uploads, no sign-up, fully private. From Background Remover and Image Compressor to format conversion, resizing, and more, every tool processes your images right on your device.",
+      "A curated collection of privacy-first image tools that run entirely in your browser, no uploads, no sign-up, fully private. From Background Remover and Image Compressor to format conversion, resizing, and more, every tool processes your images right on your device.",
     backToHome: "Back to home",
     title: "Tools",
     scrollExplore: "Scroll to explore",
     stockFinder: {
       badge: "No image to start with?",
       description:
-        "Start from scratch — search free stock photos and edit them in one click.",
+        "Start from scratch. Search free stock photos and edit them in one click.",
       button: "Browse Stock Photos",
     },
     section: {
       title: "Our tools",
       subtitle:
-        "Every tool runs 100% locally in your browser — nothing leaves your device.",
+        "Every tool runs 100% locally in your browser, so nothing ever leaves your device.",
     },
   },
   "tools-image": {
@@ -959,7 +959,7 @@ export const en = {
   },
   embed: {
     attribution: {
-      private: "100% private — runs in your browser",
+      private: "100% private, runs in your browser",
       poweredBy: "Powered by",
     },
     brandHeader: {

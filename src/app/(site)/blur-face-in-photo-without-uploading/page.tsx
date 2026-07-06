@@ -40,7 +40,7 @@ const jsonLdData = {
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://getalatify.com" },
-        { "@type": "ListItem", "position": 2, "name": "Blur Faces & Sensitive Info in Photos — Without Uploading", "item": `https://getalatify.com/${PAGE_SLUG}` }
+        { "@type": "ListItem", "position": 2, "name": "Blur Faces & Sensitive Info in Photos: Without Uploading", "item": `https://getalatify.com/${PAGE_SLUG}` }
       ]
     }
   ]
@@ -50,7 +50,7 @@ const SECTIONS = [
   {
     heading: "The contradiction in most blur tools",
     body: [
-      "You blur a photo precisely because it contains something sensitive — a face, an address, a document, a plate number. Yet most online blur tools require you to upload that exact sensitive photo to their servers first.",
+      "You blur a photo precisely because it contains something sensitive, a face, an address, a document, a plate number. Yet most online blur tools require you to upload that exact sensitive photo to their servers first.",
       "That means the un-redacted original has already been transmitted before any blurring happens. The protection is applied after the exposure."
     ]
   },
@@ -70,7 +70,7 @@ const SECTIONS = [
   {
     heading: "How to blur a photo",
     body: [
-      "Open Blur & Redact, add your image, drag blur or solid redaction blocks over anything sensitive, and download. The blur is permanent in the exported file — it can't be reversed by removing a layer."
+      "Open Blur & Redact, add your image, drag blur or solid redaction blocks over anything sensitive, and download. The blur is permanent in the exported file. It can't be reversed by removing a layer."
     ]
   }
 ];
@@ -97,7 +97,7 @@ const FAQS = [
   },
   {
     q: "Do I have to upload my photo to blur it?",
-    a: "No. Blurring happens entirely in your browser. The un-blurred original is never sent to a server — verifiable in the Network tab."
+    a: "No. Blurring happens entirely in your browser. The un-blurred original is never sent to a server, verifiable in the Network tab."
   },
   {
     q: "Can I use it offline?",
@@ -113,8 +113,8 @@ export default function BlurFacesPage() {
         <Header showToolsLink showSupportLink />
         <LandingPageLayout
           eyebrow="Privacy-first · runs in your browser"
-          h1="Blur Faces & Sensitive Info in Photos — Without Uploading"
-          heroSubtext="Blurring a face or a license plate to protect someone's privacy — then uploading that photo to a random website to do it — defeats the purpose. Alatify blurs everything on your own device, so the un-blurred original never leaves your computer."
+          h1="Blur Faces & Sensitive Info in Photos: Without Uploading"
+          heroSubtext="Blurring a face or a license plate to protect someone's privacy, then uploading that photo to a random website to do it, defeats the purpose. Alatify blurs everything on your own device, so the un-blurred original never leaves your computer."
           ctaLabel="Open Blur & Redact →"
           ctaHref={pageConfig.targetToolPath}
           sections={SECTIONS}

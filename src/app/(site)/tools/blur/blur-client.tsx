@@ -675,7 +675,7 @@ export default function BlurClient() {
         // Fast Guard: Offline and model not cached
         if (!modelResponse && typeof navigator !== "undefined" && !navigator.onLine) {
           toast.error(
-            "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas — that works fully offline."
+            "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas, that works fully offline."
           );
           setIsDetecting(false);
           return;
@@ -730,7 +730,7 @@ export default function BlurClient() {
       const detections = results.detections || [];
 
       if (detections.length === 0) {
-        toast.info("No faces detected — add regions manually.");
+        toast.info("No faces detected, add regions manually.");
         setIsDetecting(false);
         return;
       }
@@ -770,7 +770,7 @@ export default function BlurClient() {
         setRegions((prev) => [...prev, ...newRegions]);
         toast.success(`Detected and redacted ${newRegions.length} face${newRegions.length > 1 ? "s" : ""}.`);
       } else {
-        toast.info("No faces detected — add regions manually.");
+        toast.info("No faces detected, add regions manually.");
       }
     } catch (err) {
       console.error("Face detection failed:", err);
@@ -784,7 +784,7 @@ export default function BlurClient() {
 
       if (isNetworkError) {
         toast.error(
-          "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas — that works fully offline."
+          "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas, that works fully offline."
         );
       } else {
         toast.error(err instanceof Error ? err.message : "Face detection failed.");
@@ -1278,16 +1278,16 @@ export default function BlurClient() {
                     <SelectTrigger className="w-full bg-secondary border border-border/80 hover:border-primary/50 text-foreground text-xs rounded-xl h-10 px-3 outline-none flex items-center justify-between transition-all duration-200">
                       <span className="font-semibold">
                         {exportFormat === "image/png"
-                          ? "PNG — Lossless (Preserves quality)"
-                          : "JPEG — Optimized (Smaller file)"}
+                          ? "PNG · Lossless (Preserves quality)"
+                          : "JPEG · Optimized (Smaller file)"}
                       </span>
                     </SelectTrigger>
                     <SelectContent className="bg-card border border-border/80 rounded-xl shadow-xl backdrop-blur-md">
                       <SelectItem value="image/png" className="text-xs font-semibold cursor-pointer">
-                        PNG — Lossless (Preserves quality)
+                        PNG · Lossless (Preserves quality)
                       </SelectItem>
                       <SelectItem value="image/jpeg" className="text-xs font-semibold cursor-pointer">
-                        JPEG — Optimized (Smaller file)
+                        JPEG · Optimized (Smaller file)
                       </SelectItem>
                     </SelectContent>
                   </Select>

@@ -645,10 +645,10 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-card border border-border/80 rounded-xl shadow-xl">
-                        <SelectItem value="L" className="text-xs font-semibold">L — Low (7% recovery)</SelectItem>
-                        <SelectItem value="M" className="text-xs font-semibold">M — Medium (15% recovery)</SelectItem>
-                        <SelectItem value="Q" className="text-xs font-semibold">Q — Quartile (25% recovery)</SelectItem>
-                        <SelectItem value="H" className="text-xs font-semibold">H — High (30% recovery)</SelectItem>
+                        <SelectItem value="L" className="text-xs font-semibold">L, Low (7% recovery)</SelectItem>
+                        <SelectItem value="M" className="text-xs font-semibold">M, Medium (15% recovery)</SelectItem>
+                        <SelectItem value="Q" className="text-xs font-semibold">Q, Quartile (25% recovery)</SelectItem>
+                        <SelectItem value="H" className="text-xs font-semibold">H, High (30% recovery)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
