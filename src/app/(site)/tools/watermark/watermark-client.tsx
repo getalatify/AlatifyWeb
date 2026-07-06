@@ -2,6 +2,7 @@
 "use client";
 
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
@@ -1431,16 +1432,22 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                         <p className="text-[10px] text-muted-foreground">{formatBytes(logoFile.size)}</p>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleRemoveLogo}
-                      title="Remove Logo"
-                      aria-label="Remove logo"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 p-2 shrink-0 h-8 w-8 rounded-lg"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleRemoveLogo}
+                          aria-label="Remove logo"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 p-2 shrink-0 h-8 w-8 rounded-lg"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Remove Logo
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 )}
               </div>
@@ -1568,15 +1575,20 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                 <label className="text-xs font-bold text-foreground block">Anchor corner</label>
                 <div className="grid grid-cols-3 gap-1.5 w-32 p-1.5 bg-secondary rounded-xl border border-border/60">
                   {(['top-left', 'top-center', 'top-right', 'center-left', 'center', 'center-right', 'bottom-left', 'bottom-center', 'bottom-right'] as const).map((pos) => (
-                    <button
-                      key={pos}
-                      onClick={() => setSettings(prev => ({ ...prev, gridPosition: pos }))}
-                      title={pos}
-                      aria-label={`Align watermark to ${pos}`}
-                      className={`w-8 h-8 rounded-lg border transition-all ${settings.gridPosition === pos ? "bg-primary border-primary shadow-md text-primary-foreground scale-105" : "bg-card border-border/60 text-muted-foreground hover:bg-secondary/80 hover:text-foreground"}`}
-                    >
-                      <div className={`w-2 h-2 rounded-full mx-auto ${settings.gridPosition === pos ? "bg-background" : "bg-muted-foreground/35"}`} />
-                    </button>
+                    <Tooltip key={pos}>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setSettings(prev => ({ ...prev, gridPosition: pos }))}
+                          aria-label={`Align watermark to ${pos}`}
+                          className={`w-8 h-8 rounded-lg border transition-all ${settings.gridPosition === pos ? "bg-primary border-primary shadow-md text-primary-foreground scale-105" : "bg-card border-border/60 text-muted-foreground hover:bg-secondary/80 hover:text-foreground"}`}
+                        >
+                          <div className={`w-2 h-2 rounded-full mx-auto ${settings.gridPosition === pos ? "bg-background" : "bg-muted-foreground/35"}`} />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {pos}
+                      </TooltipContent>
+                    </Tooltip>
                   ))}
                 </div>
 
@@ -1875,38 +1887,56 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
 
                       <div className="flex items-center gap-1 shrink-0">
                         {/* Order navigation */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => moveImageItem(idx, 'up')}
-                          disabled={idx === 0}
-                          title="Move Up"
-                          aria-label="Move item up"
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg"
-                        >
-                          <ArrowUp className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => moveImageItem(idx, 'down')}
-                          disabled={idx === imagesList.length - 1}
-                          title="Move Down"
-                          aria-label="Move item down"
-                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg"
-                        >
-                          <ArrowDown className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeImageItem(item.id)}
-                          title="Remove Image"
-                          aria-label="Remove item from queue"
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg ml-1"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => moveImageItem(idx, 'up')}
+                              disabled={idx === 0}
+                              aria-label="Move item up"
+                              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Move Up
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => moveImageItem(idx, 'down')}
+                              disabled={idx === imagesList.length - 1}
+                              aria-label="Move item down"
+                              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Move Down
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeImageItem(item.id)}
+                              aria-label="Remove item from queue"
+                              className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg ml-1"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Remove Image
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   ))}

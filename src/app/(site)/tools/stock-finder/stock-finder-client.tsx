@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Search, Download, ChevronDown, Sparkles, Scissors, Minimize2, Maximize2, RefreshCw, Crop, AlertCircle, Loader2, ExternalLink, Image as ImageIcon, CheckCircle2, HelpCircle } from "lucide-react";
 import { StockImage } from '@/app/api/stock-search/route';
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 export default function StockFinderClient() {
   const t = useT();
@@ -392,15 +393,22 @@ export default function StockFinderClient() {
                             {/* Hover Overlay Actions */}
                             <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3 select-none">
                               <div className="flex justify-end gap-1.5">
-                                <a
-                                  href={item.sourceUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="p-1.5 rounded-lg bg-card/90 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground border border-border/20 shadow-sm transition-all duration-150"
-                                  title={`View original on ${item.provider}`}
-                                >
-                                  <ExternalLink className="w-3.5 h-3.5" />
-                                </a>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <a
+                                      href={item.sourceUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="p-1.5 rounded-lg bg-card/90 backdrop-blur-sm text-foreground hover:bg-primary hover:text-primary-foreground border border-border/20 shadow-sm transition-all duration-150"
+                                      aria-label={`View original on ${item.provider}`}
+                                    >
+                                      <ExternalLink className="w-3.5 h-3.5" />
+                                    </a>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    {`View original on ${item.provider}`}
+                                  </TooltipContent>
+                                </Tooltip>
                               </div>
 
                               {/* Quick Edit/Download Panel */}

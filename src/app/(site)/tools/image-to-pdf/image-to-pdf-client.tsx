@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useDropzone } from "react-dropzone";
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Header, PrivacyNotice } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -96,35 +97,53 @@ const ImageRow = React.memo(function ImageRow({
       {/* Reordering and deletion controls */}
       <div className="flex items-center gap-1.5 shrink-0">
         {/* Touch Mobile Reorder Buttons */}
-        <button
-          type="button"
-          disabled={isFirst}
-          onClick={onMoveUp}
-          className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-          title="Move Up"
-          aria-label="Move Up"
-        >
-          <ArrowUp className="w-3.5 h-3.5" />
-        </button>
-        <button
-          type="button"
-          disabled={isLast}
-          onClick={onMoveDown}
-          className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-          title="Move Down"
-          aria-label="Move Down"
-        >
-          <ArrowDown className="w-3.5 h-3.5" />
-        </button>
-        <button
-          type="button"
-          onClick={onRemove}
-          className="p-1.5 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 text-destructive transition-colors ml-1"
-          title="Remove image"
-          aria-label="Remove image"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              disabled={isFirst}
+              onClick={onMoveUp}
+              className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              aria-label="Move Up"
+            >
+              <ArrowUp className="w-3.5 h-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Move Up
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              disabled={isLast}
+              onClick={onMoveDown}
+              className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              aria-label="Move Down"
+            >
+              <ArrowDown className="w-3.5 h-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Move Down
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={onRemove}
+              className="p-1.5 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 text-destructive transition-colors ml-1"
+              aria-label="Remove image"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Remove image
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

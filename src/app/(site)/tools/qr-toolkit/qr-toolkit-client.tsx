@@ -1,6 +1,7 @@
 "use client";
 
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble } from "@/components/shared";
@@ -701,15 +702,20 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
                     {/* curated palette */}
                     <div className="flex items-center gap-1.5 pt-1">
                       {["#000000", "#1a1a1a", "#2e3440", "#ffffff"].map((c) => (
-                        <button
-                          key={c}
-                          type="button"
-                          onClick={() => setFgColor(c)}
-                          className="w-5 h-5 rounded-full border border-border/60 hover:scale-110 active:scale-95 transition-all shadow-sm"
-                          style={{ backgroundColor: c }}
-                          title={`Set foreground to ${c}`}
-                          aria-label={`Set foreground color to ${c}`}
-                        />
+                        <Tooltip key={c}>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={() => setFgColor(c)}
+                              className="w-5 h-5 rounded-full border border-border/60 hover:scale-110 active:scale-95 transition-all shadow-sm"
+                              style={{ backgroundColor: c }}
+                              aria-label={`Set foreground color to ${c}`}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {`Set foreground to ${c}`}
+                          </TooltipContent>
+                        </Tooltip>
                       ))}
                     </div>
                   </div>
@@ -737,22 +743,27 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
                     {/* curated palette */}
                     <div className="flex items-center gap-1.5 pt-1">
                       {["#ffffff", "transparent", "#f3f4f6", "#1a1a1a"].map((c) => (
-                        <button
-                          key={c}
-                          type="button"
-                          onClick={() => setBgColor(c)}
-                          className="w-5 h-5 rounded-full border border-border/60 hover:scale-110 active:scale-95 transition-all shadow-sm flex items-center justify-center text-[8px] overflow-hidden"
-                          style={{
-                            backgroundColor: c === "transparent" ? "#ffffff" : c,
-                            backgroundImage: c === "transparent" ? "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)" : "none",
-                            backgroundSize: "6px 6px",
-                            backgroundPosition: "0 0, 0 3px, 3px -3px, -3px 0"
-                          }}
-                          title={`Set background to ${c}`}
-                          aria-label={`Set background color to ${c}`}
-                        >
-                          {c === "transparent" && <span className="opacity-70 font-bold select-none text-[8px]">T</span>}
-                        </button>
+                        <Tooltip key={c}>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={() => setBgColor(c)}
+                              className="w-5 h-5 rounded-full border border-border/60 hover:scale-110 active:scale-95 transition-all shadow-sm flex items-center justify-center text-[8px] overflow-hidden"
+                              style={{
+                                backgroundColor: c === "transparent" ? "#ffffff" : c,
+                                backgroundImage: c === "transparent" ? "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)" : "none",
+                                backgroundSize: "6px 6px",
+                                backgroundPosition: "0 0, 0 3px, 3px -3px, -3px 0"
+                              }}
+                              aria-label={`Set background color to ${c}`}
+                            >
+                              {c === "transparent" && <span className="opacity-70 font-bold select-none text-[8px]">T</span>}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {`Set background to ${c}`}
+                          </TooltipContent>
+                        </Tooltip>
                       ))}
                     </div>
                   </div>

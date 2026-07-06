@@ -1,6 +1,7 @@
 "use client";
 
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useDropzone } from "react-dropzone";
@@ -553,20 +554,32 @@ export default function IdProtectorClient() {
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-foreground">Solid Color</label>
                       <div className="flex gap-2">
-                        <button
-                          className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#000000' ? "border-primary" : "border-transparent")}
-                          style={{ backgroundColor: '#000000' }}
-                          onClick={() => setSolidColor('#000000')}
-                          title="Select Black Color"
-                          aria-label="Select black color for solid redaction"
-                        />
-                        <button
-                          className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#ffffff' ? "border-primary" : "border-border")}
-                          style={{ backgroundColor: '#ffffff' }}
-                          onClick={() => setSolidColor('#ffffff')}
-                          title="Select White Color"
-                          aria-label="Select white color for solid redaction"
-                        />
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#000000' ? "border-primary" : "border-transparent")}
+                              style={{ backgroundColor: '#000000' }}
+                              onClick={() => setSolidColor('#000000')}
+                              aria-label="Select black color for solid redaction"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Select Black Color
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#ffffff' ? "border-primary" : "border-border")}
+                              style={{ backgroundColor: '#ffffff' }}
+                              onClick={() => setSolidColor('#ffffff')}
+                              aria-label="Select white color for solid redaction"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Select White Color
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   )}

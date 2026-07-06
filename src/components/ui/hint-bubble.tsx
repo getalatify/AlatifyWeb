@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { AlertCircle, X } from "lucide-react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useT } from "@/lib/i18n/useT";
 
 interface HintBubbleProps {
@@ -15,15 +16,21 @@ export function HintBubble({ text }: HintBubbleProps) {
   return (
     <div className="relative inline-flex items-center">
       {/* Icon "!" in a circle */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="text-muted-foreground hover:text-primary transition-colors focus:outline-none p-1 rounded-full hover:bg-secondary flex items-center justify-center"
-        title={t("hintBubble.toggleTip")}
-        aria-label={t("hintBubble.ariaToggleTip")}
-      >
-        <AlertCircle className="w-3.5 h-3.5" />
-      </button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-muted-foreground hover:text-primary transition-colors focus:outline-none p-1 rounded-full hover:bg-secondary flex items-center justify-center"
+            aria-label={t("hintBubble.ariaToggleTip")}
+          >
+            <AlertCircle className="w-3.5 h-3.5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {t("hintBubble.toggleTip")}
+        </TooltipContent>
+      </Tooltip>
 
       {/* Comic-style speech bubble */}
       {isOpen && (
