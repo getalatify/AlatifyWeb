@@ -834,7 +834,7 @@ export default function UpscalerClient() {
                 )}
 
                 <Button
-                  onClick={upscale}
+                              onClick={upscale}
                   disabled={isProcessing || !activeImage}
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 active:scale-[0.98] transition-all gap-2 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -845,6 +845,7 @@ export default function UpscalerClient() {
                   file={processedImage}
                   filenamePrefix={`upscaled-${scale}x`}
                   originalFilename={activeImage?.name ?? "image"}
+                  editableFilename
                   disabled={isProcessing || stage !== "complete" || !processedImage}
                   className={cn(
                     "w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all gap-2 flex items-center justify-center disabled:opacity-50 disabled:pointer-events-none",
