@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { Header, PrivacyNotice } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -21,6 +23,9 @@ export default function IdProtectorClient() {
   const [redactions, setRedactions] = useState<Redaction[]>([]);
   const [history, setHistory] = useState<Redaction[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
+
+  const defaultStem = "id-protected";
+  const filename = useFilenameStem(defaultStem, file?.name);
 
   const [mode, setMode] = useState<RedactionMode>('solid');
   const [solidColor, setSolidColor] = useState<string>('#000000');
@@ -252,7 +257,7 @@ export default function IdProtectorClient() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `id-protected.png`;
+      a.download = `${filename.resolve()}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -668,6 +673,26 @@ export default function IdProtectorClient() {
                   </div>
                 </div>
               </div>
+
+              {imageObj && (
+                <>
+                  <div className="h-px bg-border/40" />
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-2 border-b border-border/40 pb-2">
+                      <Download className="w-4 h-4 text-primary" /> Save Options
+                    </h3>
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-foreground">Output Filename</label>
+                      <FilenameField
+                        value={filename.value}
+                        onChange={filename.onChange}
+                        ext="png"
+                        placeholder="id-protected"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </section>

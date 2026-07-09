@@ -571,11 +571,18 @@ export default function PdfToMarkdownClient() {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     Markdown Output
                   </span>
-                  <div className="flex items-end gap-2">
+                  <div className="flex items-center gap-2 flex-wrap justify-end">
+                    <FilenameField
+                      value={filename.value}
+                      onChange={filename.onChange}
+                      ext="md"
+                      placeholder={defaultStem}
+                      className="w-44"
+                    />
                     <Button
                       onClick={handleCopy}
                       variant="outline"
@@ -594,24 +601,15 @@ export default function PdfToMarkdownClient() {
                         </>
                       )}
                     </Button>
-                    <div className="flex flex-col gap-1.5 items-end">
-                      <FilenameField
-                        value={filename.value}
-                        onChange={filename.onChange}
-                        ext="md"
-                        placeholder={defaultStem}
-                        className="w-48"
-                      />
-                      <Button
-                        onClick={handleDownloadMarkdown}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        Download .md
-                      </Button>
-                    </div>
+                    <Button
+                      onClick={handleDownloadMarkdown}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      Download .md
+                    </Button>
                   </div>
                 </div>
 
