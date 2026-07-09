@@ -934,6 +934,9 @@ export const en = {
     tools: "Tools",
     support: "Support Us",
     backToTools: "Back to tools",
+    menu: "Menu",
+    menuTitle: "Tools",
+    browseAll: "Browse all tools",
   },
   footer: {
     tagline:
@@ -1132,5 +1135,33 @@ export const en = {
       'Switch to the **"Upload File"** tab at the top of the workspace.',
     "blocked-step3":
       "Select or drag your saved file to start processing locally.",
+  },
+  toolCard: {
+    "bg-remover": "Remove or erase the background from any image, fully on-device.",
+    "upscaler": "Upscale and enhance photos to higher resolution with AI, on-device.",
+    "watermark": "Add text or logo watermarks to images, including tiled and batch.",
+    "compressor": "Compress images to reduce file size without leaving your device.",
+    "converter": "Convert images between 8 formats including JPG, PNG, WebP, and SVG.",
+    "cropper": "Crop and trim images freely or to a fixed aspect ratio.",
+    "resizer": "Resize images by pixels or scale, single or batch.",
+    "exif-cleaner": "View and strip EXIF metadata and GPS location from photos.",
+    "id-protector": "Redact and black out sensitive info on ID cards and documents.",
+    "blur": "Blur, pixelate, or redact any part of an image, on-device.",
+    "qr-toolkit": "Generate and read QR codes, including URL and Wi-Fi codes.",
+    "steganography": "Hide secret messages inside images and decode them back.",
+    "stock-finder": "Search free stock photos, illustrations, and vectors in one place.",
+    "markdown-to-pdf": "Convert Markdown into a clean PDF with real selectable text.",
+    "pdf-to-markdown": "Extract text from a PDF into clean Markdown, on-device.",
+    "pdf-pages": "Merge, split, reorder, rotate, and delete PDF pages on-device.",
+    "html-to-markdown": "Convert HTML source or .html files into clean Markdown, on-device.",
+    "pdf-to-image": "Convert PDF pages into high-quality JPG or PNG images on-device.",
+    "image-to-pdf": "Combine multiple PNG, JPG, or WebP images into a single PDF, on-device.",
+    "code-to-image": "Turn code snippets into styled, share-ready PNG images for social posts.",
+  },
+  toolCategory: {
+    image: "Image",
+    privacy: "Privacy",
+    document: "Document",
+    utility: "Utility",
   },
 };

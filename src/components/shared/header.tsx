@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Heart } from "lucide-react";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageToggle } from "./language-toggle";
 import { ToolSearch } from "@/components/ToolSearch";
 import { useT } from "@/lib/i18n/useT";
+import { MobileToolMenu } from "./mobile-tool-menu";
 
 interface HeaderProps {
   showBackToTools?: boolean;
@@ -24,15 +25,22 @@ export function Header({
 
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [elevated, setElevated] = useState(false);
   const lastY = useRef(0);
   const ticking = useRef(false);
+  const drawerOpenRef = useRef(false);
+  const prefersReducedRef = useRef(false);
+  const elevateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    prefersReducedRef.current = prefersReduced;
     const THRESHOLD = 80; // don't hide until scrolled past this
     const DELTA = 6;       // ignore sub-pixel jitter
 
     const update = () => {
+      if (drawerOpenRef.current) { ticking.current = false; return; }
       const y = window.scrollY;
       setScrolled(y > 8);
       if (prefersReduced) {
@@ -59,9 +67,32 @@ export function Header({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const handleDrawerOpenChange = (o: boolean) => {
+    drawerOpenRef.current = o;
+    setDrawerOpen(o);
+    if (!prefersReducedRef.current) {
+      setHidden(o);
+    }
+    if (elevateTimer.current) clearTimeout(elevateTimer.current);
+    if (o) {
+      setElevated(true);
+    } else {
+      lastY.current = window.scrollY;
+      // keep header above the overlay until the close slide + overlay fade finish
+      elevateTimer.current = setTimeout(() => setElevated(false), 400);
+    }
+  };
+
+  // Clean up elevation timer on unmount to prevent state updates on an unmounted component
+  useEffect(() => {
+    return () => {
+      if (elevateTimer.current) clearTimeout(elevateTimer.current);
+    };
+  }, []);
+
   return (
     <div
-      className={`w-full flex flex-col items-start gap-3 max-w-7xl mx-auto shrink-0 sticky top-3 z-40 transition-transform duration-200 ease-out will-change-transform motion-reduce:transition-none ${
+      className={`w-full flex flex-col items-start gap-3 max-w-7xl mx-auto shrink-0 sticky top-3 ${elevated ? "z-[60]" : "z-40"} transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none ${
         hidden ? "-translate-y-[calc(100%+1rem)]" : ""
       }`}
     >
@@ -82,7 +113,7 @@ export function Header({
           {showToolsLink && (
             <Link
               href="/tools"
-              className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+              className="hidden sm:inline-block text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
             >
               {t("header.tools")}
             </Link>
@@ -90,15 +121,18 @@ export function Header({
           {showSupportLink && (
             <Link
               href="/support"
-              className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center p-2 rounded-xl sm:p-0 sm:border-none hover:bg-secondary/50 sm:hover:bg-transparent"
+              aria-label={t("header.support")}
             >
-              {t("header.support")}
+              <Heart className="w-5 h-5 sm:hidden text-muted-foreground hover:text-foreground" />
+              <span className="hidden sm:inline">{t("header.support")}</span>
             </Link>
           )}
           <div className="flex items-center gap-2">
             <LanguageToggle />
             <ThemeToggle />
           </div>
+          <MobileToolMenu open={drawerOpen} onOpenChange={handleDrawerOpenChange} />
         </div>
       </header>
 

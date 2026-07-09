@@ -8,53 +8,19 @@ import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { TOOLS, ToolEntry } from "@/lib/tools/registry";
+import { TOOL_ICONS } from "@/lib/tools/tool-icons";
 import { 
   ArrowLeft, 
-  ArrowDown,
   ArrowRight,
-  Sparkles, 
-  Minimize2, 
-  Scissors, 
-  Maximize2, 
-  RefreshCw, 
-  Crop,
-  Shield,
-  Search,
-  EyeOff,
-  Type,
-  Binary,
-  QrCode,
   FileText,
-  FileCode,
-  FileImage,
-  Files
+  Sparkles,
+  ArrowDown,
+  Search
 } from "lucide-react";
-
-const TOOL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  "compressor": Minimize2,
-  "bg-remover": Scissors,
-  "resizer": Maximize2,
-  "converter": RefreshCw,
-  "cropper": Crop,
-  "exif-cleaner": Shield,
-  "blur": EyeOff,
-  "watermark": Type,
-  "id-protector": Shield,
-  "upscaler": Sparkles,
-  "steganography": Binary,
-  "qr-toolkit": QrCode,
-  "stock-finder": Search,
-  "html-to-markdown": FileCode,
-  "markdown-to-pdf": FileText,
-  "pdf-to-markdown": FileText,
-  "pdf-pages": FileText,
-  "pdf-to-image": FileImage,
-  "image-to-pdf": Files,
-};
 
 const mapToolToCard = (t: ToolEntry, translate: (key: string) => string) => ({
   name: t.name,
-  description: t.description,
+  description: translate(`toolCard.${t.id}`),
   status: translate("tools.status.available"),
   statusColor: "bg-success/10 text-success border-success/20",
   icon: TOOL_ICONS[t.id] ?? FileText,

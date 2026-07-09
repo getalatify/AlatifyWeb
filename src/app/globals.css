@@ -124,6 +124,7 @@
 
   html {
     background-color: var(--bg-base);
+    scrollbar-gutter: stable;
   }
   body {
     @apply text-foreground overflow-x-clip;

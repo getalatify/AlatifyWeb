@@ -810,7 +810,7 @@ export const id = {
         step2:
           "Seret baris untuk mengatur urutan halaman, putar halaman tertentu 90°, hapus yang tidak perlu, atau centang halaman untuk dipisah.",
         step3:
-          "Klik Merge & Export All Pages untuk seluruh set halaman, atau Export selected pages untuk hanya mengekspor halaman yang Anda centang.",
+          "Klik Merge & Export All Pages untuk seluruh set halaman, atau Export selected pages untuk hanya mengekspor halaman yang kamu centang.",
         step4:
           "Library pdf-lib menyalin objek halaman asli langsung ke file PDF baru tanpa rasterisasi, menjaga kualitas teks tetap tajam.",
       },
@@ -828,7 +828,7 @@ export const id = {
       },
       faq: {
         q1: "Apakah PDF saya diunggah ke server?",
-        a1: "Tidak. Semua pemuatan, pengeditan, dan ekspor dilakukan secara lokal di browser Anda. File Anda tidak pernah meninggalkan perangkat.",
+        a1: "Tidak. Semua pemuatan, pengeditan, dan ekspor dilakukan secara lokal di browser kamu. File kamu tidak pernah meninggalkan perangkat.",
         q2: "Bagaimana cara menggabungkan dua file PDF?",
         a2: "Masukkan file pertama, klik Add more files untuk memasukkan file kedua. Halamannya otomatis tergabung dalam satu daftar. Klik Merge & Export All Pages untuk menyimpannya.",
         q3: "Bagaimana cara memisahkan atau mengambil halaman tertentu?",
@@ -931,7 +931,7 @@ export const id = {
   },
   toolsPage: {
     intro:
-      "Koleksi pilihan alat gambar yang mengutamakan privasi dan berjalan sepenuhnya di browser kamu. Tanpa unggah, tanpa daftar akun, sepenuhnya privat. Mulai dari Background Remover dan Image Compressor hingga konversi format, pengubahan ukuran, dan lainnya, setiap alat memproses gambar Anda langsung di perangkat.",
+      "Koleksi pilihan alat gambar yang mengutamakan privasi dan berjalan sepenuhnya di browser kamu. Tanpa unggah, tanpa daftar akun, sepenuhnya privat. Mulai dari Background Remover dan Image Compressor hingga konversi format, pengubahan ukuran, dan lainnya, setiap alat memproses gambar kamu langsung di perangkat.",
     backToHome: "Kembali ke beranda",
     title: "Tools",
     scrollExplore: "Gulir untuk menjelajah",
@@ -964,6 +964,9 @@ export const id = {
     tools: "Tools",
     support: "Dukung Kami",
     backToTools: "Kembali ke Tools",
+    menu: "Menu",
+    menuTitle: "Tools",
+    browseAll: "Lihat semua tools",
   },
   footer: {
     tagline:
@@ -1163,5 +1166,33 @@ export const id = {
       'Pindah ke tab **"Upload File"** di bagian atas workspace.',
     "blocked-step3":
       "Pilih atau drag file yang udah kamu simpan buat mulai proses secara lokal.",
+  },
+  toolCard: {
+    "bg-remover": "Hapus background gambar otomatis, langsung di browser.",
+    "upscaler": "Perbesar resolusi gambar pakai AI tanpa bikin pecah.",
+    "watermark": "Tambah watermark teks atau logo ke gambar.",
+    "compressor": "Perkecil ukuran file gambar, kualitas kamu yang atur.",
+    "resizer": "Ubah ukuran gambar per pixel atau skala, satuan atau batch.",
+    "converter": "Konversi gambar antar format seperti JPG, PNG, dan WebP.",
+    "cropper": "Crop dan potong gambar sesuai ukuran yang kamu mau.",
+    "code-to-image": "Ubah potongan kode jadi gambar rapi siap dibagikan.",
+    "exif-cleaner": "Lihat dan hapus metadata EXIF serta lokasi GPS dari foto.",
+    "id-protector": "Sensor dan tutup info sensitif di KTP dan dokumen.",
+    "blur": "Blur, pixelate, atau sensor bagian mana pun dari gambar.",
+    "steganography": "Sembunyikan pesan rahasia di dalam gambar, lalu baca lagi.",
+    "qr-toolkit": "Bikin dan scan QR code, termasuk URL dan Wi-Fi.",
+    "stock-finder": "Cari foto stok gratis dari Unsplash, Pexels, dan Pixabay.",
+    "markdown-to-pdf": "Ubah Markdown jadi dokumen PDF rapi di perangkat kamu.",
+    "pdf-to-markdown": "Ekstrak teks dari PDF jadi Markdown bersih di perangkat.",
+    "pdf-pages": "Gabung, pisah, urutkan, putar, dan hapus halaman PDF.",
+    "html-to-markdown": "Ubah HTML jadi Markdown bersih, langsung di browser.",
+    "pdf-to-image": "Ubah halaman PDF jadi gambar JPG atau PNG.",
+    "image-to-pdf": "Gabung beberapa gambar jadi satu file PDF.",
+  },
+  toolCategory: {
+    image: "Gambar",
+    privacy: "Privasi",
+    document: "Dokumen",
+    utility: "Lainnya",
   },
 };
