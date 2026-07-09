@@ -46,7 +46,7 @@ export function DownloadButton({
 
   useEffect(() => {
     setStemOverride(null);
-  }, [originalFilename, filenamePrefix]);
+  }, [originalFilename]);
 
   // Resolve Extension
   let ext = "png"; // fallback
