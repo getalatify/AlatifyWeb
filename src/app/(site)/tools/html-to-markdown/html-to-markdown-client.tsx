@@ -306,14 +306,22 @@ export default function HtmlToMarkdownClient() {
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between h-8">
+            <div className="flex items-end justify-between gap-4 flex-wrap">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Markdown Output
               </span>
-              <div className="flex items-end gap-2">
+              <div className="flex items-end gap-2 flex-wrap justify-end">
                 {isConverting && (
-                  <RefreshCw className="w-3.5 h-3.5 text-muted-foreground animate-spin" />
+                  <RefreshCw className="w-3.5 h-3.5 text-muted-foreground animate-spin self-center" />
                 )}
+                <FilenameField
+                  value={filename.value}
+                  onChange={filename.onChange}
+                  ext="md"
+                  placeholder={defaultStem}
+                  showLabel={true}
+                  className="w-48"
+                />
                 <Button
                   onClick={handleCopy}
                   variant="outline"
@@ -332,25 +340,15 @@ export default function HtmlToMarkdownClient() {
                     </>
                   )}
                 </Button>
-                <div className="flex flex-col gap-1.5 items-end">
-                  <FilenameField
-                    value={filename.value}
-                    onChange={filename.onChange}
-                    ext="md"
-                    placeholder={defaultStem}
-                    className="w-48"
-                  />
-                  <Button
-                    onClick={handleDownloadMd}
-                    disabled={!markdown.trim()}
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5 disabled:opacity-40"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    {t("tools.html-to-markdown.downloadMd")}
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleDownloadMd}
+                  disabled={!markdown.trim()}
+                  size="sm"
+                  className="text-xs h-8 px-3 rounded-lg font-semibold flex items-center gap-1.5 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  {t("tools.html-to-markdown.downloadMd")}
+                </Button>
               </div>
             </div>
 

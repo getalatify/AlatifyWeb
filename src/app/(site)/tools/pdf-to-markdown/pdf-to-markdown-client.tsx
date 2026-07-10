@@ -571,16 +571,17 @@ export default function PdfToMarkdownClient() {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex items-end justify-between gap-4 flex-wrap">
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     Markdown Output
                   </span>
-                  <div className="flex items-center gap-2 flex-wrap justify-end">
+                  <div className="flex items-end gap-2 flex-wrap justify-end">
                     <FilenameField
                       value={filename.value}
                       onChange={filename.onChange}
                       ext="md"
                       placeholder={defaultStem}
+                      showLabel={true}
                       className="w-44"
                     />
                     <Button
@@ -603,9 +604,8 @@ export default function PdfToMarkdownClient() {
                     </Button>
                     <Button
                       onClick={handleDownloadMarkdown}
-                      variant="outline"
                       size="sm"
-                      className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5"
+                      className="text-xs h-8 px-3 rounded-lg font-semibold flex items-center gap-1.5 bg-foreground text-background hover:bg-foreground/90"
                     >
                       <Download className="w-3.5 h-3.5" />
                       Download .md
