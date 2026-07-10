@@ -29,6 +29,7 @@ export default function IdProtectorClient() {
 
   const [mode, setMode] = useState<RedactionMode>('solid');
   const [solidColor, setSolidColor] = useState<string>('#000000');
+  const [blurStrength, setBlurStrength] = useState<number>(25);
 
   const [watermark, setWatermark] = useState<WatermarkConfig>({
     text: '',
@@ -88,8 +89,8 @@ export default function IdProtectorClient() {
     const previewRedactions = draggedRedaction
       ? redactions.filter(r => r.id !== draggedRedaction.id)
       : redactions;
-    renderToCanvas(imageObj, previewRedactions, watermark, previewCanvasRef.current, true);
-  }, [imageObj, redactions, watermark, draggedRedaction]);
+    renderToCanvas(imageObj, previewRedactions, watermark, previewCanvasRef.current, true, blurStrength);
+  }, [imageObj, redactions, watermark, draggedRedaction, blurStrength]);
 
   useEffect(() => {
     const rAF = requestAnimationFrame(updateCanvas);
@@ -250,7 +251,7 @@ export default function IdProtectorClient() {
 
     try {
       const offscreenCanvas = document.createElement('canvas');
-      renderToCanvas(imageObj, redactions, watermark, offscreenCanvas, false); // false for natural size export
+      renderToCanvas(imageObj, redactions, watermark, offscreenCanvas, false, blurStrength); // false for natural size export
 
       const blob = await exportPng(offscreenCanvas);
 
@@ -507,7 +508,7 @@ export default function IdProtectorClient() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-end justify-between gap-4 p-4 bg-card rounded-2xl border border-border/60 shadow-sm">
+                <div className="flex flex-wrap items-end justify-end gap-4 p-4 bg-card rounded-2xl border border-border/60 shadow-sm">
                   <FilenameField
                     showLabel={true}
                     value={filename.value}
@@ -559,9 +560,30 @@ export default function IdProtectorClient() {
                   </div>
 
                   {mode === 'blur' && (
-                    <div className="p-3 bg-destructive/5 dark:bg-destructive/10 border border-destructive/20 rounded-xl flex items-start gap-2 text-destructive text-xs leading-normal">
-                      <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-destructive" />
-                      <span>Blurring is theoretically reversible. Use <strong>Solid</strong> blocks for sensitive fields (e.g. ID numbers).</span>
+                    <div className="space-y-3">
+                      <div className="p-3 bg-destructive/5 dark:bg-destructive/10 border border-destructive/20 rounded-xl flex items-start gap-2 text-destructive text-xs leading-normal">
+                        <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-destructive" />
+                        <span>Blurring is theoretically reversible. Use <strong>Solid</strong> blocks for sensitive fields (e.g. ID numbers).</span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                            Blur Strength
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">
+                            {blurStrength}px
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min={5}
+                          max={100}
+                          step={1}
+                          value={blurStrength}
+                          onChange={(e) => setBlurStrength(Number(e.target.value))}
+                          className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                        />
+                      </div>
                     </div>
                   )}
 

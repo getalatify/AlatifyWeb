@@ -25,7 +25,8 @@ export function renderToCanvas(
   redactions: Redaction[],
   watermark: WatermarkConfig | null,
   canvas: HTMLCanvasElement,
-  isDisplayPreview: boolean = false
+  isDisplayPreview: boolean = false,
+  blurStrength: number = 25
 ): void {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -52,17 +53,20 @@ export function renderToCanvas(
       ctx.fillStyle = redaction.color;
       ctx.fillRect(redaction.x, redaction.y, redaction.w, redaction.h);
     } else if (redaction.mode === 'blur') {
-      ctx.save();
-      // Clip to redaction rect
-      ctx.beginPath();
-      ctx.rect(redaction.x, redaction.y, redaction.w, redaction.h);
-      ctx.clip();
-
-      // Apply blur to the clipped area
-      ctx.filter = `blur(${Math.max(source.naturalWidth, source.naturalHeight) * 0.02}px)`; // Dynamic blur size
-      // Draw image exactly in place to avoid scaling artifacts/misalignment
-      ctx.drawImage(source, 0, 0, source.naturalWidth, source.naturalHeight);
-      ctx.restore();
+      const blurCanvas = document.createElement('canvas');
+      blurCanvas.width = source.naturalWidth;
+      blurCanvas.height = source.naturalHeight;
+      const blurCtx = blurCanvas.getContext('2d');
+      if (blurCtx) {
+        blurCtx.filter = `blur(${blurStrength}px)`;
+        blurCtx.drawImage(source, 0, 0);
+        // opaque box copy — fully replaces underlying pixels in the region
+        ctx.drawImage(
+          blurCanvas,
+          redaction.x, redaction.y, redaction.w, redaction.h,
+          redaction.x, redaction.y, redaction.w, redaction.h
+        );
+      }
     }
   }
 
