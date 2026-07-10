@@ -1080,6 +1080,7 @@ export const id = {
       failedFetch: "Gagal mengambil gambar",
     },
     uploadFile: "Unggah File",
+    replaceFile: "Ganti file",
     pasteUrl: "Tempel URL",
     placeholder: "Tempel URL gambar atau halaman web apa pun",
     fetching: "Mengambil...",

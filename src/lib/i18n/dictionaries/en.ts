@@ -1048,6 +1048,7 @@ export const en = {
       failedFetch: "Failed to fetch image",
     },
     uploadFile: "Upload File",
+    replaceFile: "Replace file",
     pasteUrl: "Paste URL",
     placeholder: "Paste any image URL or webpage URL",
     fetching: "Fetching...",

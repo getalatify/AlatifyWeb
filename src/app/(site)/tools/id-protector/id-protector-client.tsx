@@ -472,13 +472,6 @@ export default function IdProtectorClient() {
                     >
                       <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Start Over
                     </Button>
-                    <Button
-                      size="sm"
-                      onClick={handleDownload}
-                      className="h-9 text-xs font-extrabold rounded-xl bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary-hover text-primary-foreground shadow-md hover:shadow-lg active:scale-[0.98] transition-all gap-1.5"
-                    >
-                      <Download className="w-3.5 h-3.5" /> Download Protected PNG
-                    </Button>
                   </div>
                 </div>
 
@@ -512,6 +505,23 @@ export default function IdProtectorClient() {
                     />
                     {renderOverlay()}
                   </div>
+                </div>
+
+                <div className="flex flex-wrap items-end justify-between gap-4 p-4 bg-card rounded-2xl border border-border/60 shadow-sm">
+                  <FilenameField
+                    showLabel={true}
+                    value={filename.value}
+                    onChange={filename.onChange}
+                    ext="png"
+                    placeholder="id-protected"
+                    className="w-48"
+                  />
+                  <Button
+                    onClick={handleDownload}
+                    className="h-9 text-xs font-extrabold rounded-xl bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary-hover text-primary-foreground shadow-md hover:shadow-lg active:scale-[0.98] transition-all gap-1.5"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Download Protected PNG
+                  </Button>
                 </div>
               </div>
             )}
@@ -674,25 +684,6 @@ export default function IdProtectorClient() {
                 </div>
               </div>
 
-              {imageObj && (
-                <>
-                  <div className="h-px bg-border/40" />
-                  <div className="space-y-4">
-                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-2 border-b border-border/40 pb-2">
-                      <Download className="w-4 h-4 text-primary" /> Save Options
-                    </h3>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-foreground">Output Filename</label>
-                      <FilenameField
-                        value={filename.value}
-                        onChange={filename.onChange}
-                        ext="png"
-                        placeholder="id-protected"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </section>
