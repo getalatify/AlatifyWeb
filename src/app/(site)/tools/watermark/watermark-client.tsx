@@ -3,6 +3,8 @@
 
 import { useT } from "@/lib/i18n/useT";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
@@ -170,6 +172,28 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
   const requestRef = useRef<number | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
+  const firstFileName = imagesList[0]?.file.name;
+  const defaultStem = imagesList.length === 1 && firstFileName
+    ? `${firstFileName.replace(/\.[^/.]+$/, "")}-watermarked`
+    : "watermarked-images";
+  const sourceKey = imagesList.length === 1 ? firstFileName : "batch-zip";
+  const filename = useFilenameStem(defaultStem, sourceKey);
+
+  const resolvedExt = (() => {
+    if (imagesList.length === 0) return "png";
+    const mimeToExtension: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/gif': 'gif',
+      'image/bmp': 'bmp',
+      'image/x-icon': 'ico',
+      'image/tiff': 'tiff',
+    };
+    const format = settings.outputFormat === "original" ? imagesList[0].file.type : settings.outputFormat;
+    return mimeToExtension[format.toLowerCase()] || "png";
+  })();
+
   const dragStartOffsetRef = useRef<{ x: number; y: number } | null>(null);
 
   // Hit-testing for free positioning mode
@@ -875,11 +899,13 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
       canvas.width = 0;
       canvas.height = 0;
 
-      const filename = getWatermarkedFilename(item.file.name, format);
+      const downloadName = imagesList.length === 1
+        ? `${filename.resolve()}.${resolvedExt}`
+        : getWatermarkedFilename(item.file.name, format);
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = filename;
+      a.download = downloadName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -986,7 +1012,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
       const url = URL.createObjectURL(zipBlob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "watermarked-images.zip";
+      a.download = `${filename.resolve()}.zip`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1794,6 +1820,15 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                   </div>
                 )}
 
+                <FilenameField
+                  showLabel={true}
+                  value={filename.value}
+                  onChange={filename.onChange}
+                  ext={imagesList.length > 1 ? "zip" : resolvedExt}
+                  placeholder={defaultStem}
+                  className="mb-2"
+                />
+
                 {/* Primary Button Trigger */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button
@@ -1832,14 +1867,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                   <ContinueWith
                     currentToolId="watermark"
                     outputBlob={watermarkedImage}
-                    outputFileName={
-                      imagesList[0]
-                        ? getWatermarkedFilename(
-                            imagesList[0].file.name,
-                            settings.outputFormat === "original" ? imagesList[0].file.type : settings.outputFormat
-                          )
-                        : "watermarked.png"
-                    }
+                    outputFileName={`${filename.resolve()}.${resolvedExt}`}
                     provenance={provenance}
                     onStartOver={clearImagesList}
                   />

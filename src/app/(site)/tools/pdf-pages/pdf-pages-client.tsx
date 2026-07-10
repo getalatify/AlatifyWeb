@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n/useT";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { PageActionTooltip } from "./page-action-tooltip";
 import {
   createWorkingPages,
@@ -35,6 +37,12 @@ import type { PdfSource, WorkingPage } from "./types";
 export default function PdfPagesClient() {
   const t = useT();
   const [sources, setSources] = useState<Record<string, PdfSource>>({});
+  const firstFileName = Object.values(sources)[0]?.fileName;
+  const defaultStem = firstFileName
+    ? `${firstFileName.replace(/\.[^/.]+$/, "")}-pages`
+    : "pages";
+  const filenameHook = useFilenameStem(defaultStem, firstFileName);
+
   const [pages, setPages] = useState<WorkingPage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -173,7 +181,7 @@ export default function PdfPagesClient() {
     const loadingId = toast.loading("Building PDF...");
 
     try {
-      const filename = selectedOnly ? "extracted-pages.pdf" : "merged.pdf";
+      const filename = `${filenameHook.resolve()}.pdf`;
       await exportWorkingPages(exportPages, sources, filename);
       toast.dismiss(loadingId);
       toast.success(
@@ -419,6 +427,15 @@ export default function PdfPagesClient() {
                   </div>
                 ))}
               </div>
+
+              <FilenameField
+                showLabel={true}
+                ext="pdf"
+                value={filenameHook.value}
+                onChange={filenameHook.onChange}
+                placeholder={defaultStem}
+                className="w-full max-w-xs mb-2"
+              />
 
               <div className="flex flex-wrap items-start gap-4 pt-2">
                 <div className="flex flex-col items-start gap-1.5">
