@@ -376,10 +376,6 @@ export default function HtmlToMarkdownClient() {
           </div>
         </section>
 
-        <PrivacyNotice>
-          <p>{t("tools.html-to-markdown.privacyNotice")}</p>
-        </PrivacyNotice>
-
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
           <div className="text-center sm:text-left">
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
@@ -561,6 +557,10 @@ export default function HtmlToMarkdownClient() {
             </Link>
           </div>
         </section>
+
+        <PrivacyNotice>
+          <p>{t("tools.html-to-markdown.privacyNotice")}</p>
+        </PrivacyNotice>
 
       </div>
     </main>

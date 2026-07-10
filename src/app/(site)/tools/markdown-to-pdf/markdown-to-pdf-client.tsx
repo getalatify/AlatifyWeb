@@ -344,11 +344,6 @@ export default function MarkdownToPdfClient() {
           </div>
         </section>
 
-        {/* Natively Private Disclaimer */}
-        <PrivacyNotice>
-          <p>{t("tools.markdown-to-pdf.privacyNotice")}</p>
-        </PrivacyNotice>
-
         {/* How It Works */}
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
           <div className="text-center sm:text-left">
@@ -534,6 +529,11 @@ export default function MarkdownToPdfClient() {
             </Link>
           </div>
         </section>
+
+        {/* Natively Private Disclaimer */}
+        <PrivacyNotice>
+          <p>{t("tools.markdown-to-pdf.privacyNotice")}</p>
+        </PrivacyNotice>
 
       </div>
     </main>

@@ -633,13 +633,6 @@ export default function PdfToMarkdownClient() {
           </div>
         </section>
 
-        {/* Natively Private explanation block */}
-        <PrivacyNotice>
-          <p>
-            {t("tools.pdf-to-markdown.privacyNotice")}
-          </p>
-        </PrivacyNotice>
-
         {/* How It Works Section */}
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
           <div className="text-center sm:text-left">
@@ -802,6 +795,13 @@ export default function PdfToMarkdownClient() {
             </Link>
           </div>
         </section>
+
+        {/* Natively Private explanation block */}
+        <PrivacyNotice>
+          <p>
+            {t("tools.pdf-to-markdown.privacyNotice")}
+          </p>
+        </PrivacyNotice>
 
       </div>
     </main>

@@ -99,6 +99,7 @@ export const en = {
   },
   shared: {
     privacyNotice: {
+      title: "Natively Private & Client-Side Secure",
       body: "Alatify processes your graphics files completely locally using sandbox APIs inside your browser tab. We never upload any of your files or private coordinates to external clouds, making the tool 100% immune to leaks or server-side data retention.",
     },
     related: {

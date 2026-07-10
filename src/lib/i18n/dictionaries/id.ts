@@ -101,6 +101,7 @@ export const id = {
   },
   shared: {
     privacyNotice: {
+      title: "Privat Secara Native & Aman Client-Side",
       body: "Alatify memproses file gambarmu sepenuhnya secara lokal menggunakan sandbox API di dalam tab browser kamu. Kami tidak pernah mengunggah file atau koordinat pribadimu ke server cloud luar, sehingga 100% aman dari kebocoran data.",
     },
     related: {
