@@ -1005,7 +1005,8 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
 
       setProcessingProgress(prev => ({
         ...prev,
-        stage: 'zipping'
+        stage: 'zipping',
+        current: prev.total
       }));
 
       const zipBlob = await zip.generateAsync({ type: "blob" });
@@ -1217,6 +1218,13 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
       positionY: Math.round(py)
     }));
   };
+
+  const displayPct =
+    processingProgress.stage === 'done' || processingProgress.stage === 'zipping'
+      ? 100
+      : processingProgress.total > 0
+        ? Math.round((processingProgress.current / processingProgress.total) * 100)
+        : 0;
 
   return (
     <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 text-foreground flex flex-col gap-6 select-none">
@@ -1799,7 +1807,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                           : "Watermarking completed!"}
                       </span>
                       <span className="text-foreground shrink-0">
-                        {Math.round((processingProgress.current / processingProgress.total) * 100)}%
+                        {displayPct}%
                       </span>
                     </div>
                     
@@ -1807,7 +1815,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                       <div
                         className="h-full bg-primary transition-all duration-300 rounded-full"
                         style={{
-                          width: `${(processingProgress.current / processingProgress.total) * 100}%`,
+                          width: `${displayPct}%`,
                         }}
                       />
                     </div>
