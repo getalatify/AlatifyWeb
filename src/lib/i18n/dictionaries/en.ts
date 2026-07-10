@@ -962,6 +962,7 @@ export const en = {
     label: "Download",
     filenameLabel: "Output filename",
     filenamePlaceholder: "filename",
+    filenameHeader: "File Name",
   },
   embed: {
     attribution: {

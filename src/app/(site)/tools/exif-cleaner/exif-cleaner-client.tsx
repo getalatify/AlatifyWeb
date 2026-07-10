@@ -699,6 +699,7 @@ export default function ExifCleanerClient() {
                     ext={extDotless}
                     placeholder={defaultStem}
                     className="mb-2"
+                    showLabel={true}
                   />
                   <Button
                     onClick={downloadCleanedImage}

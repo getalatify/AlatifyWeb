@@ -1428,7 +1428,7 @@ export default function FormatConverterPage() {
                       setWasSvgDownscaled(false);
                     }}
                     disabled={isConverting}
-                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50"
+                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]"
                   >
                     <optgroup label="Standard">
                       <option value="image/webp">Convert to WebP (Optimized)</option>
@@ -1873,7 +1873,7 @@ export default function FormatConverterPage() {
                       setWasSvgDownscaled(false);
                     }}
                     disabled={isConverting}
-                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50"
+                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]"
                   >
                     <optgroup label="Standard">
                       <option value="image/webp">Convert to WebP (Optimized)</option>

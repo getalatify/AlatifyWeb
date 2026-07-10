@@ -992,6 +992,7 @@ export const id = {
     label: "Unduh",
     filenameLabel: "Nama file output",
     filenamePlaceholder: "nama file",
+    filenameHeader: "Nama File",
   },
   embed: {
     attribution: {

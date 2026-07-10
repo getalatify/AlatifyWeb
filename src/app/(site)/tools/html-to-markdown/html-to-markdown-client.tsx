@@ -59,7 +59,7 @@ type BulletListMarker = "-" | "*" | "+";
 type CodeBlockStyle = "fenced" | "indented";
 
 const selectClassName =
-  "html-to-markdown-select h-8 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-semibold outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer scheme-light dark:scheme-dark";
+  "html-to-markdown-select h-8 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-semibold outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer [color-scheme:light] dark:[color-scheme:dark]";
 
 const optionClassName = "bg-popover text-popover-foreground";
 

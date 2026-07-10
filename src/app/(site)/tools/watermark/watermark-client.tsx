@@ -1261,7 +1261,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                 <select
                   value={settings.fontFamily}
                   onChange={(e) => setSettings(prev => ({ ...prev, fontFamily: e.target.value }))}
-                  className="w-full p-2.5 rounded-xl bg-secondary border border-border/80 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
+                  className="w-full p-2.5 rounded-xl bg-secondary border border-border/80 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all [color-scheme:light] dark:[color-scheme:dark]"
                 >
                   <option value={`${geistSansFamily}, system-ui, sans-serif`}>Geist Sans</option>
                   <option value='Georgia, serif'>Georgia Serif</option>
@@ -1665,7 +1665,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
               <select
                 value={settings.outputFormat}
                 onChange={(e) => setSettings(prev => ({ ...prev, outputFormat: e.target.value as WatermarkSettings['outputFormat'] }))}
-                className="w-full p-2.5 rounded-xl bg-secondary border border-border/85 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
+                className="w-full p-2.5 rounded-xl bg-secondary border border-border/85 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all [color-scheme:light] dark:[color-scheme:dark]"
               >
                 <option value="original">Keep original format</option>
                 <option value="image/jpeg">Convert to JPEG</option>

@@ -11,6 +11,7 @@ interface FilenameFieldProps {
   ext?: string;                    // dotless; omit for dual-format tools
   placeholder?: string;
   className?: string;
+  showLabel?: boolean;
 }
 
 export function FilenameField({
@@ -19,11 +20,12 @@ export function FilenameField({
   ext,
   placeholder,
   className,
+  showLabel = false,
 }: FilenameFieldProps) {
   const t = useT();
 
-  return (
-    <div className={cn("flex items-center gap-1.5 w-full", className)}>
+  const inputRow = (
+    <div className={cn("flex items-center gap-1.5 w-full", !showLabel && className)}>
       <input
         type="text"
         value={value}
@@ -36,4 +38,17 @@ export function FilenameField({
       {ext ? <span className="text-xs font-mono text-muted-foreground shrink-0 select-none">.{ext}</span> : null}
     </div>
   );
+
+  if (showLabel) {
+    return (
+      <div className={cn("flex flex-col gap-1 w-full", className)}>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {t("download.filenameHeader")}
+        </span>
+        {inputRow}
+      </div>
+    );
+  }
+
+  return inputRow;
 }

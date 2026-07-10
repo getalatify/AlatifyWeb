@@ -669,17 +669,14 @@ const filename = useFilenameStem("combined");
               </div>
 
               {/* Action Compile button */}
-              <div className="space-y-2.5">
-                <label className="text-xs font-bold text-foreground block">
-                  Output Filename
-                </label>
-                <FilenameField
-                  value={filename.value}
-                  onChange={filename.onChange}
-                  ext="pdf"
-                  placeholder="combined"
-                />
-              </div>
+              <FilenameField
+                value={filename.value}
+                onChange={filename.onChange}
+                ext="pdf"
+                placeholder="combined"
+                showLabel={true}
+                className="mb-2.5"
+              />
               <Button
                 disabled={images.length === 0 || isCompiling}
                 onClick={handleCompile}

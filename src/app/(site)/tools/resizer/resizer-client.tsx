@@ -721,7 +721,7 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
                         value={selectedPresetId}
                         onChange={(e) => setSelectedPresetId(e.target.value)}
                         disabled={isResizing}
-                        className="w-full p-2.5 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50"
+                        className="w-full p-2.5 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]"
                       >
                         {/* Group presets dynamically */}
                         {Array.from(new Set(socialPresets.map((p) => p.group))).map((group) => (
@@ -773,7 +773,7 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
                     value={format}
                     onChange={(e) => setFormat(e.target.value)}
                     disabled={isResizing}
-                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed [color-scheme:light] dark:[color-scheme:dark]"
                   >
                     <option value="original">Keep original format</option>
                     <option value="image/jpeg">Convert to JPEG</option>

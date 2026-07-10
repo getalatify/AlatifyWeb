@@ -284,6 +284,7 @@ export default function MarkdownToPdfClient() {
               onChange={filename.onChange}
               placeholder="document"
               className="mb-3"
+              showLabel={true}
             />
             <div className="flex flex-col sm:flex-row gap-3">
               <Button

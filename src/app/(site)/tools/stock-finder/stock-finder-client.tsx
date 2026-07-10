@@ -274,7 +274,7 @@ export default function StockFinderClient() {
                     value={contentType}
                     onChange={(e) => setContentType(e.target.value as 'photo' | 'illustration' | 'vector')}
                     disabled={loading}
-                    className="bg-secondary border border-border text-foreground rounded-lg p-2 outline-none cursor-pointer focus:border-primary"
+                    className="bg-secondary border border-border text-foreground rounded-lg p-2 outline-none cursor-pointer focus:border-primary [color-scheme:light] dark:[color-scheme:dark]"
                   >
                     <option value="photo">Photos</option>
                     <option value="illustration">Illustrations</option>
@@ -289,7 +289,7 @@ export default function StockFinderClient() {
                     value={contentType === 'photo' ? provider : 'pixabay'}
                     onChange={(e) => setProvider(e.target.value as 'unsplash' | 'pexels' | 'pixabay' | 'all')}
                     disabled={loading || contentType !== 'photo'}
-                    className="bg-secondary border border-border text-foreground rounded-lg p-2 outline-none cursor-pointer focus:border-primary disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="bg-secondary border border-border text-foreground rounded-lg p-2 outline-none cursor-pointer focus:border-primary disabled:opacity-60 disabled:cursor-not-allowed [color-scheme:light] dark:[color-scheme:dark]"
                   >
                     {contentType === 'photo' ? (
                       <>
@@ -311,7 +311,7 @@ export default function StockFinderClient() {
                     value={orientation}
                     onChange={(e) => setOrientation(e.target.value as 'all' | 'landscape' | 'portrait' | 'square')}
                     disabled={loading}
-                    className="bg-secondary border border-border text-foreground rounded-lg p-2 outline-none cursor-pointer focus:border-primary"
+                    className="bg-secondary border border-border text-foreground rounded-lg p-2 outline-none cursor-pointer focus:border-primary [color-scheme:light] dark:[color-scheme:dark]"
                   >
                     <option value="all">All Orientations</option>
                     <option value="landscape">Landscape</option>
