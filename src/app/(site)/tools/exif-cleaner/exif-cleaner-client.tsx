@@ -6,6 +6,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import { Shield, Loader2, AlertCircle, RefreshCw, Trash2, Image as ImageIcon, Download, CheckCircle2, Camera, Calendar, Layers, Laptop, EyeOff, HelpCircle } from "lucide-react";
@@ -91,6 +93,22 @@ export default function ExifCleanerClient() {
   const [cleaningError, setCleaningError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const defaultStem = `${activeImage ? activeImage.name.substring(0, activeImage.name.lastIndexOf(".")) : "image"}-cleaned`;
+  const filename = useFilenameStem(defaultStem, activeImage?.name);
+
+  const getExtDotless = () => {
+    if (!activeImage) return "png";
+    const origName = activeImage.name;
+    const lastDot = origName.lastIndexOf(".");
+    let ext = lastDot !== -1 ? origName.substring(lastDot) : ".png";
+    const formatStr = getImageFormat(activeImage).toLowerCase();
+    if (formatStr === "heic" || formatStr === "heif") {
+      ext = ".jpg";
+    }
+    return ext.replace(/^\./, "");
+  };
+  const extDotless = getExtDotless();
 
   // Manage source preview URL lifecycle
   useEffect(() => {
@@ -302,19 +320,8 @@ export default function ExifCleanerClient() {
     const url = URL.createObjectURL(cleanedBlob);
     const a = document.createElement("a");
 
-    const origName = activeImage.name;
-    const lastDot = origName.lastIndexOf(".");
-    const name = lastDot !== -1 ? origName.substring(0, lastDot) : origName;
-    
-    // Fallback extension for HEIC/other canvas formats that changed format
-    let ext = lastDot !== -1 ? origName.substring(lastDot) : ".png";
-    const formatStr = getImageFormat(activeImage).toLowerCase();
-    if (formatStr === "heic" || formatStr === "heif") {
-      ext = ".jpg";
-    }
-
     a.href = url;
-    a.download = `${name}-cleaned${ext}`;
+    a.download = `${filename.resolve()}.${extDotless}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -686,6 +693,13 @@ export default function ExifCleanerClient() {
                     </div>
                   </div>
 
+                  <FilenameField
+                    value={filename.value}
+                    onChange={filename.onChange}
+                    ext={extDotless}
+                    placeholder={defaultStem}
+                    className="mb-2"
+                  />
                   <Button
                     onClick={downloadCleanedImage}
                     className="w-full h-11 text-sm font-extrabold rounded-xl bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary-hover text-primary-foreground shadow-md hover:shadow-lg active:scale-[0.98] transition-all gap-2 flex items-center justify-center"

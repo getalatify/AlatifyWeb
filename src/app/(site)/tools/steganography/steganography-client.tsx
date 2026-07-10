@@ -6,6 +6,8 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { Binary, Download, Copy, Check, AlertTriangle, Lock, Unlock, CheckCircle2, HelpCircle, Shield, EyeOff, Upload, Info, Eye, FileText, AlertCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -280,6 +282,9 @@ export default function SteganographyClient() {
   const [encodedUrl, setEncodedUrl] = useState<string | null>(null);
   const [capacityError, setCapacityError] = useState<string | null>(null);
 
+  const defaultStem = `${hostFile ? hostFile.name.substring(0, hostFile.name.lastIndexOf(".")) : "carrier"}-stego`;
+  const filename = useFilenameStem(defaultStem, hostFile?.name);
+
   // Decode tab states
   const [stegoFile, setStegoFile] = useState<File | null>(null);
   const [stegoUrl, setStegoUrl] = useState<string | null>(null);
@@ -525,9 +530,7 @@ export default function SteganographyClient() {
     if (!encodedUrl) return;
     const a = document.createElement("a");
     a.href = encodedUrl;
-    // Derive name from host
-    const origName = hostFile ? hostFile.name.substring(0, hostFile.name.lastIndexOf(".")) : "carrier";
-    a.download = `${origName}-stego.png`;
+    a.download = `${filename.resolve()}.png`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -810,6 +813,13 @@ export default function SteganographyClient() {
                     </div>
                   </div>
 
+                  <FilenameField
+                    value={filename.value}
+                    onChange={filename.onChange}
+                    ext="png"
+                    placeholder={defaultStem}
+                    className="mb-2"
+                  />
                   <Button
                     onClick={downloadStego}
                     className="w-full py-4 text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-md h-11 gap-1.5 flex items-center justify-center"

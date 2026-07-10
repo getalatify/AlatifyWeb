@@ -6,6 +6,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +50,9 @@ export default function BlurClient() {
   const [activeBrushSize, setActiveBrushSize] = useState<number>(40);
   const [regions, setRegions] = useState<Region[]>([]);
   const [exportFormat, setExportFormat] = useState<"image/png" | "image/jpeg">("image/png");
+
+  const defaultStem = `${activeImage ? activeImage.name.substring(0, activeImage.name.lastIndexOf(".")) : "image"}-redacted`;
+  const filename = useFilenameStem(defaultStem, activeImage?.name);
 
   // Drawing State
   const [isDrawing, setIsDrawing] = useState(false);
@@ -926,8 +931,7 @@ export default function BlurClient() {
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          const originalName = activeImage ? activeImage.name.substring(0, activeImage.name.lastIndexOf(".")) : "redacted";
-          a.download = `${originalName}-redacted.${ext}`;
+          a.download = `${filename.resolve()}.${ext}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -1300,6 +1304,13 @@ export default function BlurClient() {
                 </div>
 
                 {/* Download trigger */}
+                <FilenameField
+                  value={filename.value}
+                  onChange={filename.onChange}
+                  ext={exportFormat === "image/jpeg" ? "jpg" : "png"}
+                  placeholder={defaultStem}
+                  className="mb-2"
+                />
                 <Button
                   onClick={handleDownload}
                   className="w-full py-4 text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-md hover:shadow-lg flex items-center justify-center gap-2 h-11 transition-all"

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useT } from "@/lib/i18n/useT";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -64,6 +66,10 @@ export default function MarkdownToPdfClient() {
   const [markdown, setMarkdown] = useState("");
   const [previewHtml, setPreviewHtml] = useState("");
   const [isExporting, setIsExporting] = useState(false);
+  const [uploadedFilename, setUploadedFilename] = useState<string | null>(null);
+
+  const defaultStem = uploadedFilename ?? "document";
+  const filename = useFilenameStem(defaultStem, uploadedFilename ?? undefined);
 
   // Re-render HTML preview when markdown text changes
   useEffect(() => {
@@ -96,6 +102,9 @@ export default function MarkdownToPdfClient() {
       const content = event.target?.result;
       if (typeof content === "string") {
         setMarkdown(content);
+        const lastDot = file.name.lastIndexOf(".");
+        const stem = lastDot !== -1 ? file.name.substring(0, lastDot) : file.name;
+        setUploadedFilename(stem);
         toast.success(`Loaded ${file.name} successfully!`);
       }
     };
@@ -135,9 +144,9 @@ export default function MarkdownToPdfClient() {
         },
       };
 
-      const { docDefinition, filename, hasFailedImages } = await compileMarkdownToPdf(markdown);
+      const { docDefinition, hasFailedImages } = await compileMarkdownToPdf(markdown);
 
-      pdfMake.createPdf(docDefinition as unknown as Parameters<typeof pdfMake.createPdf>[0]).download(filename);
+      pdfMake.createPdf(docDefinition as unknown as Parameters<typeof pdfMake.createPdf>[0]).download(`${filename.resolve()}.pdf`);
 
       toast.dismiss(loadingToastId);
       toast.success("PDF downloaded successfully!");
@@ -164,7 +173,7 @@ export default function MarkdownToPdfClient() {
       const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = blobUrl;
-      a.download = "document.md";
+      a.download = `${filename.resolve()}.md`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -270,6 +279,12 @@ export default function MarkdownToPdfClient() {
               className="w-full h-[450px] p-5 rounded-2xl bg-card border border-border/40 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-sm font-mono leading-relaxed outline-none resize-none transition-all shadow-inner placeholder:text-muted-foreground/60"
             />
 
+            <FilenameField
+              value={filename.value}
+              onChange={filename.onChange}
+              placeholder="document"
+              className="mb-3"
+            />
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={handleDownload}

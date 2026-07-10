@@ -813,6 +813,7 @@ export default function ImageResizerPage({ isEmbed = false }: { isEmbed?: boolea
                   file={resizedImage}
                   filenamePrefix="resized"
                   originalFilename={(activeImage as File).name ?? "image"}
+                  editableFilename
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center"
                 >
                   Download Resized Image

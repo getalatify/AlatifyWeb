@@ -23,6 +23,8 @@ import {
   Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FilenameField } from "@/components/shared/filename-field";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
 
 interface ImageItem {
   id: string;
@@ -164,6 +166,7 @@ export default function ImageToPdfClient() {
   const [orientation, setOrientation] = useState<"auto" | "portrait" | "landscape">("auto");
   const [marginSize, setMarginSize] = useState<"none" | "small" | "medium">("none");
   const [isCompiling, setIsCompiling] = useState(false);
+const filename = useFilenameStem("combined");
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
@@ -383,7 +386,7 @@ export default function ImageToPdfClient() {
       }
 
       if (doc) {
-        doc.save("compiled-images.pdf");
+        doc.save(`${filename.resolve()}.pdf`);
         toast.success("Successfully generated and downloaded PDF document.", { id: toastId });
       } else {
         throw new Error("PDF compiler was not initialized.");
@@ -666,6 +669,17 @@ export default function ImageToPdfClient() {
               </div>
 
               {/* Action Compile button */}
+              <div className="space-y-2.5">
+                <label className="text-xs font-bold text-foreground block">
+                  Output Filename
+                </label>
+                <FilenameField
+                  value={filename.value}
+                  onChange={filename.onChange}
+                  ext="pdf"
+                  placeholder="combined"
+                />
+              </div>
               <Button
                 disabled={images.length === 0 || isCompiling}
                 onClick={handleCompile}

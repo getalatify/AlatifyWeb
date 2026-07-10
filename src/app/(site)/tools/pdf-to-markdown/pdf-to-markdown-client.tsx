@@ -3,6 +3,8 @@
 import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { toast } from "sonner";
@@ -32,6 +34,9 @@ export default function PdfToMarkdownClient() {
   const [copied, setCopied] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const defaultStem = selectedFile ? selectedFile.name.replace(/\.pdf$/i, "") : "extracted";
+  const filename = useFilenameStem(defaultStem, selectedFile?.name);
 
   // Native drag & drop event handlers
   const handleDragOver = (e: React.DragEvent) => {
@@ -407,9 +412,8 @@ export default function PdfToMarkdownClient() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     
-    const baseName = selectedFile ? selectedFile.name.replace(/\.pdf$/i, "") : "extracted";
     link.href = url;
-    link.download = `${baseName}.md`;
+    link.download = `${filename.resolve()}.md`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -567,11 +571,18 @@ export default function PdfToMarkdownClient() {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     Markdown Output
                   </span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap justify-end">
+                    <FilenameField
+                      value={filename.value}
+                      onChange={filename.onChange}
+                      ext="md"
+                      placeholder={defaultStem}
+                      className="w-44"
+                    />
                     <Button
                       onClick={handleCopy}
                       variant="outline"

@@ -1640,6 +1640,7 @@ export default function FormatConverterPage() {
                   file={convertedImage}
                   filenamePrefix="converted"
                   originalFilename={(activeImage as File).name ?? "image"}
+                  editableFilename
                   disabled={isConverting || !convertedImage}
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                 >

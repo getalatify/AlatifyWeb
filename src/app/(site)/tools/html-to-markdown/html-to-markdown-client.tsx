@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useT } from "@/lib/i18n/useT";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -70,7 +72,11 @@ export default function HtmlToMarkdownClient() {
   const [headingStyle, setHeadingStyle] = useState<HeadingStyle>("atx");
   const [bulletListMarker, setBulletListMarker] = useState<BulletListMarker>("-");
   const [codeBlockStyle, setCodeBlockStyle] = useState<CodeBlockStyle>("fenced");
+  const [uploadedFilename, setUploadedFilename] = useState<string | null>(null);
   const convertRequestRef = useRef(0);
+
+  const defaultStem = uploadedFilename ?? "converted";
+  const filename = useFilenameStem(defaultStem, uploadedFilename ?? undefined);
 
   const convertHtmlToMarkdown = useCallback(async (source: string) => {
     if (!source.trim()) {
@@ -138,6 +144,9 @@ export default function HtmlToMarkdownClient() {
       const content = event.target?.result;
       if (typeof content === "string") {
         setHtml(content);
+        const lastDot = file.name.lastIndexOf(".");
+        const stem = lastDot !== -1 ? file.name.substring(0, lastDot) : file.name;
+        setUploadedFilename(stem);
         toast.success(`Loaded ${file.name} successfully!`);
       }
     };
@@ -167,7 +176,7 @@ export default function HtmlToMarkdownClient() {
       const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = blobUrl;
-      a.download = "converted.md";
+      a.download = `${filename.resolve()}.md`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -301,16 +310,15 @@ export default function HtmlToMarkdownClient() {
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Markdown Output
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-end gap-2">
                 {isConverting && (
                   <RefreshCw className="w-3.5 h-3.5 text-muted-foreground animate-spin" />
                 )}
                 <Button
                   onClick={handleCopy}
-                  disabled={!markdown.trim()}
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5 disabled:opacity-40"
+                  className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5"
                 >
                   {copied ? (
                     <>
@@ -324,16 +332,25 @@ export default function HtmlToMarkdownClient() {
                     </>
                   )}
                 </Button>
-                <Button
-                  onClick={handleDownloadMd}
-                  disabled={!markdown.trim()}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5 disabled:opacity-40"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  {t("tools.html-to-markdown.downloadMd")}
-                </Button>
+                <div className="flex flex-col gap-1.5 items-end">
+                  <FilenameField
+                    value={filename.value}
+                    onChange={filename.onChange}
+                    ext="md"
+                    placeholder={defaultStem}
+                    className="w-48"
+                  />
+                  <Button
+                    onClick={handleDownloadMd}
+                    disabled={!markdown.trim()}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5 disabled:opacity-40"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    {t("tools.html-to-markdown.downloadMd")}
+                  </Button>
+                </div>
               </div>
             </div>
 

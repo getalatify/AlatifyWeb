@@ -989,6 +989,8 @@ export const id = {
     success: "File berhasil diunduh",
     error: "Ada yang salah. Silakan coba lagi",
     label: "Unduh",
+    filenameLabel: "Nama file output",
+    filenamePlaceholder: "nama file",
   },
   embed: {
     attribution: {

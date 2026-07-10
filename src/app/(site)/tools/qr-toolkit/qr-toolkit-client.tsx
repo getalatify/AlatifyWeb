@@ -5,6 +5,8 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { QrCode, Scan, Download, Copy, Check, AlertTriangle, ExternalLink, Wifi, Type, Link2, CheckCircle2, HelpCircle, Shield, EyeOff, Camera, Upload, Info } from "lucide-react";
@@ -45,6 +47,9 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [copiedGen, setCopiedGen] = useState(false);
+
+  const defaultStem = `qr-code-${genMode}`;
+  const filename = useFilenameStem(defaultStem);
 
   // Compile final generator payload
   const getGeneratorPayload = (): string => {
@@ -105,7 +110,7 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
       const url = canvasRef.current.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = url;
-      a.download = `qr-code-${genMode}.png`;
+      a.download = `${filename.resolve()}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -138,7 +143,7 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `qr-code-${genMode}.svg`;
+        a.download = `${filename.resolve()}.svg`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -823,6 +828,12 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
 
                   <div className="h-px bg-border/40 my-1" />
 
+                  <FilenameField
+                    value={filename.value}
+                    onChange={filename.onChange}
+                    placeholder={defaultStem}
+                    className="mb-2"
+                  />
                   <Button
                     onClick={downloadPng}
                     className="w-full text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-md h-10 gap-1.5 flex items-center justify-center"

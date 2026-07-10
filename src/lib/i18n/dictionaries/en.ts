@@ -959,6 +959,8 @@ export const en = {
     success: "File downloaded successfully",
     error: "Something went wrong. Please try again",
     label: "Download",
+    filenameLabel: "Output filename",
+    filenamePlaceholder: "filename",
   },
   embed: {
     attribution: {
