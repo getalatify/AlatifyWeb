@@ -57,6 +57,12 @@ export default function IdProtectorClient() {
 
   const [activeRedactionId, setActiveRedactionId] = useState<string | null>(null);
 
+  const blurEditDirtyRef = useRef(false);
+  const redactionsRef = useRef(redactions);
+  useEffect(() => {
+    redactionsRef.current = redactions;
+  }, [redactions]);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { "image/*": [] },
     maxFiles: 1,
@@ -109,6 +115,12 @@ export default function IdProtectorClient() {
     setHistoryIndex(nextHistory.length);
     setRedactions(newRedactions);
   }, [history, historyIndex]);
+
+  const commitBlurEdit = useCallback(() => {
+    if (!blurEditDirtyRef.current) return;
+    blurEditDirtyRef.current = false;
+    pushState(redactionsRef.current);
+  }, [pushState]);
 
   const undo = useCallback(() => {
     if (historyIndex > 0) {
@@ -234,7 +246,8 @@ export default function IdProtectorClient() {
         w: currentRect.w,
         h: currentRect.h,
         mode: mode,
-        color: solidColor
+        color: solidColor,
+        blurStrength: blurStrength
       };
 
       pushState([...redactions, newRedaction]);
@@ -378,6 +391,11 @@ export default function IdProtectorClient() {
       </div>
     );
   };
+
+  const activeBox = redactions.find(r => r.id === activeRedactionId);
+  const sliderValue = (activeBox && activeBox.mode === 'blur')
+    ? (activeBox.blurStrength ?? blurStrength)
+    : blurStrength;
 
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip">
@@ -559,7 +577,7 @@ export default function IdProtectorClient() {
                     </button>
                   </div>
 
-                  {mode === 'blur' && (
+                  {(mode === 'blur' || (activeBox && activeBox.mode === 'blur')) && (
                     <div className="space-y-3">
                       <div className="p-3 bg-destructive/5 dark:bg-destructive/10 border border-destructive/20 rounded-xl flex items-start gap-2 text-destructive text-xs leading-normal">
                         <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-destructive" />
@@ -571,7 +589,7 @@ export default function IdProtectorClient() {
                             Blur Strength
                           </span>
                           <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">
-                            {blurStrength}px
+                            {sliderValue}px
                           </span>
                         </div>
                         <input
@@ -579,8 +597,19 @@ export default function IdProtectorClient() {
                           min={5}
                           max={100}
                           step={1}
-                          value={blurStrength}
-                          onChange={(e) => setBlurStrength(Number(e.target.value))}
+                          value={sliderValue}
+                          onChange={(e) => {
+                            const v = Number(e.target.value);
+                            if (activeBox && activeBox.mode === 'blur') {
+                              setRedactions(prev => prev.map(r => r.id === activeBox.id ? { ...r, blurStrength: v } : r));
+                              blurEditDirtyRef.current = true;
+                            } else {
+                              setBlurStrength(v);
+                            }
+                          }}
+                          onPointerUp={commitBlurEdit}
+                          onTouchEnd={commitBlurEdit}
+                          onKeyUp={commitBlurEdit}
                           className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
                         />
                       </div>
