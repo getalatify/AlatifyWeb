@@ -762,6 +762,20 @@ export const en = {
         'Upload a document and select "Convert to Markdown" to see the formatted output here.',
       warningScanned:
         "We detected little to no selectable text in this document. It is highly likely this is a scanned/image-only PDF with no embedded text layers. Offline OCR is not supported.",
+      toastSuccess:
+        "PDF converted to Markdown successfully!",
+      toastPartial:
+        "Converted to Markdown. {skipped} of {total} pages had little or no text to extract (likely scanned, no OCR).",
+      toastNoText:
+        "No selectable text found. This PDF looks scanned or image-based, and this tool extracts text only (no OCR).",
+      toastError:
+        "Something went wrong while reading the PDF.",
+      scannedTitle:
+        "No selectable text found",
+      partialTitle:
+        "Some pages had no text",
+      warningPartial:
+        "{skipped} of {total} pages had little or no selectable text. Those pages are likely scanned or image-based and produced no output (no offline OCR).",
       limitations: {
         tables:
           "PDFs contain no tabular semantics. Grid coordinates are flat and output is linear.",
