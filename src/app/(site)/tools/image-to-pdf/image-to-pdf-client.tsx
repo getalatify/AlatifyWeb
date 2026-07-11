@@ -669,21 +669,18 @@ const filename = useFilenameStem("combined");
               </div>
 
               {/* Action Compile button */}
-              <div className="space-y-2.5">
-                <label className="text-xs font-bold text-foreground block">
-                  Output Filename
-                </label>
-                <FilenameField
-                  value={filename.value}
-                  onChange={filename.onChange}
-                  ext="pdf"
-                  placeholder="combined"
-                />
-              </div>
+              <FilenameField
+                value={filename.value}
+                onChange={filename.onChange}
+                ext="pdf"
+                placeholder="combined"
+                showLabel={true}
+                className="mb-2.5"
+              />
               <Button
                 disabled={images.length === 0 || isCompiling}
                 onClick={handleCompile}
-                className="w-full p-3 sm:p-3.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 group"
+                className="w-full p-3 sm:p-3.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 group"
               >
                 {isCompiling ? (
                   <>
@@ -700,11 +697,6 @@ const filename = useFilenameStem("combined");
             </div>
           </div>
         </section>
-
-        {/* Natively Private explanation block */}
-        <PrivacyNotice>
-          <p>{t("tools.image-to-pdf.privacyNotice")}</p>
-        </PrivacyNotice>
 
         {/* How It Works */}
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
@@ -864,6 +856,12 @@ const filename = useFilenameStem("combined");
             </Link>
           </div>
         </section>
+
+        {/* Natively Private explanation block */}
+        <PrivacyNotice>
+          <p>{t("tools.image-to-pdf.privacyNotice")}</p>
+        </PrivacyNotice>
+
       </div>
     </main>
   );

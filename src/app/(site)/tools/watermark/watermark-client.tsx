@@ -3,6 +3,8 @@
 
 import { useT } from "@/lib/i18n/useT";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
@@ -170,6 +172,28 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
   const requestRef = useRef<number | null>(null);
 
   const [isDragging, setIsDragging] = useState(false);
+  const firstFileName = imagesList[0]?.file.name;
+  const defaultStem = imagesList.length === 1 && firstFileName
+    ? `${firstFileName.replace(/\.[^/.]+$/, "")}-watermarked`
+    : "watermarked-images";
+  const sourceKey = imagesList.length === 1 ? firstFileName : "batch-zip";
+  const filename = useFilenameStem(defaultStem, sourceKey);
+
+  const resolvedExt = (() => {
+    if (imagesList.length === 0) return "png";
+    const mimeToExtension: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+      'image/gif': 'gif',
+      'image/bmp': 'bmp',
+      'image/x-icon': 'ico',
+      'image/tiff': 'tiff',
+    };
+    const format = settings.outputFormat === "original" ? imagesList[0].file.type : settings.outputFormat;
+    return mimeToExtension[format.toLowerCase()] || "png";
+  })();
+
   const dragStartOffsetRef = useRef<{ x: number; y: number } | null>(null);
 
   // Hit-testing for free positioning mode
@@ -875,11 +899,13 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
       canvas.width = 0;
       canvas.height = 0;
 
-      const filename = getWatermarkedFilename(item.file.name, format);
+      const downloadName = imagesList.length === 1
+        ? `${filename.resolve()}.${resolvedExt}`
+        : getWatermarkedFilename(item.file.name, format);
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = filename;
+      a.download = downloadName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -979,14 +1005,15 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
 
       setProcessingProgress(prev => ({
         ...prev,
-        stage: 'zipping'
+        stage: 'zipping',
+        current: prev.total
       }));
 
       const zipBlob = await zip.generateAsync({ type: "blob" });
       const url = URL.createObjectURL(zipBlob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "watermarked-images.zip";
+      a.download = `${filename.resolve()}.zip`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1192,6 +1219,13 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
     }));
   };
 
+  const displayPct =
+    processingProgress.stage === 'done' || processingProgress.stage === 'zipping'
+      ? 100
+      : processingProgress.total > 0
+        ? Math.round((processingProgress.current / processingProgress.total) * 100)
+        : 0;
+
   return (
     <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 text-foreground flex flex-col gap-6 select-none">
       
@@ -1261,7 +1295,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                 <select
                   value={settings.fontFamily}
                   onChange={(e) => setSettings(prev => ({ ...prev, fontFamily: e.target.value }))}
-                  className="w-full p-2.5 rounded-xl bg-secondary border border-border/80 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
+                  className="w-full p-2.5 rounded-xl bg-secondary border border-border/80 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all [color-scheme:light] dark:[color-scheme:dark]"
                 >
                   <option value={`${geistSansFamily}, system-ui, sans-serif`}>Geist Sans</option>
                   <option value='Georgia, serif'>Georgia Serif</option>
@@ -1665,7 +1699,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
               <select
                 value={settings.outputFormat}
                 onChange={(e) => setSettings(prev => ({ ...prev, outputFormat: e.target.value as WatermarkSettings['outputFormat'] }))}
-                className="w-full p-2.5 rounded-xl bg-secondary border border-border/85 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all"
+                className="w-full p-2.5 rounded-xl bg-secondary border border-border/85 hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all [color-scheme:light] dark:[color-scheme:dark]"
               >
                 <option value="original">Keep original format</option>
                 <option value="image/jpeg">Convert to JPEG</option>
@@ -1773,7 +1807,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                           : "Watermarking completed!"}
                       </span>
                       <span className="text-foreground shrink-0">
-                        {Math.round((processingProgress.current / processingProgress.total) * 100)}%
+                        {displayPct}%
                       </span>
                     </div>
                     
@@ -1781,7 +1815,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                       <div
                         className="h-full bg-primary transition-all duration-300 rounded-full"
                         style={{
-                          width: `${(processingProgress.current / processingProgress.total) * 100}%`,
+                          width: `${displayPct}%`,
                         }}
                       />
                     </div>
@@ -1793,6 +1827,15 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                     )}
                   </div>
                 )}
+
+                <FilenameField
+                  showLabel={true}
+                  value={filename.value}
+                  onChange={filename.onChange}
+                  ext={imagesList.length > 1 ? "zip" : resolvedExt}
+                  placeholder={defaultStem}
+                  className="mb-2"
+                />
 
                 {/* Primary Button Trigger */}
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -1832,14 +1875,7 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
                   <ContinueWith
                     currentToolId="watermark"
                     outputBlob={watermarkedImage}
-                    outputFileName={
-                      imagesList[0]
-                        ? getWatermarkedFilename(
-                            imagesList[0].file.name,
-                            settings.outputFormat === "original" ? imagesList[0].file.type : settings.outputFormat
-                          )
-                        : "watermarked.png"
-                    }
+                    outputFileName={`${filename.resolve()}.${resolvedExt}`}
                     provenance={provenance}
                     onStartOver={clearImagesList}
                   />

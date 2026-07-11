@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import {
   FileText,
   Upload,
+  Replace,
   Download,
   HelpCircle,
   CheckCircle2,
@@ -260,8 +261,12 @@ export default function MarkdownToPdfClient() {
                   Load Example
                 </Button>
                 <label className="inline-flex items-center justify-center text-xs font-semibold h-8 px-3 rounded-lg border border-border bg-card text-foreground cursor-pointer hover:bg-secondary/40 transition-colors">
-                  <Upload className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
-                  Upload File
+                  {uploadedFilename ? (
+                    <Replace className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
+                  ) : (
+                    <Upload className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
+                  )}
+                  {uploadedFilename ? t("imageSourceInput.replaceFile") : t("imageSourceInput.uploadFile")}
                   <input
                     type="file"
                     accept=".md,.markdown,.txt"
@@ -284,6 +289,7 @@ export default function MarkdownToPdfClient() {
               onChange={filename.onChange}
               placeholder="document"
               className="mb-3"
+              showLabel={true}
             />
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
@@ -343,11 +349,6 @@ export default function MarkdownToPdfClient() {
             </div>
           </div>
         </section>
-
-        {/* Natively Private Disclaimer */}
-        <PrivacyNotice>
-          <p>{t("tools.markdown-to-pdf.privacyNotice")}</p>
-        </PrivacyNotice>
 
         {/* How It Works */}
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
@@ -534,6 +535,11 @@ export default function MarkdownToPdfClient() {
             </Link>
           </div>
         </section>
+
+        {/* Natively Private Disclaimer */}
+        <PrivacyNotice>
+          <p>{t("tools.markdown-to-pdf.privacyNotice")}</p>
+        </PrivacyNotice>
 
       </div>
     </main>

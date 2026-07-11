@@ -31,6 +31,8 @@ export default function PdfToMarkdownClient() {
   const [isConverting, setIsConverting] = useState(false);
   const [markdownOutput, setMarkdownOutput] = useState("");
   const [scannedWarning, setScannedWarning] = useState(false);
+  const [skippedPageCount, setSkippedPageCount] = useState<number>(0);
+  const [totalPageCount, setTotalPageCount] = useState<number>(0);
   const [copied, setCopied] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -60,6 +62,8 @@ export default function PdfToMarkdownClient() {
         setSelectedFile(file);
         setMarkdownOutput("");
         setScannedWarning(false);
+        setSkippedPageCount(0);
+        setTotalPageCount(0);
         toast.success(`PDF selected: ${file.name}`);
       } else {
         toast.error("Unsupported file type. Please upload a PDF file.");
@@ -75,6 +79,8 @@ export default function PdfToMarkdownClient() {
         setSelectedFile(file);
         setMarkdownOutput("");
         setScannedWarning(false);
+        setSkippedPageCount(0);
+        setTotalPageCount(0);
         toast.success(`PDF selected: ${file.name}`);
       } else {
         toast.error("Unsupported file type. Please upload a PDF file.");
@@ -87,6 +93,8 @@ export default function PdfToMarkdownClient() {
     setSelectedFile(null);
     setMarkdownOutput("");
     setScannedWarning(false);
+    setSkippedPageCount(0);
+    setTotalPageCount(0);
     toast.success("File removed.");
   };
 
@@ -376,18 +384,27 @@ export default function PdfToMarkdownClient() {
       const rawMarkdown = pageMarkdowns.filter(Boolean).join("\n\n");
       // Safety net: collapse 2+ blank lines into a single blank line
       const finalMarkdown = rawMarkdown.replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n");
-      setMarkdownOutput(finalMarkdown);
-      
-      // Scanned PDF warning triggers if pages are mostly blank or the final text is too small
-      const isScanned = emptyPageCount === numPages || finalMarkdown.trim().length < 50;
-      setScannedWarning(isScanned);
-      
+      const meaningfulText = finalMarkdown.trim().length >= 50;
+      const allEmpty = numPages > 0 && emptyPageCount === numPages;
+      const failed = allEmpty || !meaningfulText;
+
+      setMarkdownOutput(failed ? "" : finalMarkdown);
+      setScannedWarning(failed);
+      setSkippedPageCount(failed ? 0 : emptyPageCount);
+      setTotalPageCount(numPages);
+
       toast.dismiss(toastId);
-      toast.success("PDF converted to Markdown successfully!");
+      if (failed) {
+        toast.error(t("tools.pdf-to-markdown.toastNoText"));
+      } else if (emptyPageCount > 0) {
+        toast.success(t("tools.pdf-to-markdown.toastPartial", { skipped: emptyPageCount, total: numPages }));
+      } else {
+        toast.success(t("tools.pdf-to-markdown.toastSuccess"));
+      }
     } catch (err: unknown) {
       console.error(err);
       toast.dismiss(toastId);
-      const errorMessage = err instanceof Error ? err.message : "An error occurred while reading the PDF.";
+      const errorMessage = err instanceof Error ? err.message : t("tools.pdf-to-markdown.toastError");
       toast.error(errorMessage);
     } finally {
       setIsConverting(false);
@@ -560,27 +577,54 @@ export default function PdfToMarkdownClient() {
           {/* Right Column: Markdown Output Workspace */}
           <div className="lg:col-span-7">
             {!markdownOutput ? (
-              <div className="w-full min-h-[440px] flex flex-col items-center justify-center text-center p-6 bg-card border border-border/40 rounded-2xl border-dashed">
-                <FileCode className="w-12 h-12 text-muted-foreground/30 stroke-[1.5] mb-3" />
-                <p className="text-xs font-extrabold uppercase tracking-widest text-foreground">
-                  Markdown Output Panel
-                </p>
-                <p className="text-[11px] text-muted-foreground max-w-xs mt-1 leading-normal">
-                  {t("tools.pdf-to-markdown.placeholder")}
-                </p>
-              </div>
+              scannedWarning ? (
+                <div className="w-full min-h-[440px] flex flex-col items-center justify-center text-center p-6 bg-card border border-amber-500/20 rounded-2xl bg-amber-500/5 text-amber-600 dark:text-amber-400">
+                  <AlertTriangle className="w-12 h-12 mb-3 stroke-[1.5] text-amber-500" />
+                  <p className="text-xs font-extrabold uppercase tracking-widest text-foreground mb-1">
+                    {t("tools.pdf-to-markdown.scannedTitle")}
+                  </p>
+                  <p className="text-[11px] max-w-sm mt-1 leading-normal text-muted-foreground">
+                    {t("tools.pdf-to-markdown.warningScanned")}
+                  </p>
+                </div>
+              ) : (
+                <div className="w-full min-h-[440px] flex flex-col items-center justify-center text-center p-6 bg-card border border-border/40 rounded-2xl border-dashed">
+                  <FileCode className="w-12 h-12 text-muted-foreground/30 stroke-[1.5] mb-3" />
+                  <p className="text-xs font-extrabold uppercase tracking-widest text-foreground">
+                    Markdown Output Panel
+                  </p>
+                  <p className="text-[11px] text-muted-foreground max-w-xs mt-1 leading-normal">
+                    {t("tools.pdf-to-markdown.placeholder")}
+                  </p>
+                </div>
+              )
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between gap-4 flex-wrap">
+                {skippedPageCount > 0 && (
+                  <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
+                    <div>
+                      <span className="font-extrabold block">
+                        {t("tools.pdf-to-markdown.partialTitle")}
+                      </span>
+                      <span>
+                        {t("tools.pdf-to-markdown.warningPartial", { skipped: skippedPageCount, total: totalPageCount })}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-end justify-between gap-4 flex-wrap">
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     Markdown Output
                   </span>
-                  <div className="flex items-center gap-2 flex-wrap justify-end">
+                  <div className="flex items-end gap-2 flex-wrap justify-end">
                     <FilenameField
                       value={filename.value}
                       onChange={filename.onChange}
                       ext="md"
                       placeholder={defaultStem}
+                      showLabel={true}
                       className="w-44"
                     />
                     <Button
@@ -603,9 +647,8 @@ export default function PdfToMarkdownClient() {
                     </Button>
                     <Button
                       onClick={handleDownloadMarkdown}
-                      variant="outline"
                       size="sm"
-                      className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5"
+                      className="text-xs h-8 px-3 rounded-lg font-semibold flex items-center gap-1.5 bg-foreground text-background hover:bg-foreground/90"
                     >
                       <Download className="w-3.5 h-3.5" />
                       Download .md
@@ -618,27 +661,10 @@ export default function PdfToMarkdownClient() {
                   value={markdownOutput}
                   className="w-full h-[450px] p-5 rounded-2xl bg-card border border-border/40 text-sm font-mono leading-relaxed outline-none resize-none transition-all shadow-inner select-text"
                 />
-
-                {scannedWarning && (
-                  <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs flex items-start gap-2.5">
-                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-extrabold block">Potential Scanned PDF Warning</span>
-                      {t("tools.pdf-to-markdown.warningScanned")}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </div>
         </section>
-
-        {/* Natively Private explanation block */}
-        <PrivacyNotice>
-          <p>
-            {t("tools.pdf-to-markdown.privacyNotice")}
-          </p>
-        </PrivacyNotice>
 
         {/* How It Works Section */}
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
@@ -802,6 +828,13 @@ export default function PdfToMarkdownClient() {
             </Link>
           </div>
         </section>
+
+        {/* Natively Private explanation block */}
+        <PrivacyNotice>
+          <p>
+            {t("tools.pdf-to-markdown.privacyNotice")}
+          </p>
+        </PrivacyNotice>
 
       </div>
     </main>

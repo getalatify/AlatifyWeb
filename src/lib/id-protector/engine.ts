@@ -8,7 +8,9 @@ export interface Redaction {
   h: number;
   mode: RedactionMode;
   color: string; // Used for solid mode
+  blurStrength?: number;
 }
+
 
 export interface WatermarkConfig {
   text: string;
@@ -25,23 +27,15 @@ export function renderToCanvas(
   redactions: Redaction[],
   watermark: WatermarkConfig | null,
   canvas: HTMLCanvasElement,
-  isDisplayPreview: boolean = false
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  isDisplayPreview: boolean = false,
+  blurStrength: number = 25
 ): void {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  if (isDisplayPreview) {
-    // For preview, bound the canvas to max 1500px width/height to avoid massive repaints
-    const MAX_PREVIEW_SIZE = 1500;
-    const scale = Math.min(1, MAX_PREVIEW_SIZE / Math.max(source.naturalWidth, source.naturalHeight));
-    canvas.width = source.naturalWidth * scale;
-    canvas.height = source.naturalHeight * scale;
-    ctx.scale(scale, scale);
-  } else {
-    // Size canvas to source natural dimensions for full export
-    canvas.width = source.naturalWidth;
-    canvas.height = source.naturalHeight;
-  }
+  canvas.width = source.naturalWidth;
+  canvas.height = source.naturalHeight;
 
   // Draw source image
   ctx.drawImage(source, 0, 0, source.naturalWidth, source.naturalHeight);
@@ -52,17 +46,29 @@ export function renderToCanvas(
       ctx.fillStyle = redaction.color;
       ctx.fillRect(redaction.x, redaction.y, redaction.w, redaction.h);
     } else if (redaction.mode === 'blur') {
-      ctx.save();
-      // Clip to redaction rect
-      ctx.beginPath();
-      ctx.rect(redaction.x, redaction.y, redaction.w, redaction.h);
-      ctx.clip();
-
-      // Apply blur to the clipped area
-      ctx.filter = `blur(${Math.max(source.naturalWidth, source.naturalHeight) * 0.02}px)`; // Dynamic blur size
-      // Draw image exactly in place to avoid scaling artifacts/misalignment
-      ctx.drawImage(source, 0, 0, source.naturalWidth, source.naturalHeight);
-      ctx.restore();
+      const strength = redaction.blurStrength ?? blurStrength ?? 25;
+      const pad = Math.ceil(strength * 3);
+      const sx = Math.max(0, redaction.x - pad);
+      const sy = Math.max(0, redaction.y - pad);
+      const ex = Math.min(source.naturalWidth,  redaction.x + redaction.w + pad);
+      const ey = Math.min(source.naturalHeight, redaction.y + redaction.h + pad);
+      const sw = ex - sx;
+      const sh = ey - sy;
+      if (sw > 0 && sh > 0) {
+        const rc = document.createElement('canvas');
+        rc.width = sw;
+        rc.height = sh;
+        const rctx = rc.getContext('2d');
+        if (rctx) {
+          rctx.filter = `blur(${strength}px)`;
+          rctx.drawImage(source, sx, sy, sw, sh, 0, 0, sw, sh);
+          ctx.drawImage(
+            rc,
+            redaction.x - sx, redaction.y - sy, redaction.w, redaction.h,
+            redaction.x, redaction.y, redaction.w, redaction.h
+          );
+        }
+      }
     }
   }
 

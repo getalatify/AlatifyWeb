@@ -101,6 +101,7 @@ export const id = {
   },
   shared: {
     privacyNotice: {
+      title: "Privat Secara Native & Aman Client-Side",
       body: "Alatify memproses file gambarmu sepenuhnya secara lokal menggunakan sandbox API di dalam tab browser kamu. Kami tidak pernah mengunggah file atau koordinat pribadimu ke server cloud luar, sehingga 100% aman dari kebocoran data.",
     },
     related: {
@@ -792,6 +793,20 @@ export const id = {
         'Unggah dokumen dan klik "Convert to Markdown" untuk melihat hasilnya di sini.',
       warningScanned:
         "Kami mendeteksi sedikit sekali teks di dokumen ini. Kemungkinan besar ini adalah PDF hasil scan atau gambar tanpa data teks. OCR offline tidak didukung.",
+      toastSuccess:
+        "PDF berhasil dikonversi ke Markdown!",
+      toastPartial:
+        "Berhasil dikonversi ke Markdown. {skipped} dari {total} halaman punya sedikit atau tanpa teks untuk diambil (kemungkinan hasil scan, tanpa OCR).",
+      toastNoText:
+        "Tidak ada teks yang bisa diambil. PDF ini tampaknya hasil scan atau berbasis gambar, sementara tool ini hanya mengekstrak teks (tanpa OCR).",
+      toastError:
+        "Terjadi masalah saat membaca PDF.",
+      scannedTitle:
+        "Tidak ada teks yang bisa diambil",
+      partialTitle:
+        "Sebagian halaman tanpa teks",
+      warningPartial:
+        "{skipped} dari {total} halaman punya sedikit atau tanpa teks. Halaman itu kemungkinan hasil scan atau berbasis gambar dan tidak menghasilkan output (tanpa OCR offline).",
       limitations: {
         tables:
           "PDF tidak punya struktur tabel asli. Koordinat grid datar dan hasilnya akan berupa baris mendatar biasa.",
@@ -991,6 +1006,7 @@ export const id = {
     label: "Unduh",
     filenameLabel: "Nama file output",
     filenamePlaceholder: "nama file",
+    filenameHeader: "Nama File",
   },
   embed: {
     attribution: {
@@ -1078,6 +1094,7 @@ export const id = {
       failedFetch: "Gagal mengambil gambar",
     },
     uploadFile: "Unggah File",
+    replaceFile: "Ganti file",
     pasteUrl: "Tempel URL",
     placeholder: "Tempel URL gambar atau halaman web apa pun",
     fetching: "Mengambil...",

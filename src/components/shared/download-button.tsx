@@ -148,17 +148,22 @@ export function DownloadButton({
   if (editableFilename) {
     return (
       <div className="w-full flex flex-col gap-2">
-        <div className="flex items-center gap-1.5 w-full">
-          <input
-            type="text"
-            value={stemValue}
-            onChange={(e) => setStemOverride(stripPathSeparators(e.target.value))}
-            className="flex-1 min-w-0 h-9 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-mono outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
-            placeholder={defaultStem}
-            aria-label={t("download.filenameLabel")}
-            spellCheck={false}
-          />
-          <span className="text-xs font-mono text-muted-foreground shrink-0 select-none">.{ext}</span>
+        <div className="flex flex-col gap-1 w-full">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {t("download.filenameHeader")}
+          </span>
+          <div className="flex items-center gap-1.5 w-full">
+            <input
+              type="text"
+              value={stemValue}
+              onChange={(e) => setStemOverride(stripPathSeparators(e.target.value))}
+              className="flex-1 min-w-0 h-9 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-mono outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50"
+              placeholder={defaultStem}
+              aria-label={t("download.filenameLabel")}
+              spellCheck={false}
+            />
+            <span className="text-xs font-mono text-muted-foreground shrink-0 select-none">.{ext}</span>
+          </div>
         </div>
         {buttonElement}
       </div>

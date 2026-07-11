@@ -833,6 +833,7 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
                     onChange={filename.onChange}
                     placeholder={defaultStem}
                     className="mb-2"
+                    showLabel={true}
                   />
                   <Button
                     onClick={downloadPng}

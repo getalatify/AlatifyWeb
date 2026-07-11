@@ -478,7 +478,7 @@ export default function PdfToImageClient() {
               <Button
                 disabled={!selectedFile || isConverting || pagesToExport.length === 0}
                 onClick={handleConvert}
-                className="w-full p-3 sm:p-3.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 group"
+                className="w-full p-3 sm:p-3.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 group"
               >
                 {isConverting ? (
                   <>
@@ -495,11 +495,6 @@ export default function PdfToImageClient() {
             </div>
           </div>
         </section>
-
-        {/* Natively Private explanation block */}
-        <PrivacyNotice>
-          <p>{t("tools.pdf-to-image.privacyNotice")}</p>
-        </PrivacyNotice>
 
         {/* How It Works */}
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
@@ -659,6 +654,12 @@ export default function PdfToImageClient() {
             </Link>
           </div>
         </section>
+
+        {/* Natively Private explanation block */}
+        <PrivacyNotice>
+          <p>{t("tools.pdf-to-image.privacyNotice")}</p>
+        </PrivacyNotice>
+
       </div>
     </main>
   );
