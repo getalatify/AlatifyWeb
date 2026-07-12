@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, RefreshCw, FileImage, Loader2 } from "lucide-react";
 import { formatBytes, getImageFormat } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/useT";
 
 interface ImagePreviewProps {
   className?: string;
@@ -14,6 +15,7 @@ interface ImagePreviewProps {
 }
 
 export function ImagePreview({ className, showActions = true }: ImagePreviewProps) {
+  const t = useT();
   const activeImage = useImageStore((state) => state.activeImage);
   const activeImageUrl = useImageStore((state) => state.activeImageUrl);
   const clearActiveImage = useImageStore((state) => state.clearActiveImage);
@@ -89,7 +91,7 @@ export function ImagePreview({ className, showActions = true }: ImagePreviewProp
         ) : (
           <img
             src={activeImageUrl}
-            alt="Preview"
+            alt={t("imagePreview.alt")}
             className="object-contain max-h-[500px] w-auto h-auto rounded-md shadow-md transition-transform duration-200"
           />
         )}
@@ -128,7 +130,7 @@ export function ImagePreview({ className, showActions = true }: ImagePreviewProp
               className="gap-1.5 text-xs border-border hover:bg-muted text-foreground"
             >
               <RefreshCw className="w-3.5 h-3.5" />
-              Replace
+              {t("imagePreview.replace")}
             </Button>
             <Button
               variant="ghost"
@@ -137,7 +139,7 @@ export function ImagePreview({ className, showActions = true }: ImagePreviewProp
               className="gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              Remove
+              {t("imagePreview.remove")}
             </Button>
           </div>
         )}

@@ -5,11 +5,11 @@ import { JsonLd } from "@/components/json-ld";
 const ExifCleanerClient = dynamic(() => import("./exif-cleaner-client"));
 
 export const metadata: Metadata = {
-  title: "Remove EXIF & GPS Metadata from Photos — Free, No Upload | Alatify",
-  description: "Strip GPS location, camera details, and hidden metadata from your photos before sharing — 100% private, runs in your browser, no upload, fully lossless.",
+  title: "Remove EXIF & GPS Metadata from Photos: Free, No Upload | Alatify",
+  description: "Strip GPS location, camera details, and hidden metadata from your photos before sharing: 100% private, runs in your browser, no upload, fully lossless.",
   openGraph: {
-    title: "Remove EXIF & GPS Metadata from Photos — Free, No Upload | Alatify",
-    description: "Strip GPS location, camera details, and hidden metadata from your photos before sharing — 100% private, runs in your browser, no upload, fully lossless.",
+    title: "Remove EXIF & GPS Metadata from Photos: Free, No Upload | Alatify",
+    description: "Strip GPS location, camera details, and hidden metadata from your photos before sharing: 100% private, runs in your browser, no upload, fully lossless.",
   },
 };
 
@@ -18,9 +18,9 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "EXIF Privacy Cleaner — Alatify",
+      "name": "EXIF Privacy Cleaner: Alatify",
       "url": "https://getalatify.com/tools/exif-cleaner",
-      "description": "Strip GPS location, camera details, and hidden metadata from your photos before sharing — 100% private, runs in your browser, no upload, fully lossless.",
+      "description": "Strip GPS location, camera details, and hidden metadata from your photos before sharing: 100% private, runs in your browser, no upload, fully lossless.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "browserRequirements": "Requires a modern web browser",

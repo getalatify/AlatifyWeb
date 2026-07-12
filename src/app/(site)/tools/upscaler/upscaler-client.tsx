@@ -405,7 +405,7 @@ export default function UpscalerClient() {
           workerRef.current = null;
           setStage("gpu-failed");
           setError(
-            "WebGPU couldn't start on this device. Please reload the page — it will automatically switch to the slower (but reliable) CPU mode.",
+            "WebGPU couldn't start on this device. Please reload the page, it will automatically switch to the slower (but reliable) CPU mode.",
           );
           return;
         case "success": {
@@ -468,7 +468,7 @@ export default function UpscalerClient() {
         scale,
         device,
       },
-      [buffer], // transfer ownership — no copy
+      [buffer], // transfer ownership, no copy
     );
   }, [
     activeImage,
@@ -528,7 +528,7 @@ export default function UpscalerClient() {
             AI Image Upscaler
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-            Upscale Images 2x &amp; 4x — Private, On-Device AI
+            Upscale Images 2x &amp; 4x: Private, On-Device AI
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
             {t("tools.upscaler.intro")}
@@ -834,7 +834,7 @@ export default function UpscalerClient() {
                 )}
 
                 <Button
-                  onClick={upscale}
+                              onClick={upscale}
                   disabled={isProcessing || !activeImage}
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10 active:scale-[0.98] transition-all gap-2 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -845,6 +845,7 @@ export default function UpscalerClient() {
                   file={processedImage}
                   filenamePrefix={`upscaled-${scale}x`}
                   originalFilename={activeImage?.name ?? "image"}
+                  editableFilename
                   disabled={isProcessing || stage !== "complete" || !processedImage}
                   className={cn(
                     "w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all gap-2 flex items-center justify-center disabled:opacity-50 disabled:pointer-events-none",

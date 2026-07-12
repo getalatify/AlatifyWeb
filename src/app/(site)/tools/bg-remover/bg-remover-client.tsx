@@ -533,7 +533,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
 
           const totalDuration = totalDurationFloat.toFixed(1);
           const attemptDuration = attemptDurationFloat.toFixed(1);
-          const modelName = modelType === 'isnet' ? 'Quality — ISNet Base' : modelType === 'isnet_fp16' ? 'Balanced — ISNet FP16' : 'Lite — ISNet Quant8';
+          const modelName = modelType === 'isnet' ? 'Quality · ISNet Base' : modelType === 'isnet_fp16' ? 'Balanced · ISNet FP16' : 'Lite · ISNet Quant8';
           const originalFormat = activeImage ? getImageFormat(activeImage) : "";
           const imgDimensions = originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : "Unknown";
 
@@ -636,7 +636,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
         handleGpuFallback();
       } else {
         const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
-        console.log(`[BG Remover] Failed at ${duration}s — Error: ${errorObj?.message || errorObj}`);
+        console.log(`[BG Remover] Failed at ${duration}s, Error: ${errorObj?.message || errorObj}`);
 
         setError(errorObj?.message || "Failed to start background removal process.");
         setStage("error");
@@ -746,7 +746,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
               AI Background Remover
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-foreground">
-              Remove Image Backgrounds — Free, Unlimited &amp; Private
+              Remove Image Backgrounds: Free, Unlimited &amp; Private
             </h1>
             <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
               {t("tools.bg-remover.intro")}
@@ -1145,7 +1145,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
                   <div className="space-y-2 text-[10px] text-muted-foreground leading-relaxed pt-2">
                     <div className="flex gap-2">
                       <span className="text-primary font-bold">✔</span>
-                      <span><strong className="text-foreground font-semibold">Privacy-first AI:</strong> Processing runs entirely in your browser. Processing time depends on your device—larger images and slower devices take longer.</span>
+                      <span><strong className="text-foreground font-semibold">Privacy-first AI:</strong> Processing runs entirely in your browser. Processing time depends on your device, larger images and slower devices take longer.</span>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-primary font-bold">✔</span>
@@ -1190,6 +1190,7 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
                   file={processedImage}
                   filenamePrefix="no-bg"
                   originalFilename={(activeImage as File)?.name ?? "image"}
+                  editableFilename
                   disabled={isProcessing || stage !== 'complete' || !processedImage}
                   className={cn(
                     "w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",

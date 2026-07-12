@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useDropzone } from "react-dropzone";
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Header, PrivacyNotice } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -22,6 +23,8 @@ import {
   Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FilenameField } from "@/components/shared/filename-field";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
 
 interface ImageItem {
   id: string;
@@ -96,35 +99,53 @@ const ImageRow = React.memo(function ImageRow({
       {/* Reordering and deletion controls */}
       <div className="flex items-center gap-1.5 shrink-0">
         {/* Touch Mobile Reorder Buttons */}
-        <button
-          type="button"
-          disabled={isFirst}
-          onClick={onMoveUp}
-          className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-          title="Move Up"
-          aria-label="Move Up"
-        >
-          <ArrowUp className="w-3.5 h-3.5" />
-        </button>
-        <button
-          type="button"
-          disabled={isLast}
-          onClick={onMoveDown}
-          className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
-          title="Move Down"
-          aria-label="Move Down"
-        >
-          <ArrowDown className="w-3.5 h-3.5" />
-        </button>
-        <button
-          type="button"
-          onClick={onRemove}
-          className="p-1.5 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 text-destructive transition-colors ml-1"
-          title="Remove image"
-          aria-label="Remove image"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              disabled={isFirst}
+              onClick={onMoveUp}
+              className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              aria-label="Move Up"
+            >
+              <ArrowUp className="w-3.5 h-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Move Up
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              disabled={isLast}
+              onClick={onMoveDown}
+              className="p-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              aria-label="Move Down"
+            >
+              <ArrowDown className="w-3.5 h-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Move Down
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={onRemove}
+              className="p-1.5 rounded-lg border border-destructive/20 bg-destructive/5 hover:bg-destructive/10 text-destructive transition-colors ml-1"
+              aria-label="Remove image"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Remove image
+          </TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );
@@ -145,6 +166,7 @@ export default function ImageToPdfClient() {
   const [orientation, setOrientation] = useState<"auto" | "portrait" | "landscape">("auto");
   const [marginSize, setMarginSize] = useState<"none" | "small" | "medium">("none");
   const [isCompiling, setIsCompiling] = useState(false);
+const filename = useFilenameStem("combined");
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
@@ -364,7 +386,7 @@ export default function ImageToPdfClient() {
       }
 
       if (doc) {
-        doc.save("compiled-images.pdf");
+        doc.save(`${filename.resolve()}.pdf`);
         toast.success("Successfully generated and downloaded PDF document.", { id: toastId });
       } else {
         throw new Error("PDF compiler was not initialized.");
@@ -647,10 +669,18 @@ export default function ImageToPdfClient() {
               </div>
 
               {/* Action Compile button */}
+              <FilenameField
+                value={filename.value}
+                onChange={filename.onChange}
+                ext="pdf"
+                placeholder="combined"
+                showLabel={true}
+                className="mb-2.5"
+              />
               <Button
                 disabled={images.length === 0 || isCompiling}
                 onClick={handleCompile}
-                className="w-full p-3 sm:p-3.5 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 group"
+                className="w-full p-3 sm:p-3.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 group"
               >
                 {isCompiling ? (
                   <>
@@ -667,11 +697,6 @@ export default function ImageToPdfClient() {
             </div>
           </div>
         </section>
-
-        {/* Natively Private explanation block */}
-        <PrivacyNotice>
-          <p>{t("tools.image-to-pdf.privacyNotice")}</p>
-        </PrivacyNotice>
 
         {/* How It Works */}
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
@@ -831,6 +856,12 @@ export default function ImageToPdfClient() {
             </Link>
           </div>
         </section>
+
+        {/* Natively Private explanation block */}
+        <PrivacyNotice>
+          <p>{t("tools.image-to-pdf.privacyNotice")}</p>
+        </PrivacyNotice>
+
       </div>
     </main>
   );

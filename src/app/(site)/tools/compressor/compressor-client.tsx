@@ -548,7 +548,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                     value={format}
                     onChange={(e) => setFormat(e.target.value)}
                     disabled={isCompressing}
-                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed [color-scheme:light] dark:[color-scheme:dark]"
                   >
                     <option value="original">Keep original format</option>
                     <option value="image/jpeg">Convert to JPEG</option>
@@ -664,6 +664,7 @@ export default function ImageCompressorPage({ isEmbed = false }: { isEmbed?: boo
                   file={compressedImage}
                   filenamePrefix="compressed"
                   originalFilename={(activeImage as File).name ?? "image"}
+                  editableFilename
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center"
                 >
                   Download Compressed Image

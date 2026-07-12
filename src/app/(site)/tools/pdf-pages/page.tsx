@@ -5,13 +5,13 @@ import { JsonLd } from "@/components/json-ld";
 const PdfPagesClient = dynamic(() => import("./pdf-pages-client"), { ssr: false });
 
 export const metadata: Metadata = {
-  title: "Free PDF Page Tools — Merge, Split, Reorder & Rotate Pages | Alatify",
+  title: "Free PDF Page Tools: Merge, Split, Reorder & Rotate Pages | Alatify",
   description:
-    "Load one or more PDFs, reorder, rotate, delete, and extract pages — then export a new PDF entirely in your browser. No upload, no sign-up. Files never leave your device.",
+    "Load one or more PDFs, reorder, rotate, delete, and extract pages, then export a new PDF entirely in your browser. No upload, no sign-up. Files never leave your device.",
   openGraph: {
-    title: "Free PDF Page Tools — Merge, Split, Reorder & Rotate Pages | Alatify",
+    title: "Free PDF Page Tools: Merge, Split, Reorder & Rotate Pages | Alatify",
     description:
-      "Load one or more PDFs, reorder, rotate, delete, and extract pages — then export a new PDF entirely in your browser. No upload, no sign-up. Files never leave your device.",
+      "Load one or more PDFs, reorder, rotate, delete, and extract pages, then export a new PDF entirely in your browser. No upload, no sign-up. Files never leave your device.",
   },
 };
 
@@ -20,10 +20,10 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      name: "PDF Page Tools — Alatify",
+      name: "PDF Page Tools: Alatify",
       url: "https://getalatify.com/tools/pdf-pages",
       description:
-        "Load one or more PDFs, reorder, rotate, delete, and extract pages — then export a new PDF entirely in your browser. No upload, no sign-up. Files never leave your device.",
+        "Load one or more PDFs, reorder, rotate, delete, and extract pages, then export a new PDF entirely in your browser. No upload, no sign-up. Files never leave your device.",
       applicationCategory: "DocumentApplication",
       operatingSystem: "Web Browser",
       browserRequirements: "Requires a modern web browser",

@@ -1,11 +1,14 @@
 "use client";
 
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { Header, PrivacyNotice } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
@@ -21,8 +24,12 @@ export default function IdProtectorClient() {
   const [history, setHistory] = useState<Redaction[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
 
+  const defaultStem = "id-protected";
+  const filename = useFilenameStem(defaultStem, file?.name);
+
   const [mode, setMode] = useState<RedactionMode>('solid');
   const [solidColor, setSolidColor] = useState<string>('#000000');
+  const [blurStrength, setBlurStrength] = useState<number>(25);
 
   const [watermark, setWatermark] = useState<WatermarkConfig>({
     text: '',
@@ -49,6 +56,12 @@ export default function IdProtectorClient() {
   const rAFRef = useRef<number | null>(null);
 
   const [activeRedactionId, setActiveRedactionId] = useState<string | null>(null);
+
+  const blurEditDirtyRef = useRef(false);
+  const redactionsRef = useRef(redactions);
+  useEffect(() => {
+    redactionsRef.current = redactions;
+  }, [redactions]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { "image/*": [] },
@@ -82,8 +95,8 @@ export default function IdProtectorClient() {
     const previewRedactions = draggedRedaction
       ? redactions.filter(r => r.id !== draggedRedaction.id)
       : redactions;
-    renderToCanvas(imageObj, previewRedactions, watermark, previewCanvasRef.current, true);
-  }, [imageObj, redactions, watermark, draggedRedaction]);
+    renderToCanvas(imageObj, previewRedactions, watermark, previewCanvasRef.current, true, blurStrength);
+  }, [imageObj, redactions, watermark, draggedRedaction, blurStrength]);
 
   useEffect(() => {
     const rAF = requestAnimationFrame(updateCanvas);
@@ -102,6 +115,12 @@ export default function IdProtectorClient() {
     setHistoryIndex(nextHistory.length);
     setRedactions(newRedactions);
   }, [history, historyIndex]);
+
+  const commitBlurEdit = useCallback(() => {
+    if (!blurEditDirtyRef.current) return;
+    blurEditDirtyRef.current = false;
+    pushState(redactionsRef.current);
+  }, [pushState]);
 
   const undo = useCallback(() => {
     if (historyIndex > 0) {
@@ -227,7 +246,8 @@ export default function IdProtectorClient() {
         w: currentRect.w,
         h: currentRect.h,
         mode: mode,
-        color: solidColor
+        color: solidColor,
+        blurStrength: blurStrength
       };
 
       pushState([...redactions, newRedaction]);
@@ -244,14 +264,14 @@ export default function IdProtectorClient() {
 
     try {
       const offscreenCanvas = document.createElement('canvas');
-      renderToCanvas(imageObj, redactions, watermark, offscreenCanvas, false); // false for natural size export
+      renderToCanvas(imageObj, redactions, watermark, offscreenCanvas, false, blurStrength); // false for natural size export
 
       const blob = await exportPng(offscreenCanvas);
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `id-protected.png`;
+      a.download = `${filename.resolve()}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -372,6 +392,11 @@ export default function IdProtectorClient() {
     );
   };
 
+  const activeBox = redactions.find(r => r.id === activeRedactionId);
+  const sliderValue = (activeBox && activeBox.mode === 'blur')
+    ? (activeBox.blurStrength ?? blurStrength)
+    : blurStrength;
+
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip">
       {/* Background Glows for Premium Vibe */}
@@ -466,13 +491,6 @@ export default function IdProtectorClient() {
                     >
                       <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Start Over
                     </Button>
-                    <Button
-                      size="sm"
-                      onClick={handleDownload}
-                      className="h-9 text-xs font-extrabold rounded-xl bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary-hover text-primary-foreground shadow-md hover:shadow-lg active:scale-[0.98] transition-all gap-1.5"
-                    >
-                      <Download className="w-3.5 h-3.5" /> Download Protected PNG
-                    </Button>
                   </div>
                 </div>
 
@@ -506,6 +524,23 @@ export default function IdProtectorClient() {
                     />
                     {renderOverlay()}
                   </div>
+                </div>
+
+                <div className="flex flex-wrap items-end justify-end gap-4 p-4 bg-card rounded-2xl border border-border/60 shadow-sm">
+                  <FilenameField
+                    showLabel={true}
+                    value={filename.value}
+                    onChange={filename.onChange}
+                    ext="png"
+                    placeholder="id-protected"
+                    className="w-48"
+                  />
+                  <Button
+                    onClick={handleDownload}
+                    className="h-9 text-xs font-extrabold rounded-xl bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary-hover text-primary-foreground shadow-md hover:shadow-lg active:scale-[0.98] transition-all gap-1.5"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Download Protected PNG
+                  </Button>
                 </div>
               </div>
             )}
@@ -542,10 +577,42 @@ export default function IdProtectorClient() {
                     </button>
                   </div>
 
-                  {mode === 'blur' && (
-                    <div className="p-3 bg-destructive/5 dark:bg-destructive/10 border border-destructive/20 rounded-xl flex items-start gap-2 text-destructive text-xs leading-normal">
-                      <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-destructive" />
-                      <span>Blurring is theoretically reversible. Use <strong>Solid</strong> blocks for sensitive fields (e.g. ID numbers).</span>
+                  {(mode === 'blur' || (activeBox && activeBox.mode === 'blur')) && (
+                    <div className="space-y-3">
+                      <div className="p-3 bg-destructive/5 dark:bg-destructive/10 border border-destructive/20 rounded-xl flex items-start gap-2 text-destructive text-xs leading-normal">
+                        <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-destructive" />
+                        <span>Blurring is theoretically reversible. Use <strong>Solid</strong> blocks for sensitive fields (e.g. ID numbers).</span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                            Blur Strength
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-[10px] font-extrabold">
+                            {sliderValue}px
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min={5}
+                          max={100}
+                          step={1}
+                          value={sliderValue}
+                          onChange={(e) => {
+                            const v = Number(e.target.value);
+                            if (activeBox && activeBox.mode === 'blur') {
+                              setRedactions(prev => prev.map(r => r.id === activeBox.id ? { ...r, blurStrength: v } : r));
+                              blurEditDirtyRef.current = true;
+                            } else {
+                              setBlurStrength(v);
+                            }
+                          }}
+                          onPointerUp={commitBlurEdit}
+                          onTouchEnd={commitBlurEdit}
+                          onKeyUp={commitBlurEdit}
+                          className="w-full h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                        />
+                      </div>
                     </div>
                   )}
 
@@ -553,20 +620,32 @@ export default function IdProtectorClient() {
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-foreground">Solid Color</label>
                       <div className="flex gap-2">
-                        <button
-                          className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#000000' ? "border-primary" : "border-transparent")}
-                          style={{ backgroundColor: '#000000' }}
-                          onClick={() => setSolidColor('#000000')}
-                          title="Select Black Color"
-                          aria-label="Select black color for solid redaction"
-                        />
-                        <button
-                          className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#ffffff' ? "border-primary" : "border-border")}
-                          style={{ backgroundColor: '#ffffff' }}
-                          onClick={() => setSolidColor('#ffffff')}
-                          title="Select White Color"
-                          aria-label="Select white color for solid redaction"
-                        />
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#000000' ? "border-primary" : "border-transparent")}
+                              style={{ backgroundColor: '#000000' }}
+                              onClick={() => setSolidColor('#000000')}
+                              aria-label="Select black color for solid redaction"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Select Black Color
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className={cn("w-8 h-8 rounded-lg border-2", solidColor === '#ffffff' ? "border-primary" : "border-border")}
+                              style={{ backgroundColor: '#ffffff' }}
+                              onClick={() => setSolidColor('#ffffff')}
+                              aria-label="Select white color for solid redaction"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Select White Color
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   )}
@@ -655,6 +734,7 @@ export default function IdProtectorClient() {
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </section>

@@ -5,6 +5,7 @@ import { useDropzone, type FileRejection } from "react-dropzone";
 import { ImageUp, Loader2 } from "lucide-react";
 import { useImageStore } from "@/lib/store/imageStore";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/useT";
 
 interface ImageUploaderProps {
   className?: string;
@@ -21,6 +22,7 @@ export function ImageUploader({
   multiple = false,
   onUploadMultiple
 }: ImageUploaderProps) {
+  const t = useT();
   const setActiveImage = useImageStore((state) => state.setActiveImage);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
@@ -56,25 +58,25 @@ export function ImageUploader({
           onUploadComplete();
         }
       } catch {
-        setErrorMessage("Failed to read image file.");
+        setErrorMessage(t("imageUploader.error.failedRead"));
       } finally {
         setIsReading(false);
       }
     },
-    [setActiveImage, onUpload, onUploadComplete, multiple, onUploadMultiple]
+    [setActiveImage, onUpload, onUploadComplete, multiple, onUploadMultiple, t]
   );
 
   const onDropRejected = useCallback((rejections: FileRejection[]) => {
     if (rejections.length === 0) return;
     const error = rejections[0].errors[0];
     if (error.code === "file-invalid-type") {
-      setErrorMessage("Unsupported file type. Please upload a PNG, JPG, WebP, GIF, AVIF, BMP, HEIC, TIFF, or SVG.");
+      setErrorMessage(t("imageUploader.error.unsupportedType"));
     } else if (error.code === "file-too-large") {
-      setErrorMessage("File is too large. Maximum size allowed is 50MB.");
+      setErrorMessage(t("imageUploader.error.tooLarge"));
     } else {
-      setErrorMessage(error.message || "Invalid file selection.");
+      setErrorMessage(error.message || t("imageUploader.error.invalidSelection"));
     }
-  }, []);
+  }, [t]);
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDropAccepted,
@@ -121,7 +123,7 @@ export function ImageUploader({
         {isReading ? (
           <div className="space-y-3 flex flex-col items-center">
             <Loader2 className="w-12 h-12 text-primary animate-spin" />
-            <p className="text-base font-semibold text-foreground">Reading image file...</p>
+            <p className="text-base font-semibold text-foreground">{t("imageUploader.reading")}</p>
           </div>
         ) : (
           <div className="space-y-4 flex flex-col items-center">
@@ -138,13 +140,17 @@ export function ImageUploader({
             <div className="space-y-1">
               <p className="text-base font-bold text-foreground transition-colors duration-200">
                 {showAccept
-                  ? (multiple ? "Drop your images here" : "Drop your image here")
+                  ? (multiple ? t("imageUploader.dropImages") : t("imageUploader.dropImage"))
                   : showReject
-                  ? "Unsupported file type"
-                  : (multiple ? "Drag and drop images here, or click to select" : "Drag and drop image here, or click to select")}
+                  ? t("imageUploader.unsupportedTypeTitle")
+                  : (multiple ? t("imageUploader.dragAndDropMultiple") : t("imageUploader.dragAndDropSingle"))}
               </p>
               <p className="text-xs transition-colors duration-200 text-muted-foreground">
-                {showReject ? "Please check file format or size" : `Up to 50MB${multiple ? " per file" : ""} · JPG, PNG, WebP, HEIC, TIFF, SVG`}
+                {showReject 
+                  ? t("imageUploader.checkFile") 
+                  : (multiple 
+                    ? t("imageUploader.specsMultiple") 
+                    : t("imageUploader.specsSingle"))}
               </p>
             </div>
           </div>

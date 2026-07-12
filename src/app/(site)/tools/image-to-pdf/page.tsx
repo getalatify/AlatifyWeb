@@ -3,10 +3,10 @@ import { JsonLd } from "@/components/json-ld";
 import ImageToPdfClient from "./image-to-pdf-client";
 
 export const metadata: Metadata = {
-  title: "Free Image to PDF Converter — Combine Images Online Privately | Alatify",
+  title: "Free Image to PDF Converter: Combine Images Online Privately | Alatify",
   description: "Combine multiple PNG, JPG, or WebP images into a single PDF document. Drag-and-drop or shift buttons to reorder, set page margins, orientation, and sizes locally. 100% private.",
   openGraph: {
-    title: "Free Image to PDF Converter — Combine Images Online Privately | Alatify",
+    title: "Free Image to PDF Converter: Combine Images Online Privately | Alatify",
     description: "Combine multiple PNG, JPG, or WebP images into a single PDF document. Drag-and-drop or shift buttons to reorder, set page margins, orientation, and sizes locally. 100% private.",
   },
 };
@@ -16,7 +16,7 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Image to PDF Converter — Alatify",
+      "name": "Image to PDF Converter: Alatify",
       "url": "https://getalatify.com/tools/image-to-pdf",
       "description": "Combine multiple PNG, JPG, or WebP images into a single PDF document. Drag-and-drop or shift buttons to reorder, set page margins, orientation, and sizes locally. 100% private.",
       "applicationCategory": "DocumentApplication",

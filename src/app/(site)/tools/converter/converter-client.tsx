@@ -2,6 +2,7 @@
 "use client";
 
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Header, DownloadButton, PrivacyNotice } from "@/components/shared";
@@ -382,7 +383,7 @@ export default function FormatConverterPage() {
         const ifds = UTIF.decode(buffer);
         let warning = null;
         if (ifds.length > 1) {
-          warning = "Multi-page TIFF detected — converting first page only";
+          warning = "Multi-page TIFF detected, converting first page only";
         }
         
         UTIF.decodeImage(buffer, ifds[0]);
@@ -1427,7 +1428,7 @@ export default function FormatConverterPage() {
                       setWasSvgDownscaled(false);
                     }}
                     disabled={isConverting}
-                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50"
+                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]"
                   >
                     <optgroup label="Standard">
                       <option value="image/webp">Convert to WebP (Optimized)</option>
@@ -1639,6 +1640,7 @@ export default function FormatConverterPage() {
                   file={convertedImage}
                   filenamePrefix="converted"
                   originalFilename={(activeImage as File).name ?? "image"}
+                  editableFilename
                   disabled={isConverting || !convertedImage}
                   className="w-full py-5 sm:py-6 text-sm rounded-xl font-bold bg-secondary hover:bg-secondary/80 text-foreground border border-border/50 shadow-md active:scale-[0.98] transition-all duration-150 gap-2 shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                 >
@@ -1730,39 +1732,57 @@ export default function FormatConverterPage() {
 
                       {/* Controls */}
                       <div className="flex items-center gap-1 shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => moveImageItem(index, 'up')}
-                          disabled={index === 0 || isConverting}
-                          className="w-8 h-8 rounded-lg hover:bg-secondary border border-transparent disabled:opacity-40"
-                          title="Move up"
-                          aria-label="Move image up"
-                        >
-                          <ArrowUp className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => moveImageItem(index, 'down')}
-                          disabled={index === imagesList.length - 1 || isConverting}
-                          className="w-8 h-8 rounded-lg hover:bg-secondary border border-transparent disabled:opacity-40"
-                          title="Move down"
-                          aria-label="Move image down"
-                        >
-                          <ArrowDown className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeImageItem(item.id)}
-                          disabled={isConverting}
-                          className="w-8 h-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                          title="Remove image"
-                          aria-label="Remove image from list"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveImageItem(index, 'up')}
+                              disabled={index === 0 || isConverting}
+                              className="w-8 h-8 rounded-lg hover:bg-secondary border border-transparent disabled:opacity-40"
+                              aria-label="Move image up"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Move up
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveImageItem(index, 'down')}
+                              disabled={index === imagesList.length - 1 || isConverting}
+                              className="w-8 h-8 rounded-lg hover:bg-secondary border border-transparent disabled:opacity-40"
+                              aria-label="Move image down"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Move down
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeImageItem(item.id)}
+                              disabled={isConverting}
+                              className="w-8 h-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                              aria-label="Remove image from list"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Remove image
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   ))}
@@ -1853,7 +1873,7 @@ export default function FormatConverterPage() {
                       setWasSvgDownscaled(false);
                     }}
                     disabled={isConverting}
-                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50"
+                    className="w-full p-2.5 sm:p-3 rounded-xl bg-secondary border border-border hover:border-primary/30 focus:border-primary focus:outline-none text-sm font-semibold transition-all duration-150 disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]"
                   >
                     <optgroup label="Standard">
                       <option value="image/webp">Convert to WebP (Optimized)</option>

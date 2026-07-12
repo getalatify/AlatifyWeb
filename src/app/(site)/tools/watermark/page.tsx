@@ -7,11 +7,11 @@ import { JsonLd } from "@/components/json-ld";
 const WatermarkClient = dynamic(() => import("./watermark-client"));
 
 export const metadata: Metadata = {
-  title: "Free Image Watermark Tool — Add Text or Logo Watermarks, Batch | Alatify",
-  description: "Add text or logo watermarks to images in your browser — drag to position, tile diagonally, rotate, and batch-watermark up to 30 photos at once. No upload, no sign-up. Files stay on your device.",
+  title: "Free Image Watermark Tool: Add Text or Logo Watermarks, Batch | Alatify",
+  description: "Add text or logo watermarks to images in your browser: drag to position, tile diagonally, rotate, and batch-watermark up to 30 photos at once. No upload, no sign-up. Files stay on your device.",
   openGraph: {
-    title: "Free Image Watermark Tool — Add Text or Logo Watermarks, Batch | Alatify",
-    description: "Add text or logo watermarks to images in your browser — drag to position, tile diagonally, rotate, and batch-watermark up to 30 photos at once. No upload, no sign-up. Files stay on your device.",
+    title: "Free Image Watermark Tool: Add Text or Logo Watermarks, Batch | Alatify",
+    description: "Add text or logo watermarks to images in your browser: drag to position, tile diagonally, rotate, and batch-watermark up to 30 photos at once. No upload, no sign-up. Files stay on your device.",
   },
 };
 
@@ -20,9 +20,9 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Image Watermark Tool — Alatify",
+      "name": "Image Watermark Tool: Alatify",
       "url": "https://getalatify.com/tools/watermark",
-      "description": "Add text or logo watermarks to images in your browser — drag to position, tile diagonally, rotate, and batch-watermark up to 30 photos at once. No upload, no sign-up. Files stay on your device.",
+      "description": "Add text or logo watermarks to images in your browser: drag to position, tile diagonally, rotate, and batch-watermark up to 30 photos at once. No upload, no sign-up. Files stay on your device.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "browserRequirements": "Requires a modern web browser",

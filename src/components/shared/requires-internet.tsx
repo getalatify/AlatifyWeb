@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { WifiOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n/useT";
 
 interface RequiresInternetProps {
   toolName: string;
@@ -10,6 +11,7 @@ interface RequiresInternetProps {
 }
 
 export function RequiresInternet({ toolName, onCheckConnection }: RequiresInternetProps) {
+  const t = useT();
   const [isChecking, setIsChecking] = useState(false);
 
   const handleCheck = async () => {
@@ -19,35 +21,43 @@ export function RequiresInternet({ toolName, onCheckConnection }: RequiresIntern
 
     if (online) {
       import("sonner").then(({ toast }) => {
-        toast.success("Connection restored! You can now use the tool.");
+        toast.success(t("requiresInternet.toast.restored"));
       });
     } else {
       import("sonner").then(({ toast }) => {
-        toast.error("Still offline. Please check your internet connection.");
+        toast.error(t("requiresInternet.toast.stillOffline"));
       });
     }
   };
 
   return (
-    <div className="glass-fake flex flex-col items-center justify-center text-center p-8 rounded-xl max-w-md mx-auto my-12 border border-border bg-card/50">
-      <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center text-destructive mb-4">
-        {isChecking ? (
-          <Loader2 className="w-6 h-6 animate-spin" />
-        ) : (
-          <WifiOff className="w-6 h-6" />
-        )}
+    <div className="w-full max-w-md mx-auto p-6 bg-card border border-border/80 rounded-2xl shadow-xl flex flex-col items-center text-center gap-4 animate-fade-in">
+      <div className="w-12 h-12 rounded-full bg-destructive/15 flex items-center justify-center border border-destructive/20 text-destructive animate-pulse">
+        <WifiOff className="w-6 h-6" />
       </div>
-      <h3 className="text-xl font-semibold mb-2">Connection Required</h3>
-      <p className="text-muted-foreground text-sm mb-6">
-        The <strong>{toolName}</strong> tool requires an active internet connection to download AI weights or fetch external databases.
-      </p>
+
+      <div className="space-y-1.5">
+        <h3 className="font-bold text-base text-foreground">{t("requiresInternet.title")}</h3>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {t("requiresInternet.desc", { toolName })}
+        </p>
+      </div>
+
       <Button
-        variant="secondary"
-        onClick={handleCheck}
+        variant="outline"
+        size="sm"
         disabled={isChecking}
-        className="w-full sm:w-auto"
+        onClick={handleCheck}
+        className="w-full gap-2 text-xs border-border hover:bg-muted font-bold active:scale-[0.98] transition-all"
       >
-        {isChecking ? "Checking..." : "Check Connection"}
+        {isChecking ? (
+          <>
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            {t("requiresInternet.checking")}
+          </>
+        ) : (
+          t("requiresInternet.checkButton")
+        )}
       </Button>
     </div>
   );

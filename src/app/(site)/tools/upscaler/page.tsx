@@ -5,11 +5,11 @@ import { JsonLd } from "@/components/json-ld";
 const UpscalerClient = dynamic(() => import("./upscaler-client"));
 
 export const metadata: Metadata = {
-  title: "Free AI Image Upscaler — Enlarge Photos 2x & 4x | Alatify",
-  description: "Upscale and sharpen images 2x or 4x with a Real-ESRGAN AI model that runs 100% in your browser. No uploads, no account — completely free and private.",
+  title: "Free AI Image Upscaler: Enlarge Photos 2x & 4x | Alatify",
+  description: "Upscale and sharpen images 2x or 4x with a Real-ESRGAN AI model that runs 100% in your browser. No uploads, no account: completely free and private.",
   openGraph: {
-    title: "Free AI Image Upscaler — Enlarge Photos 2x & 4x | Alatify",
-    description: "Upscale and sharpen images 2x or 4x with a Real-ESRGAN AI model that runs 100% in your browser. No uploads, no account — completely free and private.",
+    title: "Free AI Image Upscaler: Enlarge Photos 2x & 4x | Alatify",
+    description: "Upscale and sharpen images 2x or 4x with a Real-ESRGAN AI model that runs 100% in your browser. No uploads, no account: completely free and private.",
   },
 };
 
@@ -18,9 +18,9 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "AI Image Upscaler — Alatify",
+      "name": "AI Image Upscaler: Alatify",
       "url": "https://getalatify.com/tools/upscaler",
-      "description": "Upscale and sharpen images 2x or 4x with a Real-ESRGAN AI model that runs 100% in your browser. No uploads, no account — completely free and private.",
+      "description": "Upscale and sharpen images 2x or 4x with a Real-ESRGAN AI model that runs 100% in your browser. No uploads, no account: completely free and private.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "browserRequirements": "Requires a modern web browser",
@@ -44,7 +44,7 @@ const jsonLdData = {
           "name": "Are my images uploaded to a server?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No. All processing happens locally in your browser — your images never leave your device."
+            "text": "No. All processing happens locally in your browser, your images never leave your device."
           }
         },
         {
@@ -68,7 +68,7 @@ const jsonLdData = {
           "name": "Is it free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes — completely free, no account or sign-up."
+            "text": "Yes, completely free, no account or sign-up."
           }
         },
         {
@@ -100,7 +100,7 @@ const jsonLdData = {
           "name": "Does it work offline?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes — once the model is cached, your browser can upscale with no internet connection."
+            "text": "Yes, once the model is cached, your browser can upscale with no internet connection."
           }
         }
       ]

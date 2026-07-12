@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n/useT";
 
 function formatElapsed(seconds: number): string {
   if (seconds < 60) return `${Math.floor(seconds)}s`;
@@ -52,6 +53,7 @@ export function ProcessingOverlay({
   tileDone,
   tileTotal,
 }: ProcessingOverlayProps) {
+  const t = useT();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -100,26 +102,26 @@ export function ProcessingOverlay({
     ? Math.min(100, Math.round((tileDone! / tileTotal!) * 100))
     : 0;
 
-  let title = processingTitle || "Removing background...";
+  let title = processingTitle || t("processingOverlay.default.title");
   let description =
     processingDescription ||
-    "This usually takes 30-60 seconds. Please don't close this tab.";
+    t("processingOverlay.default.description");
   let showProgressBar = false;
 
   if (stage === "downloading") {
-    title = "Downloading AI model (one-time setup)…";
-    description = `Downloading neural weights (${modelSize}). This file is cached locally so future runs load instantly.`;
+    title = t("processingOverlay.downloading.title");
+    description = t("processingOverlay.downloading.description", { modelSize });
     showProgressBar = true;
   } else if (stage === "initializing" || stage === "compiling") {
-    title = "Setting up AI engine…";
+    title = t("processingOverlay.initializing.title");
     description = stage === "compiling"
-      ? "Compiling WebGPU shaders for hardware acceleration..."
-      : "Initializing execution environment...";
+      ? t("processingOverlay.compiling.description")
+      : t("processingOverlay.initializing.description");
   } else if (stage === "processing") {
-    title = processingTitle || "Removing background…";
+    title = processingTitle || t("processingOverlay.default.title");
     description =
       processingDescription ||
-      "Running local subject extraction on your device's hardware.";
+      t("processingOverlay.processing.description");
   }
 
   return createPortal(
@@ -144,7 +146,7 @@ export function ProcessingOverlay({
               />
             </div>
             <div className="flex justify-between items-center text-[10px] text-muted-foreground font-semibold">
-              <span className="truncate max-w-[150px]">{downloadingFile || "Downloading..."}</span>
+              <span className="truncate max-w-[150px]">{downloadingFile || t("processingOverlay.downloadingLabel")}</span>
               <span>{downloadProgress}%</span>
             </div>
           </div>
@@ -159,7 +161,7 @@ export function ProcessingOverlay({
               />
             </div>
             <div className="flex justify-between items-center text-[10px] text-muted-foreground font-semibold">
-              <span>Upscaling… {tileDone} / {tileTotal} tiles</span>
+              <span>{t("processingOverlay.upscalingTiles", { done: tileDone ?? 0, total: tileTotal ?? 0 })}</span>
               <span>{tilePercent}%</span>
             </div>
           </div>
@@ -167,7 +169,7 @@ export function ProcessingOverlay({
 
         {elapsed !== undefined && stage === "processing" && (
           <span className="text-xs text-muted-foreground/80 mt-0.5 font-mono">
-            Elapsed: {formatElapsed(elapsed)}
+            {t("processingOverlay.elapsedPrefix")}{formatElapsed(elapsed)}
           </span>
         )}
 
@@ -178,11 +180,11 @@ export function ProcessingOverlay({
             onClick={onCancel}
             className="mt-2 text-xs border-border hover:bg-muted text-foreground px-4"
           >
-            Cancel
+            {t("processingOverlay.cancelButton")}
           </Button>
         ) : (
           <p className="text-[10px] text-muted-foreground italic mt-2">
-            Processing cannot be cancelled once started
+            {t("processingOverlay.noCancelNotice")}
           </p>
         )}
       </div>

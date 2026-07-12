@@ -6,6 +6,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
 import { ImageSourceInput } from "@/components/image-source-input";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { UrlInputHelp } from "@/components/url-input-help";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +50,9 @@ export default function BlurClient() {
   const [activeBrushSize, setActiveBrushSize] = useState<number>(40);
   const [regions, setRegions] = useState<Region[]>([]);
   const [exportFormat, setExportFormat] = useState<"image/png" | "image/jpeg">("image/png");
+
+  const defaultStem = `${activeImage ? activeImage.name.substring(0, activeImage.name.lastIndexOf(".")) : "image"}-redacted`;
+  const filename = useFilenameStem(defaultStem, activeImage?.name);
 
   // Drawing State
   const [isDrawing, setIsDrawing] = useState(false);
@@ -675,7 +680,7 @@ export default function BlurClient() {
         // Fast Guard: Offline and model not cached
         if (!modelResponse && typeof navigator !== "undefined" && !navigator.onLine) {
           toast.error(
-            "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas — that works fully offline."
+            "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas, that works fully offline."
           );
           setIsDetecting(false);
           return;
@@ -730,7 +735,7 @@ export default function BlurClient() {
       const detections = results.detections || [];
 
       if (detections.length === 0) {
-        toast.info("No faces detected — add regions manually.");
+        toast.info("No faces detected, add regions manually.");
         setIsDetecting(false);
         return;
       }
@@ -770,7 +775,7 @@ export default function BlurClient() {
         setRegions((prev) => [...prev, ...newRegions]);
         toast.success(`Detected and redacted ${newRegions.length} face${newRegions.length > 1 ? "s" : ""}.`);
       } else {
-        toast.info("No faces detected — add regions manually.");
+        toast.info("No faces detected, add regions manually.");
       }
     } catch (err) {
       console.error("Face detection failed:", err);
@@ -784,7 +789,7 @@ export default function BlurClient() {
 
       if (isNetworkError) {
         toast.error(
-          "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas — that works fully offline."
+          "Auto face detection needs a one-time download and requires internet. You can still blur manually by drawing over areas, that works fully offline."
         );
       } else {
         toast.error(err instanceof Error ? err.message : "Face detection failed.");
@@ -926,8 +931,7 @@ export default function BlurClient() {
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          const originalName = activeImage ? activeImage.name.substring(0, activeImage.name.lastIndexOf(".")) : "redacted";
-          a.download = `${originalName}-redacted.${ext}`;
+          a.download = `${filename.resolve()}.${ext}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -1278,16 +1282,16 @@ export default function BlurClient() {
                     <SelectTrigger className="w-full bg-secondary border border-border/80 hover:border-primary/50 text-foreground text-xs rounded-xl h-10 px-3 outline-none flex items-center justify-between transition-all duration-200">
                       <span className="font-semibold">
                         {exportFormat === "image/png"
-                          ? "PNG — Lossless (Preserves quality)"
-                          : "JPEG — Optimized (Smaller file)"}
+                          ? "PNG · Lossless (Preserves quality)"
+                          : "JPEG · Optimized (Smaller file)"}
                       </span>
                     </SelectTrigger>
                     <SelectContent className="bg-card border border-border/80 rounded-xl shadow-xl backdrop-blur-md">
                       <SelectItem value="image/png" className="text-xs font-semibold cursor-pointer">
-                        PNG — Lossless (Preserves quality)
+                        PNG · Lossless (Preserves quality)
                       </SelectItem>
                       <SelectItem value="image/jpeg" className="text-xs font-semibold cursor-pointer">
-                        JPEG — Optimized (Smaller file)
+                        JPEG · Optimized (Smaller file)
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -1300,6 +1304,14 @@ export default function BlurClient() {
                 </div>
 
                 {/* Download trigger */}
+                <FilenameField
+                  value={filename.value}
+                  onChange={filename.onChange}
+                  ext={exportFormat === "image/jpeg" ? "jpg" : "png"}
+                  placeholder={defaultStem}
+                  className="mb-2"
+                  showLabel={true}
+                />
                 <Button
                   onClick={handleDownload}
                   className="w-full py-4 text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-md hover:shadow-lg flex items-center justify-center gap-2 h-11 transition-all"

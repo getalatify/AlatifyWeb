@@ -2,9 +2,12 @@
 "use client";
 
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { Binary, Download, Copy, Check, AlertTriangle, Lock, Unlock, CheckCircle2, HelpCircle, Shield, EyeOff, Upload, Info, Eye, FileText, AlertCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -279,6 +282,9 @@ export default function SteganographyClient() {
   const [encodedUrl, setEncodedUrl] = useState<string | null>(null);
   const [capacityError, setCapacityError] = useState<string | null>(null);
 
+  const defaultStem = `${hostFile ? hostFile.name.substring(0, hostFile.name.lastIndexOf(".")) : "carrier"}-stego`;
+  const filename = useFilenameStem(defaultStem, hostFile?.name);
+
   // Decode tab states
   const [stegoFile, setStegoFile] = useState<File | null>(null);
   const [stegoUrl, setStegoUrl] = useState<string | null>(null);
@@ -524,9 +530,7 @@ export default function SteganographyClient() {
     if (!encodedUrl) return;
     const a = document.createElement("a");
     a.href = encodedUrl;
-    // Derive name from host
-    const origName = hostFile ? hostFile.name.substring(0, hostFile.name.lastIndexOf(".")) : "carrier";
-    a.download = `${origName}-stego.png`;
+    a.download = `${filename.resolve()}.png`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -669,15 +673,21 @@ export default function SteganographyClient() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-secondary border border-border/80 focus:border-primary/50 text-foreground text-sm rounded-xl h-10 pl-3 pr-10 outline-none transition-all"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    title={showPassword ? "Hide password" : "Show password"}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {showPassword ? "Hide password" : "Show password"}
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
                 <p className="text-[10px] text-muted-foreground leading-normal">
                   {t("tools.steganography.passwordHelp")}
@@ -803,6 +813,14 @@ export default function SteganographyClient() {
                     </div>
                   </div>
 
+                  <FilenameField
+                    value={filename.value}
+                    onChange={filename.onChange}
+                    ext="png"
+                    placeholder={defaultStem}
+                    className="mb-2"
+                    showLabel={true}
+                  />
                   <Button
                     onClick={downloadStego}
                     className="w-full py-4 text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-md h-11 gap-1.5 flex items-center justify-center"
@@ -880,15 +898,21 @@ export default function SteganographyClient() {
                     onChange={(e) => setDecodePassword(e.target.value)}
                     className="w-full bg-secondary border border-border/80 focus:border-primary/50 text-foreground text-sm rounded-xl h-10 pl-3 pr-10 outline-none transition-all"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowDecodePassword(!showDecodePassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    title={showDecodePassword ? "Hide password" : "Show password"}
-                    aria-label={showDecodePassword ? "Hide password" : "Show password"}
-                  >
-                    {showDecodePassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={() => setShowDecodePassword(!showDecodePassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={showDecodePassword ? "Hide password" : "Show password"}
+                      >
+                        {showDecodePassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {showDecodePassword ? "Hide password" : "Show password"}
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
 

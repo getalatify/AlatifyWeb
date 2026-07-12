@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n/useT";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { PageActionTooltip } from "./page-action-tooltip";
 import {
   createWorkingPages,
@@ -35,6 +37,12 @@ import type { PdfSource, WorkingPage } from "./types";
 export default function PdfPagesClient() {
   const t = useT();
   const [sources, setSources] = useState<Record<string, PdfSource>>({});
+  const firstFileName = Object.values(sources)[0]?.fileName;
+  const defaultStem = firstFileName
+    ? `${firstFileName.replace(/\.[^/.]+$/, "")}-pages`
+    : "pages";
+  const filenameHook = useFilenameStem(defaultStem, firstFileName);
+
   const [pages, setPages] = useState<WorkingPage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -53,7 +61,7 @@ export default function PdfPagesClient() {
         return;
       }
       if (files.length > pdfFiles.length) {
-        toast.warning("Some files were skipped — only .pdf files are supported.");
+        toast.warning("Some files were skipped, only .pdf files are supported.");
       }
 
       setIsLoading(true);
@@ -173,7 +181,7 @@ export default function PdfPagesClient() {
     const loadingId = toast.loading("Building PDF...");
 
     try {
-      const filename = selectedOnly ? "extracted-pages.pdf" : "merged.pdf";
+      const filename = `${filenameHook.resolve()}.pdf`;
       await exportWorkingPages(exportPages, sources, filename);
       toast.dismiss(loadingId);
       toast.success(
@@ -360,7 +368,6 @@ export default function PdfPagesClient() {
                   >
                     <PageActionTooltip label="Drag to reorder">
                       <span
-                        title="Drag to reorder"
                         aria-label="Drag to reorder"
                         className="inline-flex shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground"
                       >
@@ -400,7 +407,6 @@ export default function PdfPagesClient() {
                         size="icon"
                         className="h-8 w-8 shrink-0"
                         onClick={() => handleRotate(page.id)}
-                        title="Rotate 90°"
                         aria-label="Rotate 90°"
                       >
                         <RotateCw className="h-3.5 w-3.5" />
@@ -413,7 +419,6 @@ export default function PdfPagesClient() {
                         size="icon"
                         className="h-8 w-8 shrink-0"
                         onClick={() => handleDelete(page.id)}
-                        title="Delete page"
                         aria-label="Delete page"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -422,6 +427,15 @@ export default function PdfPagesClient() {
                   </div>
                 ))}
               </div>
+
+              <FilenameField
+                showLabel={true}
+                ext="pdf"
+                value={filenameHook.value}
+                onChange={filenameHook.onChange}
+                placeholder={defaultStem}
+                className="w-full max-w-xs mb-2"
+              />
 
               <div className="flex flex-wrap items-start gap-4 pt-2">
                 <div className="flex flex-col items-start gap-1.5">
@@ -467,12 +481,6 @@ export default function PdfPagesClient() {
             </div>
           )}
         </section>
-
-        <PrivacyNotice>
-          <p>
-            {t("tools.pdf-pages.privacyNotice")}
-          </p>
-        </PrivacyNotice>
 
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
           <div className="text-center sm:text-left">
@@ -626,7 +634,7 @@ export default function PdfPagesClient() {
                     Format Converter
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                    Convert images between PNG, JPEG, WebP, PDF, and more —
+                    Convert images between PNG, JPEG, WebP, PDF, and more, 
                     entirely offline.
                   </p>
                 </div>
@@ -673,6 +681,13 @@ export default function PdfPagesClient() {
             </Link>
           </div>
         </section>
+
+        <PrivacyNotice>
+          <p>
+            {t("tools.pdf-pages.privacyNotice")}
+          </p>
+        </PrivacyNotice>
+
       </div>
     </main>
   );

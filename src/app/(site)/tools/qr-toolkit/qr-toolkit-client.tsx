@@ -1,9 +1,12 @@
 "use client";
 
 import { useT } from "@/lib/i18n/useT";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Header, PrivacyNotice, EmbedAttribution, EmbedBrandHeader, EmbedHelpBubble } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { QrCode, Scan, Download, Copy, Check, AlertTriangle, ExternalLink, Wifi, Type, Link2, CheckCircle2, HelpCircle, Shield, EyeOff, Camera, Upload, Info } from "lucide-react";
@@ -44,6 +47,9 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [copiedGen, setCopiedGen] = useState(false);
+
+  const defaultStem = `qr-code-${genMode}`;
+  const filename = useFilenameStem(defaultStem);
 
   // Compile final generator payload
   const getGeneratorPayload = (): string => {
@@ -104,7 +110,7 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
       const url = canvasRef.current.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = url;
-      a.download = `qr-code-${genMode}.png`;
+      a.download = `${filename.resolve()}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -137,7 +143,7 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `qr-code-${genMode}.svg`;
+        a.download = `${filename.resolve()}.svg`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -645,10 +651,10 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-card border border-border/80 rounded-xl shadow-xl">
-                        <SelectItem value="L" className="text-xs font-semibold">L — Low (7% recovery)</SelectItem>
-                        <SelectItem value="M" className="text-xs font-semibold">M — Medium (15% recovery)</SelectItem>
-                        <SelectItem value="Q" className="text-xs font-semibold">Q — Quartile (25% recovery)</SelectItem>
-                        <SelectItem value="H" className="text-xs font-semibold">H — High (30% recovery)</SelectItem>
+                        <SelectItem value="L" className="text-xs font-semibold">L, Low (7% recovery)</SelectItem>
+                        <SelectItem value="M" className="text-xs font-semibold">M, Medium (15% recovery)</SelectItem>
+                        <SelectItem value="Q" className="text-xs font-semibold">Q, Quartile (25% recovery)</SelectItem>
+                        <SelectItem value="H" className="text-xs font-semibold">H, High (30% recovery)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -701,15 +707,20 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
                     {/* curated palette */}
                     <div className="flex items-center gap-1.5 pt-1">
                       {["#000000", "#1a1a1a", "#2e3440", "#ffffff"].map((c) => (
-                        <button
-                          key={c}
-                          type="button"
-                          onClick={() => setFgColor(c)}
-                          className="w-5 h-5 rounded-full border border-border/60 hover:scale-110 active:scale-95 transition-all shadow-sm"
-                          style={{ backgroundColor: c }}
-                          title={`Set foreground to ${c}`}
-                          aria-label={`Set foreground color to ${c}`}
-                        />
+                        <Tooltip key={c}>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={() => setFgColor(c)}
+                              className="w-5 h-5 rounded-full border border-border/60 hover:scale-110 active:scale-95 transition-all shadow-sm"
+                              style={{ backgroundColor: c }}
+                              aria-label={`Set foreground color to ${c}`}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {`Set foreground to ${c}`}
+                          </TooltipContent>
+                        </Tooltip>
                       ))}
                     </div>
                   </div>
@@ -737,22 +748,27 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
                     {/* curated palette */}
                     <div className="flex items-center gap-1.5 pt-1">
                       {["#ffffff", "transparent", "#f3f4f6", "#1a1a1a"].map((c) => (
-                        <button
-                          key={c}
-                          type="button"
-                          onClick={() => setBgColor(c)}
-                          className="w-5 h-5 rounded-full border border-border/60 hover:scale-110 active:scale-95 transition-all shadow-sm flex items-center justify-center text-[8px] overflow-hidden"
-                          style={{
-                            backgroundColor: c === "transparent" ? "#ffffff" : c,
-                            backgroundImage: c === "transparent" ? "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)" : "none",
-                            backgroundSize: "6px 6px",
-                            backgroundPosition: "0 0, 0 3px, 3px -3px, -3px 0"
-                          }}
-                          title={`Set background to ${c}`}
-                          aria-label={`Set background color to ${c}`}
-                        >
-                          {c === "transparent" && <span className="opacity-70 font-bold select-none text-[8px]">T</span>}
-                        </button>
+                        <Tooltip key={c}>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={() => setBgColor(c)}
+                              className="w-5 h-5 rounded-full border border-border/60 hover:scale-110 active:scale-95 transition-all shadow-sm flex items-center justify-center text-[8px] overflow-hidden"
+                              style={{
+                                backgroundColor: c === "transparent" ? "#ffffff" : c,
+                                backgroundImage: c === "transparent" ? "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)" : "none",
+                                backgroundSize: "6px 6px",
+                                backgroundPosition: "0 0, 0 3px, 3px -3px, -3px 0"
+                              }}
+                              aria-label={`Set background color to ${c}`}
+                            >
+                              {c === "transparent" && <span className="opacity-70 font-bold select-none text-[8px]">T</span>}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {`Set background to ${c}`}
+                          </TooltipContent>
+                        </Tooltip>
                       ))}
                     </div>
                   </div>
@@ -812,6 +828,13 @@ export default function QrToolkitClient({ isEmbed = false }: { isEmbed?: boolean
 
                   <div className="h-px bg-border/40 my-1" />
 
+                  <FilenameField
+                    value={filename.value}
+                    onChange={filename.onChange}
+                    placeholder={defaultStem}
+                    className="mb-2"
+                    showLabel={true}
+                  />
                   <Button
                     onClick={downloadPng}
                     className="w-full text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover shadow-md h-10 gap-1.5 flex items-center justify-center"

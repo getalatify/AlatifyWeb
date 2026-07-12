@@ -3,10 +3,10 @@ import { JsonLd } from "@/components/json-ld";
 import PdfToImageClient from "./pdf-to-image-client";
 
 export const metadata: Metadata = {
-  title: "Free PDF to Image Converter — 100% Private, Client-Side | Alatify",
+  title: "Free PDF to Image Converter: 100% Private, Client-Side | Alatify",
   description: "Convert PDF pages into high-quality JPG or PNG images on-device. Choose resolution scale, select specific page ranges, and download as ZIP. Completely private.",
   openGraph: {
-    title: "Free PDF to Image Converter — 100% Private, Client-Side | Alatify",
+    title: "Free PDF to Image Converter: 100% Private, Client-Side | Alatify",
     description: "Convert PDF pages into high-quality JPG or PNG images on-device. Choose resolution scale, select specific page ranges, and download as ZIP. Completely private.",
   },
 };
@@ -16,7 +16,7 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "PDF to Image Converter — Alatify",
+      "name": "PDF to Image Converter: Alatify",
       "url": "https://getalatify.com/tools/pdf-to-image",
       "description": "Convert PDF pages into high-quality JPG or PNG images on-device. Choose resolution scale, select specific page ranges, and download as ZIP. Completely private.",
       "applicationCategory": "DocumentApplication",

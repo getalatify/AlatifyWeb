@@ -5,11 +5,11 @@ import { JsonLd } from "@/components/json-ld";
 const ResizerClient = dynamic(() => import("./resizer-client"));
 
 export const metadata: Metadata = {
-  title: "Free Image Resizer — Resize by Pixels or Percentage, No Upload | Alatify",
-  description: "Resize images by exact pixels, percentage, or aspect ratio in your browser — batch resize with high-quality resampling, no upload, no sign-up. Files stay on your device.",
+  title: "Free Image Resizer: Resize by Pixels or Percentage, No Upload | Alatify",
+  description: "Resize images by exact pixels, percentage, or aspect ratio in your browser: batch resize with high-quality resampling, no upload, no sign-up. Files stay on your device.",
   openGraph: {
-    title: "Free Image Resizer — Resize by Pixels or Percentage, No Upload | Alatify",
-    description: "Resize images by exact pixels, percentage, or aspect ratio in your browser — batch resize with high-quality resampling, no upload, no sign-up. Files stay on your device.",
+    title: "Free Image Resizer: Resize by Pixels or Percentage, No Upload | Alatify",
+    description: "Resize images by exact pixels, percentage, or aspect ratio in your browser: batch resize with high-quality resampling, no upload, no sign-up. Files stay on your device.",
   },
 };
 
@@ -18,9 +18,9 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Image Resizer — Alatify",
+      "name": "Image Resizer: Alatify",
       "url": "https://getalatify.com/tools/resizer",
-      "description": "Resize images by exact pixels, percentage, or aspect ratio in your browser — batch resize with high-quality resampling, no upload, no sign-up. Files stay on your device.",
+      "description": "Resize images by exact pixels, percentage, or aspect ratio in your browser: batch resize with high-quality resampling, no upload, no sign-up. Files stay on your device.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Web Browser",
       "browserRequirements": "Requires a modern web browser",

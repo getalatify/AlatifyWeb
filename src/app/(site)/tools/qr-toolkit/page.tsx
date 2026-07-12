@@ -5,10 +5,10 @@ import { JsonLd } from "@/components/json-ld";
 const QrToolkitClient = dynamic(() => import("./qr-toolkit-client"));
 
 export const metadata: Metadata = {
-  title: "QR Toolkit — Free Offline QR Generator & Safe Scanner | Alatify",
+  title: "QR Toolkit: Free Offline QR Generator & Safe Scanner | Alatify",
   description: "Generate clean, tracker-free QR codes and scan unknown ones safely. Private client-side creation and safety auditing without any server tracking or uploads.",
   openGraph: {
-    title: "QR Toolkit — Free Offline QR Generator & Safe Scanner | Alatify",
+    title: "QR Toolkit: Free Offline QR Generator & Safe Scanner | Alatify",
     description: "Generate clean, tracker-free QR codes and scan unknown ones safely. Private client-side creation and safety auditing without any server tracking or uploads.",
   },
 };
@@ -18,7 +18,7 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "QR Toolkit — Alatify",
+      "name": "QR Toolkit: Alatify",
       "url": "https://getalatify.com/tools/qr-toolkit",
       "description": "Generate clean, tracker-free QR codes and scan unknown ones safely. Private client-side creation and safety auditing without any server tracking or uploads.",
       "applicationCategory": "UtilitiesApplication",

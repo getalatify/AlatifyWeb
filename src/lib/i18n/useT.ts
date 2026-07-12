@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { useLanguage } from "./LanguageProvider";
 import { en } from "./dictionaries/en";
@@ -26,23 +28,22 @@ export function useT() {
     setMounted(true);
   }, []);
 
-  return (key: string): string => {
+  return (key: string, params?: Record<string, string | number>): string => {
     const enVal = getKeyValue(en, key);
-
+    let resolved: string;
     if (!mounted) {
-      return enVal || key;
+      resolved = enVal ?? key;
+    } else {
+      let value: string | undefined;
+      if (language === "id") value = getKeyValue(id, key);
+      if (value === undefined || value === "") value = enVal;
+      resolved = value !== undefined ? value : key;
     }
-
-    let value: string | undefined;
-    if (language === "id") {
-      value = getKeyValue(id, key);
+    if (params) {
+      resolved = resolved.replace(/\{(\w+)\}/g, (m, name) =>
+        params[name] !== undefined ? String(params[name]) : m
+      );
     }
-
-    // Fall back to English if the Indonesian value is empty string ("") or undefined
-    if (value === undefined || value === "") {
-      value = enVal;
-    }
-
-    return value !== undefined ? value : key;
+    return resolved;
   };
 }

@@ -34,7 +34,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://getalatify.com'),
   title: {
-    default: 'Alatify — Privacy-First Image Tools',
+    default: 'Alatify: Privacy-First Image Tools',
     template: '%s | Alatify',
   },
   description: 'Free online image tools that run entirely in your browser. Compress, resize, convert formats, remove backgrounds, and crop images without uploading to servers. Your files never leave your device.',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://getalatify.com',
     siteName: 'Alatify',
-    title: 'Alatify — Privacy-First Image Tools',
+    title: 'Alatify: Privacy-First Image Tools',
     description: 'Free online image tools that run entirely in your browser. No uploads, no tracking, unlimited use.',
     images: [
       {
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Alatify — Privacy-First Image Tools',
+    title: 'Alatify: Privacy-First Image Tools',
     description: 'Free online image tools that run entirely in your browser. No uploads, no tracking, unlimited use.',
     images: ['/opengraph-image'],
     creator: '@getalatify',
@@ -91,6 +91,7 @@ export const metadata: Metadata = {
 
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
 import { WorkingImageProvider } from "@/lib/chaining/WorkingImageProvider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function RootLayout({
   children,
@@ -115,7 +116,9 @@ export default function RootLayout({
         >
           <LanguageProvider>
             <WorkingImageProvider>
-              {children}
+              <TooltipProvider delayDuration={300}>
+                {children}
+              </TooltipProvider>
             </WorkingImageProvider>
             <Toaster richColors position="top-right" />
           </LanguageProvider>

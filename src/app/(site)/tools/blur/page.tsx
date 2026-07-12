@@ -5,10 +5,10 @@ import { JsonLd } from "@/components/json-ld";
 const BlurClient = dynamic(() => import("./blur-client"));
 
 export const metadata: Metadata = {
-  title: "Blur & Redact Image Online — Hide Faces, License Plates & Sensitive Info, No Upload | Alatify",
+  title: "Blur & Redact Image Online: Hide Faces, License Plates & Sensitive Info, No Upload | Alatify",
   description: "Obscure sensitive info, blur faces, and redact license plates in your images locally. Completely private, client-side editor with no file uploads.",
   openGraph: {
-    title: "Blur & Redact Image Online — Hide Faces, License Plates & Sensitive Info, No Upload | Alatify",
+    title: "Blur & Redact Image Online: Hide Faces, License Plates & Sensitive Info, No Upload | Alatify",
     description: "Obscure sensitive details in your images entirely in the browser using box or brush selection. No file uploads required, 100% private.",
   },
 };
@@ -18,7 +18,7 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Blur & Redact — Alatify",
+      "name": "Blur & Redact: Alatify",
       "url": "https://getalatify.com/tools/blur",
       "description": "Obscure sensitive info, blur faces, and redact license plates in your images locally. Completely private, client-side editor with no file uploads.",
       "applicationCategory": "MultimediaApplication",

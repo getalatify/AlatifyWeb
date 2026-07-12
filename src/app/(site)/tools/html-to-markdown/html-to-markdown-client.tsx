@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useT } from "@/lib/i18n/useT";
 import Link from "next/link";
 import { Header, PrivacyNotice } from "@/components/shared";
+import { useFilenameStem } from "@/lib/files/use-filename-stem";
+import { FilenameField } from "@/components/shared/filename-field";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -27,9 +29,9 @@ const sampleHtml = `<!DOCTYPE html>
 
   <h2>Key Features</h2>
   <ul>
-    <li><strong>100% Client-Side</strong> — no document uploads.</li>
-    <li><strong>Clean Output</strong> — headings, lists, links, and code blocks.</li>
-    <li><em>Private by design</em> — your HTML never leaves the browser.</li>
+    <li><strong>100% Client-Side</strong>, no document uploads.</li>
+    <li><strong>Clean Output</strong>, headings, lists, links, and code blocks.</li>
+    <li><em>Private by design</em>, your HTML never leaves the browser.</li>
   </ul>
 
   <h2>Task Checklist</h2>
@@ -57,7 +59,7 @@ type BulletListMarker = "-" | "*" | "+";
 type CodeBlockStyle = "fenced" | "indented";
 
 const selectClassName =
-  "html-to-markdown-select h-8 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-semibold outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer scheme-light dark:scheme-dark";
+  "html-to-markdown-select h-8 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-semibold outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer [color-scheme:light] dark:[color-scheme:dark]";
 
 const optionClassName = "bg-popover text-popover-foreground";
 
@@ -70,7 +72,11 @@ export default function HtmlToMarkdownClient() {
   const [headingStyle, setHeadingStyle] = useState<HeadingStyle>("atx");
   const [bulletListMarker, setBulletListMarker] = useState<BulletListMarker>("-");
   const [codeBlockStyle, setCodeBlockStyle] = useState<CodeBlockStyle>("fenced");
+  const [uploadedFilename, setUploadedFilename] = useState<string | null>(null);
   const convertRequestRef = useRef(0);
+
+  const defaultStem = uploadedFilename ?? "converted";
+  const filename = useFilenameStem(defaultStem, uploadedFilename ?? undefined);
 
   const convertHtmlToMarkdown = useCallback(async (source: string) => {
     if (!source.trim()) {
@@ -138,6 +144,9 @@ export default function HtmlToMarkdownClient() {
       const content = event.target?.result;
       if (typeof content === "string") {
         setHtml(content);
+        const lastDot = file.name.lastIndexOf(".");
+        const stem = lastDot !== -1 ? file.name.substring(0, lastDot) : file.name;
+        setUploadedFilename(stem);
         toast.success(`Loaded ${file.name} successfully!`);
       }
     };
@@ -167,7 +176,7 @@ export default function HtmlToMarkdownClient() {
       const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = blobUrl;
-      a.download = "converted.md";
+      a.download = `${filename.resolve()}.md`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -297,20 +306,27 @@ export default function HtmlToMarkdownClient() {
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between h-8">
+            <div className="flex items-end justify-between gap-4 flex-wrap">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Markdown Output
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-end gap-2 flex-wrap justify-end">
                 {isConverting && (
-                  <RefreshCw className="w-3.5 h-3.5 text-muted-foreground animate-spin" />
+                  <RefreshCw className="w-3.5 h-3.5 text-muted-foreground animate-spin self-center" />
                 )}
+                <FilenameField
+                  value={filename.value}
+                  onChange={filename.onChange}
+                  ext="md"
+                  placeholder={defaultStem}
+                  showLabel={true}
+                  className="w-48"
+                />
                 <Button
                   onClick={handleCopy}
-                  disabled={!markdown.trim()}
                   variant="outline"
                   size="sm"
-                  className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5 disabled:opacity-40"
+                  className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5"
                 >
                   {copied ? (
                     <>
@@ -327,9 +343,8 @@ export default function HtmlToMarkdownClient() {
                 <Button
                   onClick={handleDownloadMd}
                   disabled={!markdown.trim()}
-                  variant="outline"
                   size="sm"
-                  className="text-xs h-8 px-3 rounded-lg border-border bg-card text-foreground font-semibold flex items-center gap-1.5 disabled:opacity-40"
+                  className="text-xs h-8 px-3 rounded-lg font-semibold flex items-center gap-1.5 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40"
                 >
                   <Download className="w-3.5 h-3.5" />
                   {t("tools.html-to-markdown.downloadMd")}
@@ -358,10 +373,6 @@ export default function HtmlToMarkdownClient() {
             </div>
           </div>
         </section>
-
-        <PrivacyNotice>
-          <p>{t("tools.html-to-markdown.privacyNotice")}</p>
-        </PrivacyNotice>
 
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
           <div className="text-center sm:text-left">
@@ -544,6 +555,10 @@ export default function HtmlToMarkdownClient() {
             </Link>
           </div>
         </section>
+
+        <PrivacyNotice>
+          <p>{t("tools.html-to-markdown.privacyNotice")}</p>
+        </PrivacyNotice>
 
       </div>
     </main>

@@ -40,7 +40,7 @@ const jsonLdData = {
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://getalatify.com" },
-        { "@type": "ListItem", "position": 2, "name": "Remove EXIF Metadata From Your Photos — Without Uploading", "item": `https://getalatify.com/${PAGE_SLUG}` }
+        { "@type": "ListItem", "position": 2, "name": "Remove EXIF Metadata From Your Photos: Without Uploading", "item": `https://getalatify.com/${PAGE_SLUG}` }
       ]
     }
   ]
@@ -57,8 +57,8 @@ const SECTIONS = [
   {
     heading: "Why 'no upload' matters here specifically",
     body: [
-      "Most online EXIF removers send your photo to a server, strip the data there, and send it back. That means your original photo — with the GPS coordinates still intact — has already left your device and sat on someone else's machine.",
-      "Alatify never does that. The metadata is read and stripped entirely in your browser. The file that carries your location never travels anywhere. This isn't a promise you have to take on faith — you can verify it (see below)."
+      "Most online EXIF removers send your photo to a server, strip the data there, and send it back. That means your original photo, with the GPS coordinates still intact, has already left your device and sat on someone else's machine.",
+      "Alatify never does that. The metadata is read and stripped entirely in your browser. The file that carries your location never travels anywhere. This isn't a promise you have to take on faith, you can verify it (see below)."
     ]
   },
   {
@@ -71,7 +71,7 @@ const SECTIONS = [
   {
     heading: "How to remove EXIF data",
     body: [
-      "Open the EXIF Cleaner, drop in your photo, review the metadata it detects (including any GPS warning), and download the cleaned copy. The exported image keeps full quality — only the metadata is removed."
+      "Open the EXIF Cleaner, drop in your photo, review the metadata it detects (including any GPS warning), and download the cleaned copy. The exported image keeps full quality. Only the metadata is removed."
     ]
   }
 ];
@@ -114,8 +114,8 @@ export default function RemoveExifPage() {
         <Header showToolsLink showSupportLink />
         <LandingPageLayout
           eyebrow="Privacy-first · runs in your browser"
-          h1="Remove EXIF Metadata From Your Photos — Without Uploading"
-          heroSubtext="Every photo you take carries hidden data: the exact GPS coordinates where it was shot, your camera model, and the date and time. Post it online and you may be revealing your home address without realizing it. Alatify strips all of it — on your own device, with nothing uploaded."
+          h1="Remove EXIF Metadata From Your Photos: Without Uploading"
+          heroSubtext="Every photo you take carries hidden data: the exact GPS coordinates where it was shot, your camera model, and the date and time. Post it online and you may be revealing your home address without realizing it. Alatify strips all of it, on your own device, with nothing uploaded."
           ctaLabel="Open the EXIF Cleaner →"
           ctaHref={pageConfig.targetToolPath}
           sections={SECTIONS}

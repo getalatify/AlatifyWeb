@@ -3,10 +3,10 @@ import { JsonLd } from "@/components/json-ld";
 import MarkdownToPdfClient from "./markdown-to-pdf-client";
 
 export const metadata: Metadata = {
-  title: "Free Markdown to PDF Converter — No Signup, 100% Private | Alatify",
+  title: "Free Markdown to PDF Converter: No Signup, 100% Private | Alatify",
   description: "Convert Markdown (.md, .markdown) files or raw text into clean, printable PDFs inside your browser. No server uploads, no limits, completely secure.",
   openGraph: {
-    title: "Free Markdown to PDF Converter — No Signup, 100% Private | Alatify",
+    title: "Free Markdown to PDF Converter: No Signup, 100% Private | Alatify",
     description: "Convert Markdown (.md, .markdown) files or raw text into clean, printable PDFs inside your browser. No server uploads, no limits, completely secure.",
   },
 };
@@ -16,7 +16,7 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Markdown to PDF Converter — Alatify",
+      "name": "Markdown to PDF Converter: Alatify",
       "url": "https://getalatify.com/tools/markdown-to-pdf",
       "description": "Convert Markdown (.md, .markdown) files or raw text into clean, printable PDFs inside your browser. No server uploads, no limits, completely secure.",
       "applicationCategory": "DocumentApplication",

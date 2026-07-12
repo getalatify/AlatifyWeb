@@ -56,7 +56,7 @@ const LANG_OPTIONS: { value: SupportedLang | "auto"; label: string }[] = [
 ];
 
 const selectClassName =
-  "code-to-image-select h-8 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-semibold outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer scheme-light dark:scheme-dark";
+  "code-to-image-select h-8 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-semibold outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 cursor-pointer [color-scheme:light] dark:[color-scheme:dark]";
 
 const optionClassName = "bg-popover text-popover-foreground";
 
@@ -433,10 +433,6 @@ export default function CodeToImageClient() {
           </div>
         </section>
 
-        <PrivacyNotice>
-          <p>{t("tools.code-to-image.privacyNotice")}</p>
-        </PrivacyNotice>
-
         <section className="max-w-5xl mx-auto w-full space-y-6 pt-4">
           <div className="text-center sm:text-left">
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
@@ -583,6 +579,10 @@ export default function CodeToImageClient() {
             </Link>
           </div>
         </section>
+
+        <PrivacyNotice>
+          <p>{t("tools.code-to-image.privacyNotice")}</p>
+        </PrivacyNotice>
 
       </div>
     </main>

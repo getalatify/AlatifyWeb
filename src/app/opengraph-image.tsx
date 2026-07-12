@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Alatify — Privacy-First Image Tools';
+export const alt = 'Alatify: Privacy-First Image Tools';
 export const size = {
   width: 1200,
   height: 630,

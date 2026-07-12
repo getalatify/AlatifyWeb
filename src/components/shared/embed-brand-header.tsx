@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { Logo } from "./logo";
 import Link from "next/link";
+import { useT } from "@/lib/i18n/useT";
 
 interface EmbedBrandHeaderProps {
   slug: string;
 }
 
 export function EmbedBrandHeader({ slug }: EmbedBrandHeaderProps) {
+  const t = useT();
   const url = `https://getalatify.com/?utm_source=embed&utm_medium=widget&utm_campaign=${slug}`;
   const [isTopLevel, setIsTopLevel] = useState(false);
 
@@ -36,7 +38,7 @@ export function EmbedBrandHeader({ slug }: EmbedBrandHeaderProps) {
         }`}
       >
         <span className="transition-transform group-hover:-translate-x-0.5">←</span>
-        <span>Back</span>
+        <span>{t("embed.brandHeader.back")}</span>
       </Link>
     </div>
   );

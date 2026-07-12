@@ -8,25 +8,27 @@ import { Code, Copy, Check, Eye, ShieldAlert, Cpu, ArrowLeft } from "lucide-reac
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EMBEDDABLE_TOOLS } from "@/lib/embed/config";
 import Link from "next/link";
+import { useT } from "@/lib/i18n/useT";
 
 export default function EmbedClient() {
+  const t = useT();
   const [copied, setCopied] = useState(false);
   const [previewLoaded, setPreviewLoaded] = useState(false);
   const [selectedTool, setSelectedTool] = useState(EMBEDDABLE_TOOLS[0]);
 
   const currentSnippet = `<iframe src="https://getalatify.com/embed/${selectedTool.slug}" width="${selectedTool.defaultWidth}" height="${selectedTool.defaultHeight}" style="border:0;border-radius:12px;max-width:${selectedTool.maxWidth}" title="${selectedTool.iframeTitle}" loading="lazy"></iframe>
-<p>Free ${selectedTool.attributionName} by <a href="https://getalatify.com/tools/${selectedTool.slug}">Alatify</a> — runs 100% in your browser.</p>`;
+<p>Free ${selectedTool.attributionName} by <a href="https://getalatify.com/tools/${selectedTool.slug}">Alatify</a>. Runs 100% in your browser.</p>`;
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(currentSnippet);
       setCopied(true);
-      toast.success("Copied to clipboard!", {
-        description: "Embed snippet is ready to be pasted into your website.",
+      toast.success(t("embed.generator.toastCopied"), {
+        description: t("embed.generator.toastCopiedDesc"),
       });
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy code snippet.");
+      toast.error(t("embed.generator.toastCopyFailed"));
     }
   };
 
@@ -46,7 +48,7 @@ export default function EmbedClient() {
           className="inline-flex items-center gap-1.5 pl-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
         >
           <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-          Back to home
+          {t("embed.generator.backHome")}
         </Link>
       </div>
 
@@ -55,13 +57,13 @@ export default function EmbedClient() {
         <section className="text-center sm:text-left space-y-3 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm animate-fade-in">
             <Code className="w-3.5 h-3.5" />
-            Developer Embed Code
+            {t("embed.generator.badge")}
           </div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
-            Embed Alatify&apos;s Tools
+            {t("embed.generator.title")}
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed select-text">
-            Distribute our privacy-first, 100% client-side widgets on your own blog, app, or website. They run completely inside the user&apos;s browser — no server bandwidth or sign-ups required.
+            {t("embed.generator.intro")}
           </p>
         </section>
 
@@ -72,7 +74,7 @@ export default function EmbedClient() {
             {/* Tool Selector Card */}
             <div className="p-5 rounded-2xl bg-card border border-border shadow-md space-y-3">
               <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
-                Select Tool to Embed
+                {t("embed.generator.selectLabel")}
               </label>
               <Select
                 value={selectedTool.id}
@@ -85,7 +87,7 @@ export default function EmbedClient() {
                 }}
               >
                 <SelectTrigger className="w-full sm:max-w-xs font-bold rounded-xl border-border/60">
-                  <SelectValue placeholder="Choose a tool" />
+                  <SelectValue placeholder={t("embed.generator.selectPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
                   {EMBEDDABLE_TOOLS.map((tool) => (
@@ -102,7 +104,7 @@ export default function EmbedClient() {
               <div className="flex items-center justify-between border-b border-border/40 pb-3">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                   <Code className="w-3.5 h-3.5 text-primary" />
-                  HTML Embed Snippet
+                  {t("embed.generator.snippetLabel")}
                 </span>
                 <Button
                   onClick={handleCopy}
@@ -112,12 +114,12 @@ export default function EmbedClient() {
                   {copied ? (
                     <>
                       <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      Copied!
+                      {t("embed.generator.copied")}
                     </>
                   ) : (
                     <>
                       <Copy className="w-3.5 h-3.5" />
-                      Copy Code
+                      {t("embed.generator.copyCode")}
                     </>
                   )}
                 </Button>
@@ -132,7 +134,7 @@ export default function EmbedClient() {
             {/* Integration Details Card */}
             <div className="p-5 rounded-2xl bg-card border border-border shadow-md space-y-4">
               <h3 className="text-sm font-extrabold uppercase tracking-wider text-foreground">
-                How It Works &amp; Features
+                {t("embed.generator.featuresTitle")}
               </h3>
               <div className="space-y-4 text-xs sm:text-sm text-muted-foreground leading-relaxed select-text">
                 <div className="flex gap-3">
@@ -140,8 +142,8 @@ export default function EmbedClient() {
                     <Cpu className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-foreground">Zero Server Overhead</h4>
-                    <p className="text-xs mt-0.5">The widget runs AI models and utilities completely client-side in the user&apos;s browser. It uses WebGPU acceleration when available and falls back to CPU cleanly.</p>
+                    <h4 className="font-bold text-foreground">{t("embed.generator.feature1Title")}</h4>
+                    <p className="text-xs mt-0.5">{t("embed.generator.feature1Desc")}</p>
                   </div>
                 </div>
 
@@ -150,8 +152,8 @@ export default function EmbedClient() {
                     <ShieldAlert className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-foreground">Privacy-First Integration</h4>
-                    <p className="text-xs mt-0.5">Files never touch our servers or yours. The entire operation is sandboxable, meaning absolute privacy for your site&apos;s users.</p>
+                    <h4 className="font-bold text-foreground">{t("embed.generator.feature2Title")}</h4>
+                    <p className="text-xs mt-0.5">{t("embed.generator.feature2Desc")}</p>
                   </div>
                 </div>
               </div>
@@ -163,7 +165,7 @@ export default function EmbedClient() {
             <div className="flex items-center justify-between mb-3 w-full px-1">
               <h3 className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 justify-center lg:justify-start">
                 <Eye className="w-3.5 h-3.5 text-primary" />
-                Live Interactive Preview
+                {t("embed.generator.previewTitle")}
               </h3>
               <a
                 href={`/embed/${selectedTool.slug}`}
@@ -171,7 +173,7 @@ export default function EmbedClient() {
                 rel="noopener noreferrer"
                 className="text-[10px] font-extrabold text-muted-foreground hover:text-primary transition-colors flex items-center gap-0.5"
               >
-                Open full preview ↗
+                {t("embed.generator.openFull")}
               </a>
             </div>
 
@@ -189,16 +191,16 @@ export default function EmbedClient() {
                     <Eye className="w-8 h-8" />
                   </div>
                   <h4 className="text-sm font-bold text-foreground mb-2">
-                    {selectedTool.name} Preview
+                    {t("embed.generator.previewToolTitle", { name: selectedTool.name })}
                   </h4>
                   <p className="text-xs text-muted-foreground max-w-xs mb-6 leading-relaxed">
-                    Click below to load the live widget preview. This prevents loading the widget until you are ready to test it.
+                    {t("embed.generator.previewPrompt")}
                   </p>
                   <Button
                     onClick={() => setPreviewLoaded(true)}
                     className="font-bold text-xs py-2 px-5 hover:-translate-y-0.5 active:scale-95 transition-transform"
                   >
-                    Load Live Preview
+                    {t("embed.generator.loadPreview")}
                   </Button>
                 </div>
               )}

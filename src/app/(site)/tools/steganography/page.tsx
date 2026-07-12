@@ -5,10 +5,10 @@ import { JsonLd } from "@/components/json-ld";
 const SteganographyClient = dynamic(() => import("./steganography-client"));
 
 export const metadata: Metadata = {
-  title: "Image Steganography — Hide Encrypted Text in Images Offline | Alatify",
+  title: "Image Steganography: Hide Encrypted Text in Images Offline | Alatify",
   description: "Hide text messages inside images using LSB steganography with optional AES-GCM password encryption. 100% private, client-side, zero uploads.",
   openGraph: {
-    title: "Image Steganography — Hide Encrypted Text in Images Offline | Alatify",
+    title: "Image Steganography: Hide Encrypted Text in Images Offline | Alatify",
     description: "Hide text messages inside images using LSB steganography with optional AES-GCM password encryption. 100% private, client-side, zero uploads.",
   },
 };
@@ -18,7 +18,7 @@ const jsonLdData = {
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Image Steganography — Alatify",
+      "name": "Image Steganography: Alatify",
       "url": "https://getalatify.com/tools/steganography",
       "description": "Hide text messages inside images using LSB steganography with optional AES-GCM password encryption. 100% private, client-side, zero uploads.",
       "applicationCategory": "SecurityApplication",
