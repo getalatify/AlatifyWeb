@@ -964,6 +964,7 @@ export const en = {
     termsOfService: "Terms of Service",
     about: "About",
     supportUs: "Support Us",
+    sourceCode: "Source Code",
     connect: "Connect",
     madeIn: "Made in Indonesia 🇮🇩",
   },

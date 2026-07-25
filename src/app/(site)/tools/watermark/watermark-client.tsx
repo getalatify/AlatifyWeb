@@ -350,7 +350,6 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
 
     if (activeSettings.mode === 'text') {
       ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
-      console.log("Canvas initial font assignment:", ctx.font);
       watermarkW = ctx.measureText(activeSettings.text).width;
       watermarkH = fontPx;
     } else if (activeSettings.mode === 'logo' && logoBmp) {
@@ -411,7 +410,6 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
-        console.log("Canvas grid mode font assignment:", ctx.font);
         ctx.globalAlpha = activeSettings.opacity / 100;
 
         if (activeSettings.shadowEnabled) {
@@ -447,7 +445,6 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
-        console.log("Canvas free mode font assignment:", ctx.font);
         ctx.globalAlpha = activeSettings.opacity / 100;
 
         if (activeSettings.shadowEnabled) {
@@ -496,7 +493,6 @@ export default function WatermarkClient({ geistSansFamily, geistMonoFamily }: Wa
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.font = `${activeSettings.fontWeight} ${fontPx}px ${activeSettings.fontFamily}`;
-            console.log("Canvas tiled mode font assignment:", ctx.font);
             ctx.globalAlpha = activeSettings.opacity / 100;
 
             if (activeSettings.shadowEnabled) {

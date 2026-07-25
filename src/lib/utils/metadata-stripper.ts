@@ -75,9 +75,7 @@ export function cleanJpegLossless(arrayBuffer: ArrayBuffer): Blob {
     const size = (bytes[offset + 2] << 8) | bytes[offset + 3];
 
     // Strip APP1 (0xE1 - EXIF/XMP) and APP13 (0xED - IPTC)
-    if (marker === 0xE1 || marker === 0xED) {
-      console.log(`[Metadata Stripper] Stripped JPEG marker: 0xFF${marker.toString(16).toUpperCase()} (size: ${size} bytes)`);
-    } else {
+    if (!(marker === 0xE1 || marker === 0xED)) {
       outputParts.push(bytes.slice(offset, offset + 2 + size));
     }
 
@@ -134,9 +132,7 @@ export function cleanPngLossless(arrayBuffer: ArrayBuffer): Blob {
       break;
     }
 
-    if (chunksToStrip.has(chunkType)) {
-      console.log(`[Metadata Stripper] Stripped PNG chunk: ${chunkType} (size: ${chunkLength} bytes)`);
-    } else {
+    if (!chunksToStrip.has(chunkType)) {
       outputParts.push(bytes.slice(offset, offset + chunkTotalLength));
     }
 
@@ -196,9 +192,7 @@ export function cleanWebpLossless(arrayBuffer: ArrayBuffer): Blob {
       break;
     }
 
-    if (fourCC === "EXIF" || fourCC === "XMP ") {
-      console.log(`[Metadata Stripper] Stripped WebP chunk: ${fourCC} (size: ${chunkSize} bytes)`);
-    } else if (fourCC === "VP8X") {
+    if (fourCC === "VP8X") {
       const vp8xChunk = bytes.slice(offset, offset + chunkTotalSize);
       // First byte of VP8X payload is at index 8 of the chunk.
       // Clear XMP flag (0x04) and EXIF flag (0x08)

@@ -227,7 +227,6 @@ export async function GET(req: NextRequest) {
     const now = Date.now();
 
     if (cached && (now - cached.timestamp < PIXABAY_CACHE_TTL)) {
-      console.log(`[Pixabay Cache Hit] Serving query: ${query} (page: ${page}, type: ${pixabayImageType})`);
       return cached.data;
     }
 

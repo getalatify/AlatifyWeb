@@ -84,6 +84,14 @@ export function Footer() {
             GitHub
           </a>
           <a
+            href="https://github.com/getalatify/AlatifyWeb"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors w-fit"
+          >
+            {t("footer.sourceCode")}
+          </a>
+          <a
             href="https://x.com/getalatify"
             target="_blank"
             rel="noopener noreferrer"

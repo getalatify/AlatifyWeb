@@ -307,7 +307,6 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
 
   const handleGpuFallback = useCallback(() => {
     if (activeDeviceRef.current === "cpu") {
-      console.log("[BG Remover] Already running on CPU. Skipping redundant fallback.");
       return;
     }
 
@@ -415,10 +414,6 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
     clearHeartbeatTimer();
     clearGpuWatchdog();
 
-    const duration = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
-    const modelName = modelType === 'isnet' ? 'Quality' : modelType === 'isnet_fp16' ? 'Balanced' : 'Lite';
-    console.log(`[BG Remover] Cancelled at ${duration}s (${modelName} model)`);
-
     setStage("idle");
   };
 
@@ -500,8 +495,6 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
         clearHeartbeatTimer();
         clearGpuWatchdog();
 
-        const totalDurationFloat = (Date.now() - cumulativeStartTimeRef.current) / 1000;
-        const attemptDurationFloat = (Date.now() - startTimeRef.current) / 1000;
         const finalInferenceElapsed = inferenceStartTimeRef.current > 0
           ? (Date.now() - inferenceStartTimeRef.current) / 1000
           : 0;
@@ -530,19 +523,6 @@ export default function BgRemoverClient({ isEmbed = false }: { isEmbed?: boolean
             URL.revokeObjectURL(url);
           };
           imgVerify.src = url;
-
-          const totalDuration = totalDurationFloat.toFixed(1);
-          const attemptDuration = attemptDurationFloat.toFixed(1);
-          const modelName = modelType === 'isnet' ? 'Quality · ISNet Base' : modelType === 'isnet_fp16' ? 'Balanced · ISNet FP16' : 'Lite · ISNet Quant8';
-          const originalFormat = activeImage ? getImageFormat(activeImage) : "";
-          const imgDimensions = originalDimensions ? `${originalDimensions.width}×${originalDimensions.height}` : "Unknown";
-
-          console.log(
-            `[BG Remover] Completed in ${totalDuration}s (attempt took ${attemptDuration}s) via ${activeDeviceRef.current === 'gpu' ? 'GPU' : 'CPU'}\n` +
-            `Model: ${modelName}\n` +
-            `Image: ${imgDimensions} ${originalFormat} (${formatBytes(activeImage?.size ?? 0)})\n` +
-            `Output: ${formatBytes(outputBlob.size)}`
-          );
 
           setProcessedImage(fileObj);
           setStage("complete");
