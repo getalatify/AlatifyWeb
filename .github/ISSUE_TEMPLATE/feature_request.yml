@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest a new tool capability or improvement that stays client-side.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this solve for users?
+      placeholder: "Example: batch-export cropped images without reloading the page each time."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How you would like it to work. Keep processing on the user's device.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you thought about, or existing tools that almost work.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: client-side
+    attributes:
+      label: Product constraint
+      description: Alatify tools process user files in the browser. Features that require uploading user files to a server are out of scope.
+      options:
+        - label: This feature does not require uploading user files to a server.
+          required: true

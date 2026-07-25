@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security reports
+    url: https://github.com/getalatify/AlatifyWeb/security
+    about: Report vulnerabilities privately via GitHub Security (Private Vulnerability Reporting). Do not open a public issue.
+  - name: Live site
+    url: https://getalatify.com
+    about: Use the tools on the production site before filing a bug.

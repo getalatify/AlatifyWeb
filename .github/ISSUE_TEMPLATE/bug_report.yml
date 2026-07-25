@@ -1,0 +1,111 @@
+name: Bug report
+description: Something is broken or behaves incorrectly.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Which tool
+      description: Pick the tool where the problem shows up, or site-wide if it is not tool-specific.
+      options:
+        - Site-wide / not tool specific
+        - Background Remover (bg-remover)
+        - AI Upscaler (upscaler)
+        - Watermark (watermark)
+        - Image Compressor (compressor)
+        - Format Converter (converter)
+        - Image Cropper (cropper)
+        - Image Resizer (resizer)
+        - EXIF Privacy Cleaner (exif-cleaner)
+        - ID Privacy Shield (id-protector)
+        - Blur & Redact (blur)
+        - QR Toolkit (qr-toolkit)
+        - Steganography (steganography)
+        - Stock Image Finder (stock-finder)
+        - Markdown to PDF (markdown-to-pdf)
+        - PDF to Markdown (pdf-to-markdown)
+        - PDF Page Tools (pdf-pages)
+        - HTML to Markdown (html-to-markdown)
+        - PDF to Image Converter (pdf-to-image)
+        - Image to PDF (image-to-pdf)
+        - Code to Image (code-to-image)
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Describe the actual behaviour you saw.
+      placeholder: "Example: the download button stayed disabled after processing finished."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps that reliably reproduce the issue.
+      placeholder: |
+        1. Open /tools/...
+        2. Load a file
+        3. Click ...
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What you expected to happen instead.
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: "Example: Chrome 131, Firefox 133, Safari 18"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "Example: Windows 11, macOS 15, Ubuntu 24.04, iOS 18"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device type
+      options:
+        - Desktop
+        - Mobile
+        - Tablet
+    validations:
+      required: true
+
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshot or screen recording
+      description: Optional. Paste images or link a short recording if it helps.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: not-security
+    attributes:
+      label: Not a security report
+      description: Security issues must not be filed as public bugs. Use the private channel in SECURITY.md (GitHub Security advisories / Private Vulnerability Reporting).
+      options:
+        - label: I confirm this is not a security vulnerability report. Security issues go through SECURITY.md, not this form.
+          required: true

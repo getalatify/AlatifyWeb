@@ -16,11 +16,11 @@ authoritative installed version.
 
 | Package | Version | Notes |
 |---|---|---|
-| `@imgly/background-removal` | 1.7.0 | Package field: `SEE LICENSE IN LICENSE.md`. `LICENSE.md` is the GNU AGPL v3. Compatible with Alatify’s AGPL-3.0-only. The package also ships `ThirdPartyLicenses.json` (MIT third-party code/models it redistributes: onnxruntime-web, ISNET, lodash-es, ndarray, zod). Prefer that file for imgly’s own dependency notices rather than duplicating it here. |
+| `@imgly/background-removal` | 1.7.0 | Package field: `SEE LICENSE IN LICENSE.md`. `LICENSE.md` is the GNU AGPL v3. Compatible with Alatify's AGPL-3.0-only. The package also ships `ThirdPartyLicenses.json` (MIT third-party code/models it redistributes: onnxruntime-web, ISNET, lodash-es, ndarray, zod). Prefer that file for imgly's own dependency notices rather than duplicating it here. |
 
 AGPL also requires that users who interact with a network service be offered
 Corresponding Source. The running site links to the public repository from the
-footer (“Source Code”) for that purpose.
+footer ("Source Code") for that purpose.
 
 ---
 
@@ -35,7 +35,7 @@ footer (“Source Code”) for that purpose.
 ## Apache License 2.0
 
 Apache-2.0 requires retention of copyright, patent, trademark, and attribution
-notices when redistributing. See each package’s `LICENSE` (where present).
+notices when redistributing. See each package's `LICENSE` (where present).
 
 | Package | Version |
 |---|---|
@@ -50,7 +50,7 @@ not ship a root `LICENSE` file in the published tarball inspected for this notic
 
 ---
 
-## Dual license — MIT OR GPL-3.0-or-later
+## Dual license: MIT OR GPL-3.0-or-later
 
 | Package | Version | Election |
 |---|---|---|
@@ -108,4 +108,4 @@ dependency bump. Full license texts (when shipped) live under
 
 | Package | Version | Notes |
 |---|---|---|
-| `onnxruntime-web` | 1.21.0 | MIT. Declared as a **direct** dependency in this milestone; also used by the AI Upscaler worker and listed in imgly’s `ThirdPartyLicenses.json`. |
+| `onnxruntime-web` | 1.21.0 | MIT. Declared as a **direct** dependency in this milestone; also used by the AI Upscaler worker and listed in imgly's `ThirdPartyLicenses.json`. |
