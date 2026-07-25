@@ -2,12 +2,17 @@
 
 import React from "react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ThemeToggle, ImageUploader, ImagePreview, DownloadButton } from "@/components/shared";
 import { useImageStore } from "@/lib/store/imageStore";
 import { ArrowLeft, Layers } from "lucide-react";
 
 export default function DevComponentsPage() {
   const activeImage = useImageStore((state) => state.activeImage);
+
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
 
   return (
     <main className="relative flex min-h-screen flex-col items-center p-6 bg-background text-foreground transition-colors duration-300 select-none overflow-x-clip">

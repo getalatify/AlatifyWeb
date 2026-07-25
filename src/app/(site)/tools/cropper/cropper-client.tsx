@@ -355,9 +355,6 @@ export default function CropperClient() {
   };
 
   const handleCropChange = (c: Crop, percentCrop: Crop) => {
-    // Console log for event frequency profiling as requested in Task 4
-    console.log('[Cropper] onChange fired', Date.now());
-
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(() => {
       setCrop(percentCrop);

@@ -994,6 +994,7 @@ export const id = {
     termsOfService: "Ketentuan Layanan",
     about: "Tentang",
     supportUs: "Dukung Kami",
+    sourceCode: "Source Code",
     connect: "Ikuti Kami",
     madeIn: "Dibuat di Indonesia 🇮🇩",
   },
