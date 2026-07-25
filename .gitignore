@@ -26,9 +26,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env
-.env.local
-.env*.local
+.env*
+!.env.example
 
 # vercel
 .vercel
@@ -47,3 +46,8 @@ scratch/
 /public/sw.js.map
 
 /terminals
+AGENTS.md
+Animation/
+Dokumentation/
+graphify-out/
+.hermes/
