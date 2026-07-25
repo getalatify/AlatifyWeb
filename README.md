@@ -10,9 +10,7 @@ You do not have to take that on faith. Open DevTools, switch to the Network tab,
 
 Or skip DevTools entirely: **turn off your WiFi and most of the tools keep working.**
 
-<!-- ASSET: hero screenshot or demo GIF goes here.
-     Strongest option is a short GIF showing the Network tab staying empty
-     while a background removal completes. -->
+![Alatify compressing an image with DevTools open, network throttled to Offline, and zero requests logged](docs/assets/network-proof.gif)
 
 ---
 
@@ -163,6 +161,6 @@ Third-party attributions are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTI
 
 ---
 
-<!-- ASSET: optional grid of 3 or 4 tool screenshots -->
+![The Alatify tools hub, 20 browser-based file and image tools](docs/assets/hero.png)
 
 **Links:** [getalatify.com](https://getalatify.com) · [@getalatify](https://x.com/getalatify) · [Support the project](https://getalatify.com/support)
