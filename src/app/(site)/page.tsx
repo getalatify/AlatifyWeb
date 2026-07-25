@@ -6,6 +6,7 @@ import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Lock } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
+import { TOOL_COUNT } from "@/lib/tools/registry";
 
 /**
  * HOMEPAGE — monochrome. The animated background is the single global
@@ -25,42 +26,88 @@ export default function Home() {
       {/* Top Header Bar: mark + wordmark lockup */}
       <Header showToolsLink showSupportLink />
 
-      {/* Hero Section */}
-      <div className="max-w-2xl text-center space-y-6 pt-16 md:pt-24 z-10 flex flex-col items-center shrink-0">
-        {/* Status Badge: neutral pill */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-secondary text-muted-foreground border border-border animate-fade-in">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-foreground opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-foreground"></span>
-          </span>
-          100% Local &amp; Private
+      {/* Hero Section — claim + proof */}
+      <div className="w-full max-w-5xl pt-16 md:pt-24 z-10 shrink-0 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 items-center">
+        {/* Left: badge, title, tagline, CTAs */}
+        <div className="flex flex-col items-start text-left space-y-6 max-w-xl">
+          {/* Status Badge: tool count · open source */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-secondary text-muted-foreground border border-border animate-fade-in">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-foreground opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-foreground"></span>
+            </span>
+            {t("home.hero.badge", { count: TOOL_COUNT })}
+          </div>
+
+          {/* Heading — only h1 on the page; natural wrap, no <br> */}
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground select-none font-sans leading-[1.1]">
+            {t("home.hero.title")}
+          </h1>
+
+          {/* Tagline */}
+          <p className="text-base sm:text-lg text-muted-foreground font-medium max-w-md leading-relaxed">
+            {t("home.hero.tagline")}
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+            <Link href="/tools" className="w-full sm:w-auto">
+              <Button className="cta-glass w-full px-8 py-6 text-base font-semibold rounded-xl hover:-translate-y-0.5 active:scale-[0.98] group gap-2">
+                {t("home.hero.ctaPrimary")}
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              onClick={handleScrollToFeatures}
+              className="w-full sm:w-auto px-8 py-6 text-base font-semibold rounded-xl border border-border bg-transparent text-foreground hover:bg-secondary hover:text-foreground transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
+            >
+              {t("home.hero.ctaSecondary")}
+            </Button>
+          </div>
         </div>
 
-        {/* Heading */}
-        <h1 className="text-6xl font-extrabold tracking-tight sm:text-8xl text-foreground select-none font-sans">
-          Alatify
-        </h1>
+        {/* Right: DevTools Network proof panel */}
+        <div
+          aria-hidden="true"
+          className="w-full max-w-md md:max-w-none justify-self-center md:justify-self-end select-none"
+        >
+          <div className="rounded-2xl border border-border bg-card shadow-md overflow-hidden font-mono text-xs">
+            {/* Title bar: tabs + throttle */}
+            <div className="flex items-center justify-between gap-2 border-b border-border bg-secondary/60 px-3 py-2">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="text-foreground font-semibold border-b-2 border-foreground pb-0.5">
+                  {t("home.hero.proof.tabNetwork")}
+                </span>
+                <span className="text-muted-foreground">
+                  {t("home.hero.proof.tabConsole")}
+                </span>
+              </div>
+              <span className="shrink-0 rounded-md border border-border bg-card px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                {t("home.hero.proof.throttle")}
+              </span>
+            </div>
 
-        {/* Tagline */}
-        <p className="text-lg text-muted-foreground font-medium sm:text-xl max-w-lg mx-auto leading-relaxed">
-          {t("home.hero.tagline")}
-        </p>
+            {/* Empty network table */}
+            <div className="px-3 py-6 text-center text-muted-foreground border-b border-border/60">
+              {t("home.hero.proof.empty")}
+            </div>
 
-        {/* CTA Buttons, contrast-based */}
-        <div className="pt-4 flex flex-col sm:flex-row items-center gap-4 justify-center w-full max-w-md">
-          <Link href="/tools" className="w-full sm:w-auto">
-            <Button className="cta-glass w-full px-8 py-6 text-base font-semibold rounded-xl hover:-translate-y-0.5 active:scale-[0.98] group gap-2">
-              Try now
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </Button>
-          </Link>
-          <Button
-            variant="outline"
-            onClick={handleScrollToFeatures}
-            className="w-full sm:w-auto px-8 py-6 text-base font-semibold rounded-xl border border-border bg-transparent text-foreground hover:bg-secondary hover:text-foreground transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]"
-          >
-            How it works
-          </Button>
+            {/* Summary strip */}
+            <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border/60 text-[11px] text-muted-foreground">
+              <span>{t("home.hero.proof.requests")}</span>
+              <span className="text-foreground font-semibold">
+                {t("home.hero.proof.transferred")}
+              </span>
+            </div>
+
+            {/* Local file line (no network) */}
+            <div className="px-3 py-3 text-[11px] text-muted-foreground">
+              <span className="text-foreground font-medium">
+                {t("home.hero.proof.file")}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -74,7 +121,9 @@ export default function Home() {
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-foreground border border-border">
             <Lock className="w-5 h-5" />
           </div>
-          <h3 className="text-lg font-bold text-foreground">Zero Uploads</h3>
+          <h3 className="text-lg font-bold text-foreground">
+            {t("home.features.card1.title")}
+          </h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
             {t("home.features.card1.text")}
           </p>
@@ -85,7 +134,9 @@ export default function Home() {
           <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-foreground border border-border">
             <Zap className="w-5 h-5" />
           </div>
-          <h3 className="text-lg font-bold text-foreground">Near-Instant Speed</h3>
+          <h3 className="text-lg font-bold text-foreground">
+            {t("home.features.card2.title")}
+          </h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
             {t("home.features.card2.text")}
           </p>

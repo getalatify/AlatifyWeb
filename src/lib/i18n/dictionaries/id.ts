@@ -1,14 +1,29 @@
 export const id = {
   home: {
     hero: {
+      badge: "{count} tools · open source",
+      title: "Matikan WiFi kamu. Tool-nya tetap jalan.",
       tagline:
-        "Alat gambar yang mengutamakan privasi, berjalan sepenuhnya di browser kamu",
+        "Filemu tidak pernah diunggah, karena memang tidak ada tempat untuk mengunggahnya. Semua tool jalan di dalam tab browser kamu sendiri.",
+      ctaPrimary: "Coba tool",
+      ctaSecondary: "Cara kerjanya",
+      proof: {
+        tabNetwork: "Network",
+        tabConsole: "Console",
+        throttle: "Offline",
+        empty: "No requests",
+        requests: "0 requests",
+        transferred: "0 kB transferred",
+        file: "photo.jpg · 1.9 MB → 163 kB",
+      },
     },
     features: {
       card1: {
+        title: "Tanpa Upload",
         text: "Semua algoritma berjalan lokal di dalam tab browser kamu yang terisolasi. Tidak ada server yang menyimpan filemu.",
       },
       card2: {
+        title: "Nyaris Seketika",
         text: "Sama sekali tidak perlu menunggu unggahan selesai. Proses gambar resolusi tinggi langsung di perangkatmu.",
       },
     },

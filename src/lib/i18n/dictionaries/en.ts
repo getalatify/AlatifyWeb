@@ -1,13 +1,29 @@
 export const en = {
   home: {
     hero: {
-      tagline: "Privacy-first image tools that run entirely in your browser",
+      badge: "{count} tools · open source",
+      title: "Turn off your WiFi. The tools still work.",
+      tagline:
+        "Your files are never uploaded, because there is nowhere to upload them to. Every tool runs inside your own browser tab.",
+      ctaPrimary: "Try a tool",
+      ctaSecondary: "How it works",
+      proof: {
+        tabNetwork: "Network",
+        tabConsole: "Console",
+        throttle: "Offline",
+        empty: "No requests",
+        requests: "0 requests",
+        transferred: "0 kB transferred",
+        file: "photo.jpg · 1.9 MB → 163 kB",
+      },
     },
     features: {
       card1: {
+        title: "Zero Uploads",
         text: "All algorithms execute locally inside your sandboxed browser tab. No server holds your files.",
       },
       card2: {
+        title: "Near-Instant Speed",
         text: "Skip upload waits entirely. Process high-resolution images right on your device.",
       },
     },

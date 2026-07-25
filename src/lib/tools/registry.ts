@@ -397,3 +397,6 @@ export const TOOLS: ToolEntry[] = [
   },
 ];
 
+/** Live tool count. Derived from TOOLS so the homepage badge cannot drift. */
+export const TOOL_COUNT = TOOLS.length;
+
