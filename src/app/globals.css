@@ -1251,6 +1251,10 @@
   transform: scale(1);
 }
 
+.device-dl-toast {
+  opacity: 0;
+}
+
 /* ---- Loop animations (only under .device-phone-loop) ---- */
 
 .device-phone-loop .device-scene-a {
@@ -1299,6 +1303,10 @@
 
 .device-phone-loop .device-dl-btn {
   animation: device-dl-press var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-dl-toast {
+  animation: device-dl-toast var(--phone-loop-dur) linear infinite;
 }
 
 /* Sequential swap: A out 14–16%, B in 16–18%; B out 88–91%, A in 91–94%. Never both > 0. */
@@ -1451,6 +1459,22 @@
   }
 }
 
+/* Download success toast: after press (~74%), hold, out before scene swap 88%. 0%==100%. */
+@keyframes device-dl-toast {
+  0%,
+  74% {
+    opacity: 0;
+  }
+  76%,
+  84% {
+    opacity: 1;
+  }
+  87%,
+  100% {
+    opacity: 0;
+  }
+}
+
 /* Accept skin: on through Scene A exit (16%), reset while A opacity 0 */
 @keyframes device-drop-accept {
   0%,
@@ -1567,6 +1591,11 @@
   .device-dl-btn {
     animation: none !important;
     transform: none !important;
+  }
+
+  .device-dl-toast {
+    animation: none !important;
+    opacity: 0 !important;
   }
 
   .device-drop-accept {

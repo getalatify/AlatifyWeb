@@ -31,7 +31,7 @@ export function HomeDeviceSections() {
   return (
     <>
       <noscript>
-        <style>{`.device-replica-view{opacity:1!important}.device-scene-a{opacity:0!important}.device-scene-b{opacity:1!important}.device-replica-scroll{transform:none!important}.device-redact-box{opacity:1!important;transform:none!important}.device-chip-inner{opacity:1!important}.device-touch-a,.device-touch-b,.device-touch-c{opacity:0!important}.device-dl-btn{transform:none!important}.device-drop-accept{opacity:0!important}.device-title-idle{opacity:1!important}.device-title-accept{opacity:0!important}.device-desk-scene-a{opacity:0!important}.device-desk-scene-b{opacity:1!important}.device-desk-row-1,.device-desk-row-2,.device-desk-row-3{opacity:1!important;transform:none!important}.device-desk-progress-fill{transform:scaleX(1)!important}.device-desk-progress-panel{opacity:1!important}.device-desk-zip-row,.device-desk-success{opacity:1!important;transform:none!important}.device-desk-cursor-a,.device-desk-cursor-b,.device-desk-cursor-c{opacity:0!important}.device-desk-convert-btn,.device-desk-zip-btn{transform:none!important}`}</style>
+        <style>{`.device-replica-view{opacity:1!important}.device-scene-a{opacity:0!important}.device-scene-b{opacity:1!important}.device-replica-scroll{transform:none!important}.device-redact-box{opacity:1!important;transform:none!important}.device-chip-inner{opacity:1!important}.device-touch-a,.device-touch-b,.device-touch-c{opacity:0!important}.device-dl-btn{transform:none!important}.device-drop-accept{opacity:0!important}.device-title-idle{opacity:1!important}.device-title-accept{opacity:0!important}.device-dl-toast{opacity:0!important}.device-desk-scene-a{opacity:0!important}.device-desk-scene-b{opacity:1!important}.device-desk-row-1,.device-desk-row-2,.device-desk-row-3{opacity:1!important;transform:none!important}.device-desk-progress-fill{transform:scaleX(1)!important}.device-desk-progress-panel{opacity:1!important}.device-desk-zip-row,.device-desk-success{opacity:1!important;transform:none!important}.device-desk-cursor-a,.device-desk-cursor-b,.device-desk-cursor-c{opacity:0!important}.device-desk-convert-btn,.device-desk-zip-btn{transform:none!important}`}</style>
       </noscript>
 
       {/* Section one: phone + Blur & Redact */}
@@ -349,6 +349,26 @@ export function HomeDeviceSections() {
                     <span className="block w-2 h-2 rounded-full bg-foreground" />
                     <span className="text-[9px] font-semibold text-foreground leading-none">
                       {t("home.device.blur.done")}
+                    </span>
+                  </div>
+                </div>
+
+                {/*
+                  Download success toast (real: toast.success PNG string).
+                  Outside scale; not scrolled. top:10 → ~y10–50 of 448 viewport.
+                  Chip at 236 gone by 56%; Download press 70–73% at bottom — no collide.
+                */}
+                <div
+                  className="absolute left-1/2 -translate-x-1/2 z-30 pointer-events-none"
+                  style={{ top: 10, width: "calc(100% - 16px)", maxWidth: 200 }}
+                >
+                  <div className="device-dl-toast rounded-md border border-border bg-card px-2 py-1.5 shadow-md flex items-start gap-1.5">
+                    <CheckCircle2
+                      className="w-3 h-3 text-success shrink-0 mt-0.5"
+                      aria-hidden="true"
+                    />
+                    <span className="text-[8px] font-medium text-foreground leading-snug">
+                      Redacted image exported as PNG (EXIF metadata removed).
                     </span>
                   </div>
                 </div>
