@@ -14,7 +14,12 @@ export const id = {
         empty: "No requests",
         requests: "0 requests",
         transferred: "0 kB transferred",
-        file: "photo.jpg · 1.9 MB → 163 kB",
+        fileSource: "photo.jpg · 1.9 MB",
+        fileResult: "→ 163 kB",
+        consoleLine1: "> navigator.onLine",
+        consoleLine2: "false",
+        consoleLine3: "> await fetch(\"/api/ping\")",
+        consoleLine4: "TypeError: Failed to fetch",
       },
     },
     features: {

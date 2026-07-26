@@ -74,14 +74,20 @@ export default function Home() {
           className="w-full max-w-md md:max-w-none justify-self-center md:justify-self-end select-none"
         >
           <div className="rounded-2xl border border-border bg-card shadow-md overflow-hidden font-mono text-xs">
-            {/* Title bar: tabs + throttle */}
+            {/* Title bar: tabs + throttle (permanent fixture) */}
             <div className="flex items-center justify-between gap-2 border-b border-border bg-secondary/60 px-3 py-2">
               <div className="flex items-center gap-3 min-w-0">
-                <span className="text-foreground font-semibold border-b-2 border-foreground pb-0.5">
-                  {t("home.hero.proof.tabNetwork")}
+                <span className="proof-tab relative inline-flex flex-col items-stretch pb-0.5">
+                  <span className="proof-tab-label proof-tab-label-network font-semibold text-foreground">
+                    {t("home.hero.proof.tabNetwork")}
+                  </span>
+                  <span className="proof-tab-underline proof-tab-underline-network" />
                 </span>
-                <span className="text-muted-foreground">
-                  {t("home.hero.proof.tabConsole")}
+                <span className="proof-tab relative inline-flex flex-col items-stretch pb-0.5">
+                  <span className="proof-tab-label proof-tab-label-console font-semibold text-foreground">
+                    {t("home.hero.proof.tabConsole")}
+                  </span>
+                  <span className="proof-tab-underline proof-tab-underline-console" />
                 </span>
               </div>
               <span className="shrink-0 rounded-md border border-border bg-card px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
@@ -89,24 +95,55 @@ export default function Home() {
               </span>
             </div>
 
-            {/* Empty network table */}
-            <div className="px-3 py-6 text-center text-muted-foreground border-b border-border/60">
-              {t("home.hero.proof.empty")}
-            </div>
+            {/* Stacked bodies — grid cell shared; CSS opacity cross-fade */}
+            <div className="proof-body">
+              {/* Network body */}
+              <div className="proof-network">
+                {/* Empty network table — always visible during Network phase */}
+                <div className="px-3 py-6 text-center text-muted-foreground border-b border-border/60">
+                  {t("home.hero.proof.empty")}
+                </div>
 
-            {/* Summary strip */}
-            <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border/60 text-[11px] text-muted-foreground">
-              <span>{t("home.hero.proof.requests")}</span>
-              <span className="text-foreground font-semibold">
-                {t("home.hero.proof.transferred")}
-              </span>
-            </div>
+                {/* Summary strip */}
+                <div className="proof-summary flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border/60 text-[11px] text-muted-foreground">
+                  <span>{t("home.hero.proof.requests")}</span>
+                  <span className="text-foreground font-semibold">
+                    {t("home.hero.proof.transferred")}
+                  </span>
+                </div>
 
-            {/* Local file line (no network) */}
-            <div className="px-3 py-3 text-[11px] text-muted-foreground">
-              <span className="text-foreground font-medium">
-                {t("home.hero.proof.file")}
-              </span>
+                {/* Local file line (no network) */}
+                <div className="proof-file-row relative px-3 py-3 text-[11px] text-muted-foreground">
+                  <span className="text-foreground font-medium">
+                    <span className="proof-file-source">
+                      {t("home.hero.proof.fileSource")}
+                    </span>
+                    {" "}
+                    <span className="proof-file-result">
+                      {t("home.hero.proof.fileResult")}
+                    </span>
+                  </span>
+                  <span className="proof-bar" />
+                </div>
+              </div>
+
+              {/* Console body */}
+              <div className="proof-console">
+                <div className="px-3 py-3 space-y-1 text-[11px] text-muted-foreground">
+                  <div className="proof-console-line proof-console-line-1 text-foreground">
+                    {t("home.hero.proof.consoleLine1")}
+                  </div>
+                  <div className="proof-console-line proof-console-line-2 proof-console-out">
+                    {t("home.hero.proof.consoleLine2")}
+                  </div>
+                  <div className="proof-console-line proof-console-line-3 text-foreground">
+                    {t("home.hero.proof.consoleLine3")}
+                  </div>
+                  <div className="proof-console-line proof-console-line-4 proof-console-out">
+                    {t("home.hero.proof.consoleLine4")}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
