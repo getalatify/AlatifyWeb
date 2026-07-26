@@ -699,5 +699,35 @@
     opacity: 1 !important;
     transform: none !important;
   }
+
+  .device-phone-bezel,
+  .device-browser-bezel {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* ========== HOMEPAGE DEVICE SCROLL TILT (M40) ==========
+ * Base bezels: no transform (square-on). Rotation only in keyframes,
+ * only when animation-timeline is supported.
+ */
+@supports (animation-timeline: view()) {
+  @keyframes device-tilt-in {
+    from {
+      transform: perspective(900px) rotateY(14deg) rotateX(6deg) scale(0.97);
+    }
+    to {
+      transform: perspective(900px) rotateY(0deg) rotateX(0deg) scale(1);
+    }
+  }
+
+  .device-phone-bezel,
+  .device-browser-bezel {
+    animation-name: device-tilt-in;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 45%;
+  }
 }
 

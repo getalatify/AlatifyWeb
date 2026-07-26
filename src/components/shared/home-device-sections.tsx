@@ -8,8 +8,8 @@ import { useInView } from "@/hooks/use-in-view";
 
 export function HomeDeviceSections() {
   const t = useT();
-  const phone = useInView();
-  const desktop = useInView();
+  const phone = useInView({ threshold: 0.35, rootMargin: "0px 0px -12% 0px" });
+  const desktop = useInView({ threshold: 0.35, rootMargin: "0px 0px -12% 0px" });
 
   return (
     <>
@@ -19,7 +19,6 @@ export function HomeDeviceSections() {
 
       {/* Section one: phone + Blur & Redact */}
       <section
-        ref={phone.ref as React.RefObject<HTMLElement>}
         id="features-section"
         className={`mt-20 w-full max-w-5xl z-10 shrink-0 scroll-mt-6 grid grid-cols-1 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] gap-8 md:gap-12 items-center ${
           phone.inView ? "device-inview" : ""
@@ -41,8 +40,11 @@ export function HomeDeviceSections() {
           </Link>
         </div>
 
-        {/* Device second; left at md */}
-        <div className="order-2 md:order-1 flex justify-center md:justify-start">
+        {/* Device second; left at md — observer on device column */}
+        <div
+          ref={phone.ref as React.RefObject<HTMLDivElement>}
+          className="order-2 md:order-1 flex justify-center md:justify-start"
+        >
           <div className="device-phone-bezel w-full max-w-[15rem] aspect-[9/19.5] rounded-[1.75rem] border border-border bg-card shadow-md overflow-hidden flex flex-col">
             {/* Status bar */}
             <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5 shrink-0">
@@ -63,25 +65,32 @@ export function HomeDeviceSections() {
               <div className="h-6 rounded-md bg-secondary border border-border shrink-0" />
 
               <div className="relative flex-1 min-h-0 rounded-lg bg-secondary/60 border border-border p-2.5 overflow-hidden">
-                {/* Abstract document */}
-                <div className="device-anim absolute inset-2.5 rounded-md bg-card border border-border p-2.5 flex flex-col gap-2">
-                  <div className="flex items-start gap-2">
-                    <span className="block w-8 h-8 rounded-full bg-muted-foreground/25 shrink-0" />
-                    <div className="flex-1 flex flex-col gap-1.5 pt-0.5">
-                      <span className="block h-1.5 w-full rounded-full bg-muted-foreground/30" />
-                      <span className="block h-1.5 w-4/5 rounded-full bg-muted-foreground/20" />
+                {/* Document card — photo tool abstract */}
+                <div className="device-anim absolute inset-2.5 rounded-md bg-card border border-border p-2.5 flex flex-col gap-2 overflow-hidden">
+                  {/* Photo region absorbs remaining height */}
+                  <div className="relative flex-1 min-h-0 rounded-md bg-muted overflow-hidden flex flex-col items-center justify-center">
+                    <div className="relative shrink-0">
+                      <span className="block w-14 h-14 rounded-full bg-muted-foreground/25" />
+                      {/* Redaction over head circle */}
+                      <div className="device-anim device-delay-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-8 rounded-sm bg-foreground" />
                     </div>
+                    <span className="block w-24 h-10 mt-2 rounded-t-full bg-muted-foreground/20 shrink-0" />
                   </div>
-                  <span className="block h-1.5 w-full rounded-full bg-muted-foreground/20" />
-                  <span className="block h-1.5 w-5/6 rounded-full bg-muted-foreground/15" />
-                  <span className="block h-1.5 w-2/3 rounded-full bg-muted-foreground/15" />
+
+                  {/* Caption bars */}
+                  <span className="block h-1.5 w-3/4 rounded-full bg-muted-foreground/25 shrink-0" />
+                  <span className="block h-1.5 w-1/2 rounded-full bg-muted-foreground/15 shrink-0" />
+
+                  {/* Tool bar pills */}
+                  <div className="flex items-center justify-center gap-1.5 shrink-0 pt-0.5">
+                    <span className="block h-2 w-8 rounded-full bg-muted-foreground/20" />
+                    <span className="block h-2 w-8 rounded-full bg-muted-foreground/30" />
+                    <span className="block h-2 w-8 rounded-full bg-muted-foreground/20" />
+                  </div>
                 </div>
 
-                {/* Redaction block */}
-                <div className="device-anim device-delay-1 absolute left-5 right-5 bottom-8 h-7 rounded-sm bg-foreground" />
-
-                {/* Confirmation */}
-                <div className="device-anim device-delay-2 absolute left-1/2 -translate-x-1/2 bottom-2.5 flex items-center gap-1 rounded-full bg-card border border-border px-2 py-0.5 shadow-sm">
+                {/* Confirmation — stage child, clear of bezel */}
+                <div className="device-anim device-delay-2 absolute left-1/2 -translate-x-1/2 bottom-4 flex items-center gap-1 rounded-full bg-card border border-border px-2 py-0.5 shadow-sm z-10">
                   <span className="block w-2 h-2 rounded-full bg-foreground" />
                   <span className="text-[9px] font-semibold text-foreground leading-none">
                     {t("home.device.blur.done")}
@@ -95,7 +104,6 @@ export function HomeDeviceSections() {
 
       {/* Section two: desktop browser + Format Converter batch ZIP */}
       <section
-        ref={desktop.ref as React.RefObject<HTMLElement>}
         className={`mt-20 w-full max-w-5xl z-10 shrink-0 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center ${
           desktop.inView ? "device-inview" : ""
         }`}
@@ -115,7 +123,10 @@ export function HomeDeviceSections() {
           </Link>
         </div>
 
-        <div className="w-full">
+        <div
+          ref={desktop.ref as React.RefObject<HTMLDivElement>}
+          className="w-full"
+        >
           <div className="device-browser-bezel w-full aspect-[16/10] rounded-xl border border-border bg-card shadow-md overflow-hidden flex flex-col">
             {/* Title bar */}
             <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-secondary/40 shrink-0">
@@ -152,7 +163,7 @@ export function HomeDeviceSections() {
                 </span>
               </div>
 
-              <div className="mt-auto space-y-1.5">
+              <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="device-anim device-delay-3 text-[10px] font-medium text-muted-foreground">
                     {t("home.device.batch.progress")}
