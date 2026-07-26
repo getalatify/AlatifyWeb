@@ -711,6 +711,10 @@
   opacity: 0;
 }
 
+.device-desk-convert-label-recon {
+  opacity: 0;
+}
+
 .device-desktop-loop .device-desk-scene-a {
   animation: device-desk-scene-a var(--desktop-loop-dur) linear infinite;
 }
@@ -789,6 +793,10 @@
 
 .device-desktop-loop .device-desk-convert-label-busy {
   animation: device-desk-convert-label-busy var(--desktop-loop-dur) linear infinite;
+}
+
+.device-desktop-loop .device-desk-convert-label-recon {
+  animation: device-desk-convert-label-recon var(--desktop-loop-dur) linear infinite;
 }
 
 /* Scenes: sequential swap — never both opacity > 0 */
@@ -986,7 +994,7 @@
   }
 }
 
-/* Progress: thirds lock 42/48/54/60; reset ≥88% */
+/* Progress fill: thirds lock 42/48/54/60; hold full until panel exits; reset ≥88% */
 @keyframes device-desk-progress-fill {
   0%,
   42% {
@@ -1002,7 +1010,7 @@
     animation-timing-function: ease-in-out;
   }
   60%,
-  86% {
+  64% {
     transform: scaleX(1);
   }
   88%,
@@ -1011,16 +1019,21 @@
   }
 }
 
+/*
+ * Progress panel vs success/ZIP: sequential, never both opacity > 0
+ * (real tool: {isConverting && progress}; on done progress unmounts).
+ * Panel 42–60 on, out 60–64; success/ZIP in 64–68, hold 68–86; reset ≥88%.
+ */
 @keyframes device-desk-progress-panel {
   0%,
   40% {
     opacity: 0;
   }
   42%,
-  86% {
+  60% {
     opacity: 1;
   }
-  88%,
+  64%,
   100% {
     opacity: 0;
   }
@@ -1062,10 +1075,10 @@
     opacity: 0;
   }
   54.01%,
-  64% {
+  60% {
     opacity: 1;
   }
-  64.01%,
+  60.01%,
   100% {
     opacity: 0;
   }
@@ -1078,7 +1091,7 @@
     transform: translateY(8px);
     animation-timing-function: ease-out;
   }
-  70%,
+  68%,
   86% {
     opacity: 1;
     transform: translateY(0);
@@ -1097,7 +1110,7 @@
     transform: translateY(8px);
     animation-timing-function: ease-out;
   }
-  70%,
+  68%,
   86% {
     opacity: 1;
     transform: translateY(0);
@@ -1137,6 +1150,7 @@
   }
 }
 
+/* Labels: idle → busy (converting) → recon (convertedImage); sequential opacity */
 @keyframes device-desk-convert-label-idle {
   0%,
   40% {
@@ -1158,6 +1172,21 @@
     opacity: 0;
   }
   42%,
+  60% {
+    opacity: 1;
+  }
+  64%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes device-desk-convert-label-recon {
+  0%,
+  64% {
+    opacity: 0;
+  }
+  68%,
   86% {
     opacity: 1;
   }
@@ -1637,7 +1666,12 @@
     transform: scaleX(1) !important;
   }
 
-  .device-desk-progress-panel,
+  /* Completed static frame: progress gone; success + ZIP visible */
+  .device-desk-progress-panel {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
   .device-desk-zip-row,
   .device-desk-success {
     animation: none !important;
@@ -1646,14 +1680,10 @@
   }
 
   .device-desk-stage-1,
-  .device-desk-stage-2 {
-    animation: none !important;
-    opacity: 0 !important;
-  }
-
+  .device-desk-stage-2,
   .device-desk-stage-3 {
     animation: none !important;
-    opacity: 1 !important;
+    opacity: 0 !important;
   }
 
   .device-desk-cursor-a,
@@ -1676,12 +1706,17 @@
 
   .device-desk-convert-label-idle {
     animation: none !important;
-    opacity: 1 !important;
+    opacity: 0 !important;
   }
 
   .device-desk-convert-label-busy {
     animation: none !important;
     opacity: 0 !important;
+  }
+
+  .device-desk-convert-label-recon {
+    animation: none !important;
+    opacity: 1 !important;
   }
 }
 

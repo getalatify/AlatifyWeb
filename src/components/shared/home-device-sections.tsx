@@ -31,7 +31,7 @@ export function HomeDeviceSections() {
   return (
     <>
       <noscript>
-        <style>{`.device-replica-view{opacity:1!important}.device-scene-a{opacity:0!important}.device-scene-b{opacity:1!important}.device-replica-scroll{transform:none!important}.device-redact-box{opacity:1!important;transform:none!important}.device-chip-inner{opacity:1!important}.device-touch-a,.device-touch-b,.device-touch-c{opacity:0!important}.device-dl-btn{transform:none!important}.device-drop-accept{opacity:0!important}.device-title-idle{opacity:1!important}.device-title-accept{opacity:0!important}.device-dl-toast{opacity:0!important}.device-desk-scene-a{opacity:0!important}.device-desk-scene-b{opacity:1!important}.device-desk-row-1,.device-desk-row-2,.device-desk-row-3{opacity:1!important;transform:none!important}.device-desk-progress-fill{transform:scaleX(1)!important}.device-desk-progress-panel{opacity:1!important}.device-desk-zip-row,.device-desk-success{opacity:1!important;transform:none!important}.device-desk-cursor-a,.device-desk-cursor-b,.device-desk-cursor-c{opacity:0!important}.device-desk-convert-btn,.device-desk-zip-btn{transform:none!important}`}</style>
+        <style>{`.device-replica-view{opacity:1!important}.device-scene-a{opacity:0!important}.device-scene-b{opacity:1!important}.device-replica-scroll{transform:none!important}.device-redact-box{opacity:1!important;transform:none!important}.device-chip-inner{opacity:1!important}.device-touch-a,.device-touch-b,.device-touch-c{opacity:0!important}.device-dl-btn{transform:none!important}.device-drop-accept{opacity:0!important}.device-title-idle{opacity:1!important}.device-title-accept{opacity:0!important}.device-dl-toast{opacity:0!important}.device-desk-scene-a{opacity:0!important}.device-desk-scene-b{opacity:1!important}.device-desk-row-1,.device-desk-row-2,.device-desk-row-3{opacity:1!important;transform:none!important}.device-desk-progress-fill{transform:scaleX(1)!important}.device-desk-progress-panel{opacity:0!important}.device-desk-zip-row,.device-desk-success{opacity:1!important;transform:none!important}.device-desk-cursor-a,.device-desk-cursor-b,.device-desk-cursor-c{opacity:0!important}.device-desk-convert-btn,.device-desk-zip-btn{transform:none!important}.device-desk-convert-label-idle,.device-desk-convert-label-busy{opacity:0!important}.device-desk-convert-label-recon{opacity:1!important}`}</style>
       </noscript>
 
       {/* Section one: phone + Blur & Redact */}
@@ -478,43 +478,53 @@ export function HomeDeviceSections() {
                   <span className="device-desk-convert-label-busy absolute inset-0 flex items-center justify-center">
                     Converting Batch...
                   </span>
-                </div>
-
-                <div className="device-desk-progress-panel space-y-1">
-                  <div className="flex justify-between text-[9px] font-bold text-foreground">
-                    <span>{t("home.device.batch.progress")}</span>
-                  </div>
-                  <div className="h-1.5 w-full rounded-full bg-secondary overflow-hidden">
-                    <div className="device-desk-progress-fill h-full w-full rounded-full bg-foreground origin-left" />
-                  </div>
-                  <div className="relative h-3.5 text-[9px] text-muted-foreground font-semibold">
-                    <span className="device-desk-stage-1 absolute inset-0 truncate">
-                      Converting image 1 of 3: img-01.png
-                    </span>
-                    <span className="device-desk-stage-2 absolute inset-0 truncate">
-                      Converting image 2 of 3: img-02.png
-                    </span>
-                    <span className="device-desk-stage-3 absolute inset-0 truncate">
-                      Converting image 3 of 3: img-03.png
-                    </span>
-                  </div>
-                </div>
-
-                <div className="device-desk-success flex items-start gap-1.5 rounded-md border border-success/15 bg-success/5 px-2 py-1">
-                  <CheckCircle2 className="w-3 h-3 text-success shrink-0 mt-0.5" aria-hidden="true" />
-                  <span className="text-[9px] text-muted-foreground leading-snug">
-                    Successfully converted all images and bundled into a ZIP archive.
+                  <span className="device-desk-convert-label-recon absolute inset-0 flex items-center justify-center">
+                    Re-convert Batch
                   </span>
                 </div>
 
-                <div className="device-desk-zip-row flex items-center gap-2 rounded-md border border-border bg-secondary/50 px-2 py-1.5">
-                  <span className="block w-3 h-3 rounded-sm bg-foreground/80 shrink-0" />
-                  <span className="text-[10px] font-mono font-semibold truncate flex-1">
-                    {t("home.device.batch.zip")}
-                  </span>
-                  <span className="device-desk-zip-btn text-[9px] font-bold shrink-0 px-1.5 py-0.5 rounded border border-border bg-background inline-block">
-                    Download
-                  </span>
+                {/*
+                  Outcome slot: progress XOR success+ZIP (real tool hides progress when !isConverting).
+                  Absolute children so invisible states do not stack height and clip the bezel.
+                  Slot height = success (~30) + gap + zip (~28) ≈ 64.
+                */}
+                <div className="device-desk-outcome relative shrink-0 w-full" style={{ height: 64 }}>
+                  <div className="device-desk-progress-panel absolute inset-x-0 top-0 space-y-1">
+                    <div className="flex justify-between text-[9px] font-bold text-foreground">
+                      <span>{t("home.device.batch.progress")}</span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+                      <div className="device-desk-progress-fill h-full w-full rounded-full bg-foreground origin-left" />
+                    </div>
+                    <div className="relative h-3.5 text-[9px] text-muted-foreground font-semibold">
+                      <span className="device-desk-stage-1 absolute inset-0 truncate">
+                        Converting image 1 of 3: img-01.png
+                      </span>
+                      <span className="device-desk-stage-2 absolute inset-0 truncate">
+                        Converting image 2 of 3: img-02.png
+                      </span>
+                      <span className="device-desk-stage-3 absolute inset-0 truncate">
+                        Converting image 3 of 3: img-03.png
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="device-desk-success absolute inset-x-0 top-0 flex items-start gap-1.5 rounded-md border border-success/15 bg-success/5 px-2 py-1">
+                    <CheckCircle2 className="w-3 h-3 text-success shrink-0 mt-0.5" aria-hidden="true" />
+                    <span className="text-[9px] text-muted-foreground leading-snug">
+                      Successfully converted all images and bundled into a ZIP archive.
+                    </span>
+                  </div>
+
+                  <div className="device-desk-zip-row absolute inset-x-0 bottom-0 flex items-center gap-2 rounded-md border border-border bg-secondary/50 px-2 py-1.5">
+                    <span className="block w-3 h-3 rounded-sm bg-foreground/80 shrink-0" />
+                    <span className="text-[10px] font-mono font-semibold truncate flex-1">
+                      {t("home.device.batch.zip")}
+                    </span>
+                    <span className="device-desk-zip-btn text-[9px] font-bold shrink-0 px-1.5 py-0.5 rounded border border-border bg-background inline-block">
+                      Download
+                    </span>
+                  </div>
                 </div>
 
                 {/* Cursor B: over Convert; Cursor C: over Download — nudge left/top in markup */}
