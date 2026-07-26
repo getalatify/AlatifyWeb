@@ -17,6 +17,8 @@ import {
   Shield,
   AlertTriangle,
   Undo,
+  MousePointer2,
+  CheckCircle2,
 } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
 import { useInView } from "@/hooks/use-in-view";
@@ -29,7 +31,7 @@ export function HomeDeviceSections() {
   return (
     <>
       <noscript>
-        <style>{`.device-anim,.device-progress-fill{opacity:1!important;transform:none!important}.device-replica-view{opacity:1!important}.device-scene-a{opacity:0!important}.device-scene-b{opacity:1!important}.device-replica-scroll{transform:none!important}.device-redact-box{opacity:1!important;transform:none!important}.device-chip-inner{opacity:1!important}.device-touch-a,.device-touch-b,.device-touch-c{opacity:0!important}.device-dl-btn{transform:none!important}.device-drop-accept{opacity:0!important}.device-title-idle{opacity:1!important}.device-title-accept{opacity:0!important}`}</style>
+        <style>{`.device-replica-view{opacity:1!important}.device-scene-a{opacity:0!important}.device-scene-b{opacity:1!important}.device-replica-scroll{transform:none!important}.device-redact-box{opacity:1!important;transform:none!important}.device-chip-inner{opacity:1!important}.device-touch-a,.device-touch-b,.device-touch-c{opacity:0!important}.device-dl-btn{transform:none!important}.device-drop-accept{opacity:0!important}.device-title-idle{opacity:1!important}.device-title-accept{opacity:0!important}.device-desk-scene-a{opacity:0!important}.device-desk-scene-b{opacity:1!important}.device-desk-row-1,.device-desk-row-2,.device-desk-row-3{opacity:1!important;transform:none!important}.device-desk-progress-fill{transform:scaleX(1)!important}.device-desk-progress-panel{opacity:1!important}.device-desk-zip-row,.device-desk-success{opacity:1!important;transform:none!important}.device-desk-cursor-a,.device-desk-cursor-b,.device-desk-cursor-c{opacity:0!important}.device-desk-convert-btn,.device-desk-zip-btn{transform:none!important}`}</style>
       </noscript>
 
       {/* Section one: phone + Blur & Redact */}
@@ -359,7 +361,7 @@ export function HomeDeviceSections() {
       {/* Section two: desktop browser + Format Converter batch ZIP */}
       <section
         className={`mt-20 w-full max-w-5xl z-10 shrink-0 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center ${
-          desktop.inView ? "device-inview" : ""
+          desktop.inView ? "device-inview device-desktop-loop" : ""
         }`}
       >
         <div className="flex flex-col gap-3 text-left">
@@ -396,41 +398,117 @@ export function HomeDeviceSections() {
               </div>
             </div>
 
-            {/* Browser body */}
-            <div className="flex-1 min-h-0 p-3 flex flex-col gap-2 overflow-hidden">
-              <div className="device-anim flex items-center gap-2 rounded-md border border-border bg-secondary/30 px-2 py-1.5">
-                <span className="block w-3 h-3 rounded-sm bg-muted-foreground/30 shrink-0" />
-                <span className="text-[10px] font-mono text-muted-foreground truncate">
-                  img-01.png
-                </span>
-              </div>
-              <div className="device-anim device-delay-1 flex items-center gap-2 rounded-md border border-border bg-secondary/30 px-2 py-1.5">
-                <span className="block w-3 h-3 rounded-sm bg-muted-foreground/30 shrink-0" />
-                <span className="text-[10px] font-mono text-muted-foreground truncate">
-                  img-02.png
-                </span>
-              </div>
-              <div className="device-anim device-delay-2 flex items-center gap-2 rounded-md border border-border bg-secondary/30 px-2 py-1.5">
-                <span className="block w-3 h-3 rounded-sm bg-muted-foreground/30 shrink-0" />
-                <span className="text-[10px] font-mono text-muted-foreground truncate">
-                  img-03.png
-                </span>
+            {/* Browser body: sequential empty → working scenes */}
+            <div className="relative flex-1 min-h-0 overflow-hidden">
+              {/* Scene A — empty dropzone */}
+              <div className="device-desk-scene-a absolute inset-0 p-3 flex flex-col">
+                <div className="relative flex-1 rounded-md border-2 border-dashed border-primary/30 flex flex-col items-center justify-center text-center px-2">
+                  <span className="text-[10px] font-medium text-muted-foreground">
+                    Drop images to convert
+                  </span>
+                  <span className="text-[9px] text-muted-foreground/80 mt-1">
+                    Batch · ZIP download
+                  </span>
+                  <div className="device-desk-drop-accept absolute inset-0 rounded-md border-2 border-solid border-primary bg-primary/5 pointer-events-none" />
+                </div>
+                {/* Cursor A: left/top = dropzone centre target (Akira can nudge) */}
+                <div
+                  className="device-desk-cursor-a absolute z-20 pointer-events-none"
+                  style={{ left: "50%", top: "55%" }}
+                >
+                  <MousePointer2 className="w-3.5 h-3.5 text-foreground drop-shadow-sm" aria-hidden="true" />
+                </div>
               </div>
 
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="device-anim device-delay-3 text-[10px] font-medium text-muted-foreground">
-                    {t("home.device.batch.progress")}
+              {/* Scene B — working queue */}
+              <div className="device-desk-scene-b absolute inset-0 p-3 flex flex-col gap-1.5 overflow-hidden">
+                <div className="flex items-center justify-between shrink-0">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Batch queue
+                  </span>
+                  <span className="text-[9px] font-semibold text-foreground px-1.5 py-0.5 rounded bg-secondary border border-border">
+                    WebP
                   </span>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-secondary overflow-hidden">
-                  <div className="device-progress-fill h-full w-full rounded-full bg-foreground origin-left" />
+
+                <div className="device-desk-row-1 flex items-center gap-2 rounded-md border border-border bg-secondary/30 px-2 py-1.5">
+                  <span className="block w-3 h-3 rounded-sm bg-muted-foreground/30 shrink-0" />
+                  <span className="text-[10px] font-mono text-muted-foreground truncate flex-1">
+                    img-01.png
+                  </span>
+                  <span className="text-[9px] text-success font-bold shrink-0">· Ready</span>
                 </div>
-                <div className="device-anim device-delay-4 flex items-center gap-2 rounded-md border border-border bg-secondary/50 px-2 py-1.5">
+                <div className="device-desk-row-2 flex items-center gap-2 rounded-md border border-border bg-secondary/30 px-2 py-1.5">
+                  <span className="block w-3 h-3 rounded-sm bg-muted-foreground/30 shrink-0" />
+                  <span className="text-[10px] font-mono text-muted-foreground truncate flex-1">
+                    img-02.png
+                  </span>
+                  <span className="text-[9px] text-success font-bold shrink-0">· Ready</span>
+                </div>
+                <div className="device-desk-row-3 flex items-center gap-2 rounded-md border border-border bg-secondary/30 px-2 py-1.5">
+                  <span className="block w-3 h-3 rounded-sm bg-muted-foreground/30 shrink-0" />
+                  <span className="text-[10px] font-mono text-muted-foreground truncate flex-1">
+                    img-03.png
+                  </span>
+                  <span className="text-[9px] text-success font-bold shrink-0">· Ready</span>
+                </div>
+
+                <div className="device-desk-convert-btn relative mt-auto rounded-md bg-primary text-primary-foreground text-[10px] font-bold py-1.5 text-center">
+                  <span className="device-desk-convert-label-idle">Convert Batch</span>
+                  <span className="device-desk-convert-label-busy absolute inset-0 flex items-center justify-center">
+                    Converting Batch...
+                  </span>
+                </div>
+
+                <div className="device-desk-progress-panel space-y-1">
+                  <div className="flex justify-between text-[9px] font-bold text-foreground">
+                    <span>{t("home.device.batch.progress")}</span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+                    <div className="device-desk-progress-fill h-full w-full rounded-full bg-foreground origin-left" />
+                  </div>
+                  <div className="relative h-3.5 text-[9px] text-muted-foreground font-semibold">
+                    <span className="device-desk-stage-1 absolute inset-0 truncate">
+                      Converting image 1 of 3: img-01.png
+                    </span>
+                    <span className="device-desk-stage-2 absolute inset-0 truncate">
+                      Converting image 2 of 3: img-02.png
+                    </span>
+                    <span className="device-desk-stage-3 absolute inset-0 truncate">
+                      Converting image 3 of 3: img-03.png
+                    </span>
+                  </div>
+                </div>
+
+                <div className="device-desk-success flex items-start gap-1.5 rounded-md border border-success/15 bg-success/5 px-2 py-1">
+                  <CheckCircle2 className="w-3 h-3 text-success shrink-0 mt-0.5" aria-hidden="true" />
+                  <span className="text-[9px] text-muted-foreground leading-snug">
+                    Successfully converted all images and bundled into a ZIP archive.
+                  </span>
+                </div>
+
+                <div className="device-desk-zip-row flex items-center gap-2 rounded-md border border-border bg-secondary/50 px-2 py-1.5">
                   <span className="block w-3 h-3 rounded-sm bg-foreground/80 shrink-0" />
-                  <span className="text-[10px] font-mono font-semibold text-foreground truncate">
+                  <span className="text-[10px] font-mono font-semibold truncate flex-1">
                     {t("home.device.batch.zip")}
                   </span>
+                  <span className="device-desk-zip-btn text-[9px] font-bold shrink-0 px-1.5 py-0.5 rounded border border-border bg-background inline-block">
+                    Download
+                  </span>
+                </div>
+
+                {/* Cursor B: over Convert; Cursor C: over Download — nudge left/top in markup */}
+                <div
+                  className="device-desk-cursor-b absolute z-20 pointer-events-none"
+                  style={{ left: "50%", top: "58%" }}
+                >
+                  <MousePointer2 className="w-3.5 h-3.5 text-foreground drop-shadow-sm" aria-hidden="true" />
+                </div>
+                <div
+                  className="device-desk-cursor-c absolute z-20 pointer-events-none"
+                  style={{ left: "88%", top: "92%" }}
+                >
+                  <MousePointer2 className="w-3.5 h-3.5 text-foreground drop-shadow-sm" aria-hidden="true" />
                 </div>
               </div>
             </div>
