@@ -4,10 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Lock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
 import { TOOL_COUNT, FEATURED_TOOLS } from "@/lib/tools/registry";
 import { TOOL_ICONS, FALLBACK_TOOL_ICON } from "@/lib/tools/tool-icons";
+import { HomeDeviceSections } from "@/components/shared/home-device-sections";
 
 /**
  * HOMEPAGE — monochrome. The animated background is the single global
@@ -201,51 +202,21 @@ export default function Home() {
         </Link>
       </section>
 
-      {/* Feature Grid Section */}
-      <div
-        id="features-section"
-        className="mt-20 max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 text-left z-10 px-4 shrink-0 scroll-mt-6"
-      >
-        {/* Card 1 */}
-        <div className="p-6 rounded-2xl bg-card border border-border shadow-md space-y-3 transition-transform duration-300 hover:-translate-y-1">
-          <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-foreground border border-border">
-            <Lock className="w-5 h-5" />
-          </div>
-          <h3 className="text-lg font-bold text-foreground">
-            {t("home.features.card1.title")}
-          </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {t("home.features.card1.text")}
-          </p>
-        </div>
-
-        {/* Card 2 */}
-        <div className="p-6 rounded-2xl bg-card border border-border shadow-md space-y-3 transition-transform duration-300 hover:-translate-y-1">
-          <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-foreground border border-border">
-            <Zap className="w-5 h-5" />
-          </div>
-          <h3 className="text-lg font-bold text-foreground">
-            {t("home.features.card2.title")}
-          </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {t("home.features.card2.text")}
-          </p>
-        </div>
-      </div>
+      <HomeDeviceSections />
 
       {/* Embed section - additive only */}
       <section className="mt-16 mb-8 max-w-5xl w-full text-center sm:text-left z-10 px-6 py-6 rounded-2xl border border-border/40 bg-secondary/20 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in shrink-0">
         <div className="space-y-1">
           <h4 className="text-sm font-extrabold text-foreground">
-            Building a website or blog?
+            {t("home.embed.title")}
           </h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Embed our privacy-first, 100% client-side widgets directly on your own page.
+            {t("home.embed.text")}
           </p>
         </div>
         <Link href="/embed">
           <Button variant="outline" size="sm" className="font-bold text-xs rounded-xl border-border bg-card hover:bg-secondary transition-colors shrink-0">
-            Get Embed Code
+            {t("home.embed.cta")}
           </Button>
         </Link>
       </section>

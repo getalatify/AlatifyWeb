@@ -632,3 +632,72 @@
   }
 }
 
+/* ========== HOMEPAGE DEVICE SECTIONS (M39) ==========
+ * One-shot reveal. Base = hidden. Play only under .device-inview.
+ * Opposite of the hero proof panel (infinite loop, base = end state).
+ */
+
+.device-anim {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.device-progress-fill {
+  opacity: 1;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+@keyframes device-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes device-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.device-inview .device-anim {
+  animation: device-rise 0.35s ease-out forwards;
+}
+
+.device-inview .device-anim.device-delay-1 {
+  animation-delay: 0.12s;
+}
+
+.device-inview .device-anim.device-delay-2 {
+  animation-delay: 0.24s;
+}
+
+.device-inview .device-anim.device-delay-3 {
+  animation-delay: 0.5s;
+}
+
+.device-inview .device-anim.device-delay-4 {
+  animation-delay: 1.8s;
+}
+
+.device-inview .device-progress-fill {
+  animation: device-progress 1.2s ease-out 0.5s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .device-anim,
+  .device-progress-fill {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+

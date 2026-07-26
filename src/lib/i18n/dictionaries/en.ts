@@ -22,21 +22,32 @@ export const en = {
         consoleLine4: "TypeError: Failed to fetch",
       },
     },
-    features: {
-      card1: {
-        title: "Zero Uploads",
-        text: "All algorithms execute locally inside your sandboxed browser tab. No server holds your files.",
-      },
-      card2: {
-        title: "Near-Instant Speed",
-        text: "Skip upload waits entirely. Process high-resolution images right on your device.",
-      },
-    },
     tools: {
       title: "None of these upload anything.",
       subtitle:
         "Images, documents, privacy, and a few things for developers. Pick one and open your Network tab while it runs.",
       viewAll: "Browse all {count} tools",
+    },
+    device: {
+      blur: {
+        title: "Draw a box. The pixels are gone.",
+        text: "The redaction you draw is burned into the image on your own device. No signal, no upload, no waiting.",
+        cta: "Open Blur & Redact",
+        airplane: "Airplane mode",
+        done: "Redacted",
+      },
+      batch: {
+        title: "Batch convert. Download one ZIP.",
+        text: "Format Converter processes many images in a single run and packs the results into one ZIP, all inside your browser.",
+        cta: "Open Format Converter",
+        zip: "converted-images.zip",
+        progress: "Converting...",
+      },
+    },
+    embed: {
+      title: "Building a website or blog?",
+      text: "Embed our privacy-first widgets directly on your own page.",
+      cta: "Get Embed Code",
     },
   },
   about: {

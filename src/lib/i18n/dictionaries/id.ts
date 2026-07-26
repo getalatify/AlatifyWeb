@@ -22,21 +22,32 @@ export const id = {
         consoleLine4: "TypeError: Failed to fetch",
       },
     },
-    features: {
-      card1: {
-        title: "Tanpa Upload",
-        text: "Semua algoritma berjalan lokal di dalam tab browser kamu yang terisolasi. Tidak ada server yang menyimpan filemu.",
-      },
-      card2: {
-        title: "Nyaris Seketika",
-        text: "Sama sekali tidak perlu menunggu unggahan selesai. Proses gambar resolusi tinggi langsung di perangkatmu.",
-      },
-    },
     tools: {
       title: "Nggak ada satu pun yang mengunggah apa-apa.",
       subtitle:
         "Gambar, dokumen, privasi, dan beberapa hal buat developer. Pilih satu, lalu buka tab Network waktu dia jalan.",
       viewAll: "Lihat semua {count} tool",
+    },
+    device: {
+      blur: {
+        title: "Tarik kotaknya. Pixel-nya hilang.",
+        text: "Sensor yang kamu tarik langsung dibakar ke gambarnya di perangkat kamu sendiri. Tanpa sinyal, tanpa upload, tanpa nunggu.",
+        cta: "Buka Blur & Redact",
+        airplane: "Mode pesawat",
+        done: "Sudah disensor",
+      },
+      batch: {
+        title: "Konversi batch. Unduh satu ZIP.",
+        text: "Format Converter memproses banyak gambar sekali jalan, lalu mengemas hasilnya jadi satu ZIP, semua di browser kamu.",
+        cta: "Buka Format Converter",
+        zip: "converted-images.zip",
+        progress: "Mengonversi...",
+      },
+    },
+    embed: {
+      title: "Lagi bangun website atau blog?",
+      text: "Pasang widget privacy-first kami langsung di halaman kamu sendiri.",
+      cta: "Ambil kode embed",
     },
   },
   about: {
