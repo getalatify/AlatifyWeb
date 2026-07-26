@@ -6,7 +6,7 @@ import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Lock } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
-import { TOOL_COUNT, TOOLS } from "@/lib/tools/registry";
+import { TOOL_COUNT, FEATURED_TOOLS } from "@/lib/tools/registry";
 import { TOOL_ICONS, FALLBACK_TOOL_ICON } from "@/lib/tools/tool-icons";
 
 /**
@@ -112,7 +112,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Tool grid — all 20 registry tools, flat list */}
+      {/* Tool grid — featured subset (FEATURED_TOOLS), flat list */}
       <section
         aria-labelledby="home-tools-heading"
         className="mt-20 w-full max-w-5xl z-10 shrink-0 flex flex-col items-center gap-8"
@@ -130,7 +130,7 @@ export default function Home() {
         </div>
 
         <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {TOOLS.map((tool) => {
+          {FEATURED_TOOLS.map((tool) => {
             const Icon = TOOL_ICONS[tool.id] ?? FALLBACK_TOOL_ICON;
             return (
               <Link
@@ -139,7 +139,7 @@ export default function Home() {
                 className="group block h-full"
               >
                 <div className="flex h-full flex-col gap-3 rounded-2xl border border-border/60 bg-card p-5 shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
-                  <div className="flex min-w-0 items-start gap-2.5">
+                  <div className="flex min-w-0 items-center gap-2.5">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-secondary text-muted-foreground transition-all duration-300 group-hover:scale-105 group-hover:text-primary">
                       <Icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
                     </div>
@@ -160,7 +160,7 @@ export default function Home() {
           href="/tools"
           className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
-          {t("home.tools.viewAll")}
+          {t("home.tools.viewAll", { count: TOOL_COUNT })}
         </Link>
       </section>
 

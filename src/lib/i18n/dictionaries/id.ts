@@ -28,10 +28,10 @@ export const id = {
       },
     },
     tools: {
-      title: "Dua puluh tool. Nggak ada satu pun yang mengunggah apa-apa.",
+      title: "Nggak ada satu pun yang mengunggah apa-apa.",
       subtitle:
         "Gambar, dokumen, privasi, dan beberapa hal buat developer. Pilih satu, lalu buka tab Network waktu dia jalan.",
-      viewAll: "Lihat semua tool",
+      viewAll: "Lihat semua {count} tool",
     },
   },
   about: {

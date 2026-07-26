@@ -28,10 +28,10 @@ export const en = {
       },
     },
     tools: {
-      title: "Twenty tools. None of them upload anything.",
+      title: "None of these upload anything.",
       subtitle:
         "Images, documents, privacy, and a few things for developers. Pick one and open your Network tab while it runs.",
-      viewAll: "Browse all tools",
+      viewAll: "Browse all {count} tools",
     },
   },
   about: {
