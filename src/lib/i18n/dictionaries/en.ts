@@ -27,6 +27,12 @@ export const en = {
         text: "Skip upload waits entirely. Process high-resolution images right on your device.",
       },
     },
+    tools: {
+      title: "Twenty tools. None of them upload anything.",
+      subtitle:
+        "Images, documents, privacy, and a few things for developers. Pick one and open your Network tab while it runs.",
+      viewAll: "Browse all tools",
+    },
   },
   about: {
     intro: "Image tools should respect your privacy.",

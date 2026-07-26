@@ -27,6 +27,12 @@ export const id = {
         text: "Sama sekali tidak perlu menunggu unggahan selesai. Proses gambar resolusi tinggi langsung di perangkatmu.",
       },
     },
+    tools: {
+      title: "Dua puluh tool. Nggak ada satu pun yang mengunggah apa-apa.",
+      subtitle:
+        "Gambar, dokumen, privasi, dan beberapa hal buat developer. Pilih satu, lalu buka tab Network waktu dia jalan.",
+      viewAll: "Lihat semua tool",
+    },
   },
   about: {
     intro: "Alat edit gambar harusnya menghargai privasi kamu.",

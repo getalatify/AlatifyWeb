@@ -6,7 +6,8 @@ import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Lock } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
-import { TOOL_COUNT } from "@/lib/tools/registry";
+import { TOOL_COUNT, TOOLS } from "@/lib/tools/registry";
+import { TOOL_ICONS, FALLBACK_TOOL_ICON } from "@/lib/tools/tool-icons";
 
 /**
  * HOMEPAGE — monochrome. The animated background is the single global
@@ -111,10 +112,62 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Tool grid — all 20 registry tools, flat list */}
+      <section
+        aria-labelledby="home-tools-heading"
+        className="mt-20 w-full max-w-5xl z-10 shrink-0 flex flex-col items-center gap-8"
+      >
+        <div className="text-center space-y-2">
+          <h2
+            id="home-tools-heading"
+            className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl"
+          >
+            {t("home.tools.title")}
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+            {t("home.tools.subtitle")}
+          </p>
+        </div>
+
+        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {TOOLS.map((tool) => {
+            const Icon = TOOL_ICONS[tool.id] ?? FALLBACK_TOOL_ICON;
+            return (
+              <Link
+                key={tool.id}
+                href={tool.route}
+                className="group block h-full"
+              >
+                <div className="flex h-full flex-col gap-3 rounded-2xl border border-border/60 bg-card p-5 shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
+                  <div className="flex min-w-0 items-start gap-2.5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-secondary text-muted-foreground transition-all duration-300 group-hover:scale-105 group-hover:text-primary">
+                      <Icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                    </div>
+                    <h3 className="line-clamp-2 text-sm font-extrabold text-foreground transition-colors group-hover:text-primary">
+                      {tool.name}
+                    </h3>
+                  </div>
+                  <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                    {t(`toolCard.${tool.id}`)}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        <Link
+          href="/tools"
+          className="text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {t("home.tools.viewAll")}
+        </Link>
+      </section>
+
       {/* Feature Grid Section */}
       <div
         id="features-section"
-        className="mt-20 max-w-3xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 text-left z-10 px-4 shrink-0 scroll-mt-6"
+        className="mt-20 max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 text-left z-10 px-4 shrink-0 scroll-mt-6"
       >
         {/* Card 1 */}
         <div className="p-6 rounded-2xl bg-card border border-border shadow-md space-y-3 transition-transform duration-300 hover:-translate-y-1">
@@ -144,7 +197,7 @@ export default function Home() {
       </div>
 
       {/* Embed section - additive only */}
-      <section className="mt-16 mb-8 max-w-3xl w-full text-center sm:text-left z-10 px-6 py-6 rounded-2xl border border-border/40 bg-secondary/20 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in shrink-0">
+      <section className="mt-16 mb-8 max-w-5xl w-full text-center sm:text-left z-10 px-6 py-6 rounded-2xl border border-border/40 bg-secondary/20 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in shrink-0">
         <div className="space-y-1">
           <h4 className="text-sm font-extrabold text-foreground">
             Building a website or blog?
