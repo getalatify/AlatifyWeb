@@ -397,3 +397,52 @@ export const TOOLS: ToolEntry[] = [
   },
 ];
 
+/** Live tool count. Derived from TOOLS so the homepage badge cannot drift. */
+export const TOOL_COUNT = TOOLS.length;
+
+/** Homepage grid membership + display order. Subset of TOOLS ids only. */
+export const FEATURED_TOOL_IDS: string[] = [
+  "bg-remover",
+  "compressor",
+  "exif-cleaner",
+  "converter",
+  "resizer",
+  "id-protector",
+  "upscaler",
+  "blur",
+  "pdf-to-markdown",
+  "markdown-to-pdf",
+  "code-to-image",
+  "qr-toolkit",
+];
+
+/** Homepage tool cards. Order follows FEATURED_TOOL_IDS, not TOOLS. */
+export const FEATURED_TOOLS: ToolEntry[] = FEATURED_TOOL_IDS.map((id) =>
+  TOOLS.find((t) => t.id === id)
+).filter((t): t is ToolEntry => t !== undefined);
+
+if (process.env.NODE_ENV !== "production") {
+  const resolved = new Set(FEATURED_TOOLS.map((t) => t.id));
+  const missing = FEATURED_TOOL_IDS.filter((id) => !resolved.has(id));
+  if (missing.length > 0) {
+    console.error(
+      `[registry] FEATURED_TOOL_IDS unresolved (homepage will omit them): ${missing.join(", ")}`
+    );
+  }
+
+  const seen = new Set<string>();
+  const duplicates: string[] = [];
+  for (const id of FEATURED_TOOL_IDS) {
+    if (seen.has(id)) {
+      if (!duplicates.includes(id)) duplicates.push(id);
+    } else {
+      seen.add(id);
+    }
+  }
+  if (duplicates.length > 0) {
+    console.error(
+      `[registry] FEATURED_TOOL_IDS has duplicate ids (homepage may render a tool twice): ${duplicates.join(", ")}`
+    );
+  }
+}
+
