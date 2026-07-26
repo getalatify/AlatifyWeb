@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Header } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FileImage, CircleAlert } from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
 import { TOOL_COUNT, FEATURED_TOOLS } from "@/lib/tools/registry";
 import { TOOL_ICONS, FALLBACK_TOOL_ICON } from "@/lib/tools/tool-icons";
@@ -69,7 +69,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right: DevTools Network proof panel */}
+        {/* Right: DevTools Network proof panel (decorative; aria-hidden) */}
         <div
           aria-hidden="true"
           className="w-full max-w-md md:max-w-none justify-self-center md:justify-self-end select-none"
@@ -96,52 +96,117 @@ export default function Home() {
               </span>
             </div>
 
-            {/* Stacked bodies — grid cell shared; CSS opacity cross-fade */}
+            {/*
+              Stacked bodies share one solid surface (M43 Correction 3).
+              New decorative file/label strings are EN hardcode (M41 replica
+              convention). Older panel chrome still routes through t() for history.
+              Orphaned dict keys (do not delete here): home.hero.proof.fileSource, fileResult.
+            */}
             <div className="proof-body">
-              {/* Network body */}
+              {/* Network body — Z1 empty requests; Z2 local activity; summary bottom */}
               <div className="proof-network">
-                {/* Empty network table — always visible during Network phase */}
-                <div className="px-3 py-6 text-center text-muted-foreground border-b border-border/60">
+                <div className="px-3 py-3 text-center text-muted-foreground border-b border-border/60 text-[11px]">
                   {t("home.hero.proof.empty")}
                 </div>
 
-                {/* Summary strip */}
-                <div className="proof-summary flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border/60 text-[11px] text-muted-foreground">
+                <div className="proof-local border-b border-border/60">
+                  <div className="px-3 pt-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Local · no network
+                  </div>
+                  <div className="proof-local-slot relative h-9">
+                    {/* File 1 */}
+                    <div className="proof-file-row proof-file-row-1 absolute inset-x-0 top-0 flex items-center gap-2 px-3 h-9 text-[11px]">
+                      <FileImage
+                        className="w-3.5 h-3.5 shrink-0 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <span className="truncate font-medium text-foreground min-w-0 flex-1">
+                        photo.jpg
+                      </span>
+                      <span className="proof-file-size relative shrink-0 w-[4.5rem] h-4 text-right font-mono text-[10px]">
+                        <span className="proof-file-size-before proof-file-size-before-1 absolute inset-0 flex items-center justify-end text-muted-foreground">
+                          1.9 MB
+                        </span>
+                        <span className="proof-file-size-after proof-file-size-after-1 absolute inset-0 flex items-center justify-end text-foreground font-semibold">
+                          163 kB
+                        </span>
+                      </span>
+                      <span className="proof-bar proof-bar-1" />
+                    </div>
+                    {/* File 2 */}
+                    <div className="proof-file-row proof-file-row-2 absolute inset-x-0 top-0 flex items-center gap-2 px-3 h-9 text-[11px]">
+                      <FileImage
+                        className="w-3.5 h-3.5 shrink-0 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <span className="truncate font-medium text-foreground min-w-0 flex-1">
+                        screenshot.png
+                      </span>
+                      <span className="proof-file-size relative shrink-0 w-[4.5rem] h-4 text-right font-mono text-[10px]">
+                        <span className="proof-file-size-before proof-file-size-before-2 absolute inset-0 flex items-center justify-end text-muted-foreground">
+                          3.8 MB
+                        </span>
+                        <span className="proof-file-size-after proof-file-size-after-2 absolute inset-0 flex items-center justify-end text-foreground font-semibold">
+                          420 kB
+                        </span>
+                      </span>
+                      <span className="proof-bar proof-bar-2" />
+                    </div>
+                    {/* File 3 — base/reduced-motion end frame */}
+                    <div className="proof-file-row proof-file-row-3 absolute inset-x-0 top-0 flex items-center gap-2 px-3 h-9 text-[11px]">
+                      <FileImage
+                        className="w-3.5 h-3.5 shrink-0 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <span className="truncate font-medium text-foreground min-w-0 flex-1">
+                        scan-doc.png
+                      </span>
+                      <span className="proof-file-size relative shrink-0 w-[4.5rem] h-4 text-right font-mono text-[10px]">
+                        <span className="proof-file-size-before proof-file-size-before-3 absolute inset-0 flex items-center justify-end text-muted-foreground">
+                          6.2 MB
+                        </span>
+                        <span className="proof-file-size-after proof-file-size-after-3 absolute inset-0 flex items-center justify-end text-foreground font-semibold">
+                          890 kB
+                        </span>
+                      </span>
+                      <span className="proof-bar proof-bar-3" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Summary BOTTOM — counters always zero; opacity blink only */}
+                <div className="proof-summary flex flex-wrap items-center justify-between gap-2 px-3 py-1.5 text-[11px] text-muted-foreground">
                   <span>{t("home.hero.proof.requests")}</span>
                   <span className="text-foreground font-semibold">
                     {t("home.hero.proof.transferred")}
                   </span>
-                </div>
-
-                {/* Local file line (no network) */}
-                <div className="proof-file-row relative px-3 py-3 text-[11px] text-muted-foreground">
-                  <span className="text-foreground font-medium">
-                    <span className="proof-file-source">
-                      {t("home.hero.proof.fileSource")}
-                    </span>
-                    {" "}
-                    <span className="proof-file-result">
-                      {t("home.hero.proof.fileResult")}
-                    </span>
-                  </span>
-                  <span className="proof-bar" />
                 </div>
               </div>
 
               {/* Console body */}
               <div className="proof-console">
                 <div className="px-3 py-3 space-y-1 text-[11px] text-muted-foreground">
-                  <div className="proof-console-line proof-console-line-1 text-foreground">
-                    {t("home.hero.proof.consoleLine1")}
+                  <div className="proof-console-line proof-console-line-1 relative overflow-hidden text-foreground">
+                    <span>{t("home.hero.proof.consoleLine1")}</span>
+                    <span className="proof-console-type-mask proof-console-type-mask-1" />
                   </div>
                   <div className="proof-console-line proof-console-line-2 proof-console-out">
                     {t("home.hero.proof.consoleLine2")}
                   </div>
-                  <div className="proof-console-line proof-console-line-3 text-foreground">
-                    {t("home.hero.proof.consoleLine3")}
+                  <div className="proof-console-line proof-console-line-3 relative overflow-hidden text-foreground">
+                    <span>{t("home.hero.proof.consoleLine3")}</span>
+                    <span className="proof-console-type-mask proof-console-type-mask-3" />
                   </div>
-                  <div className="proof-console-line proof-console-line-4 proof-console-out">
-                    {t("home.hero.proof.consoleLine4")}
+                  <div className="proof-console-line proof-console-line-4 proof-console-out proof-console-err flex items-start gap-1.5 rounded-sm bg-destructive/10 px-1 -mx-1 text-destructive">
+                    <CircleAlert
+                      className="w-3 h-3 shrink-0 mt-0.5"
+                      aria-hidden="true"
+                    />
+                    <span>{t("home.hero.proof.consoleLine4")}</span>
+                  </div>
+                  <div className="proof-console-prompt flex items-center gap-1 text-foreground pt-1">
+                    <span>&gt;</span>
+                    <span className="proof-console-caret" />
                   </div>
                 </div>
               </div>
