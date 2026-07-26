@@ -355,14 +355,16 @@ export function HomeDeviceSections() {
 
                 {/*
                   Download success toast (real: toast.success PNG string).
-                  Outside scale; not scrolled. top:10 → ~y10–50 of 448 viewport.
-                  Chip at 236 gone by 56%; Download press 70–73% at bottom — no collide.
+                  Sonner mount: <Toaster richColors position="top-right" /> (layout.tsx:123).
+                  Outside scale; not scrolled. Opaque surface (bg-card is glass — use solid bg-secondary).
+                  top-right inset: top 8 / right 8; width max 188 → full box in 220×448 viewport.
+                  Chip at 236 gone by 56%; Download press 70–73% bottom — no collide.
                 */}
                 <div
-                  className="absolute left-1/2 -translate-x-1/2 z-30 pointer-events-none"
-                  style={{ top: 10, width: "calc(100% - 16px)", maxWidth: 200 }}
+                  className="absolute z-30 pointer-events-none"
+                  style={{ top: 8, right: 8, width: 188, maxWidth: "calc(100% - 16px)" }}
                 >
-                  <div className="device-dl-toast rounded-md border border-border bg-card px-2 py-1.5 shadow-md flex items-start gap-1.5">
+                  <div className="device-dl-toast rounded-md border border-border bg-secondary px-2 py-1.5 shadow-md flex items-start gap-1.5">
                     <CheckCircle2
                       className="w-3 h-3 text-success shrink-0 mt-0.5"
                       aria-hidden="true"
