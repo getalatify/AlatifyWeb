@@ -2,7 +2,22 @@
 
 import React from "react";
 import Link from "next/link";
-import { Plane } from "lucide-react";
+import {
+  Plane,
+  Image as ImageIcon,
+  Trash2,
+  Sliders,
+  EyeOff,
+  Box,
+  Brush,
+  Upload,
+  Link as LinkIcon,
+  ImageUp,
+  Download,
+  Shield,
+  AlertTriangle,
+  Undo,
+} from "lucide-react";
 import { useT } from "@/lib/i18n/useT";
 import { useInView } from "@/hooks/use-in-view";
 
@@ -14,14 +29,14 @@ export function HomeDeviceSections() {
   return (
     <>
       <noscript>
-        <style>{`.device-anim,.device-progress-fill{opacity:1!important;transform:none!important}`}</style>
+        <style>{`.device-anim,.device-progress-fill{opacity:1!important;transform:none!important}.device-replica-view{opacity:1!important}.device-scene-a{opacity:0!important}.device-scene-b{opacity:1!important}.device-replica-scroll{transform:none!important}.device-redact-box{opacity:1!important;transform:none!important}.device-chip-inner{opacity:1!important}.device-touch-a,.device-touch-b,.device-touch-c{opacity:0!important}.device-dl-btn{transform:none!important}.device-drop-accept{opacity:0!important}.device-title-idle{opacity:1!important}.device-title-accept{opacity:0!important}`}</style>
       </noscript>
 
       {/* Section one: phone + Blur & Redact */}
       <section
         id="features-section"
         className={`mt-20 w-full max-w-5xl z-10 shrink-0 scroll-mt-6 grid grid-cols-1 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] gap-8 md:gap-12 items-center ${
-          phone.inView ? "device-inview" : ""
+          phone.inView ? "device-inview device-phone-loop" : ""
         }`}
       >
         {/* DOM order: text first */}
@@ -64,37 +79,276 @@ export function HomeDeviceSections() {
             <div className="flex-1 min-h-0 px-2.5 pb-3 flex flex-col gap-2">
               <div className="h-6 rounded-md bg-secondary border border-border shrink-0" />
 
-              <div className="relative flex-1 min-h-0 rounded-lg bg-secondary/60 border border-border p-2.5 overflow-hidden">
-                {/* Document card — photo tool abstract */}
-                <div className="device-anim absolute inset-2.5 rounded-md bg-card border border-border p-2.5 flex flex-col gap-2 overflow-hidden">
-                  {/* Photo region absorbs remaining height */}
-                  <div className="relative flex-1 min-h-0 rounded-md bg-muted overflow-hidden flex flex-col items-center justify-center">
-                    <div className="relative shrink-0">
-                      <span className="block w-14 h-14 rounded-full bg-muted-foreground/25" />
-                      {/* Redaction over head circle */}
-                      <div className="device-anim device-delay-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-8 rounded-sm bg-foreground" />
+              {/* Viewport: one-shot fade only — never scale. aria-hidden decorative. */}
+              <div
+                className="device-replica-view relative flex-1 min-h-0 w-full overflow-hidden rounded-lg bg-secondary/60 border border-border"
+                aria-hidden="true"
+              >
+                {/*
+                  Faithful English replica of Blur & Redact.
+                  326×664 × 0.6748 = 220×448 (screen content box).
+                  Scale STATIC FOREVER — never animated / never transform:none.
+                */}
+                <div
+                  className="device-replica-scale"
+                  style={{
+                    width: 326,
+                    height: 664,
+                    transform: "scale(0.6748)",
+                    transformOrigin: "top left",
+                  }}
+                >
+                  {/* SCENE A — empty upload, vertically centred (blur-client L990) */}
+                  <div
+                    className="device-scene-a absolute inset-x-0 top-0 z-10 w-full flex flex-col items-center justify-center px-3"
+                    style={{ height: 664 }}
+                  >
+                    <div className="w-full space-y-3">
+                      <div className="grid grid-cols-2 w-full p-1 bg-secondary/60 rounded-xl border border-border/40">
+                        <div className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-semibold bg-background text-foreground shadow-sm border border-border/50">
+                          <Upload className="w-3.5 h-3.5" aria-hidden="true" />
+                          Upload File
+                        </div>
+                        <div className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-semibold text-muted-foreground">
+                          <LinkIcon className="w-3.5 h-3.5" aria-hidden="true" />
+                          Paste URL
+                        </div>
+                      </div>
+
+                      {/* Single dropzone: shared icon/specs; title crossfade in fixed-height box; accept skin has no text */}
+                      <div className="relative w-full">
+                        <div className="relative w-full min-h-[280px] rounded-[var(--radius)] p-6 flex flex-col items-center justify-center text-center border-2 border-dashed border-primary/30 bg-transparent text-muted-foreground">
+                          {/* Accept skin — border/bg only; no text/icon (showAccept: border-primary bg-primary/5 border-solid) */}
+                          <div className="device-drop-accept absolute inset-0 rounded-[var(--radius)] border-2 border-solid border-primary bg-primary/5 pointer-events-none" />
+                          <div className="relative z-[1] space-y-3 flex flex-col items-center w-full">
+                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center border bg-secondary/50 border-border">
+                              <ImageUp className="w-10 h-10 text-muted-foreground" aria-hidden="true" />
+                            </div>
+                            <div className="space-y-1 w-full">
+                              {/* h-10: text-sm (~14px) × ~1.4 leading × 2 lines ≈ 40px; holds both titles without shifting specs */}
+                              <div className="relative h-10 w-full">
+                                <p className="device-title-idle absolute inset-0 flex items-center justify-center text-sm font-bold text-foreground leading-tight px-1">
+                                  Drag and drop image here, or click to select
+                                </p>
+                                <p className="device-title-accept absolute inset-0 flex items-center justify-center text-sm font-bold text-primary leading-tight px-1">
+                                  Drop your image here
+                                </p>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground">
+                                Up to 50MB · JPG, PNG, WebP, HEIC, TIFF, SVG
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Finger A — dropzone center; -22px baked in keyframes */}
+                        <div
+                          className="device-touch-a absolute z-10 w-11 h-11 rounded-full bg-foreground/80 ring-2 ring-background/80 shadow-md pointer-events-none"
+                          style={{ left: "50%", top: "50%" }}
+                        />
+                      </div>
                     </div>
-                    <span className="block w-24 h-10 mt-2 rounded-t-full bg-muted-foreground/20 shrink-0" />
                   </div>
 
-                  {/* Caption bars */}
-                  <span className="block h-1.5 w-3/4 rounded-full bg-muted-foreground/25 shrink-0" />
-                  <span className="block h-1.5 w-1/2 rounded-full bg-muted-foreground/15 shrink-0" />
+                  {/* SCENE B — loaded workspace; scroll wrapper owns translateY only */}
+                  <div
+                    className="device-scene-b absolute inset-x-0 top-0 w-full overflow-hidden"
+                    style={{ height: 664 }}
+                  >
+                    <div className="device-replica-scroll w-full">
+                      <div className="grid grid-cols-1 gap-8 w-full">
+                        <div className="flex flex-col gap-4 w-full">
+                          {/* Canvas card */}
+                          <div className="w-full p-3 rounded-2xl bg-card border border-border/60 shadow-md flex flex-col gap-3">
+                            <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                <ImageIcon className="w-3.5 h-3.5" aria-hidden="true" />
+                                Interactive Workspace
+                              </span>
+                              <span className="text-xs font-semibold text-foreground px-2 py-0.5 rounded-full bg-secondary border border-border">
+                                1.9 MB
+                              </span>
+                            </div>
 
-                  {/* Tool bar pills */}
-                  <div className="flex items-center justify-center gap-1.5 shrink-0 pt-0.5">
-                    <span className="block h-2 w-8 rounded-full bg-muted-foreground/20" />
-                    <span className="block h-2 w-8 rounded-full bg-muted-foreground/30" />
-                    <span className="block h-2 w-8 rounded-full bg-muted-foreground/20" />
+                            <div className="relative w-full aspect-[4/3] bg-[#0f0f11] rounded-xl overflow-hidden border border-border/50 shadow-inner min-h-[320px] flex items-center justify-center p-4">
+                              <div className="relative w-full h-full max-h-[300px] flex items-center justify-center">
+                                <div className="relative w-[240px] h-[240px] rounded-xl bg-muted overflow-hidden flex flex-col items-center justify-center">
+                                  <span className="block w-20 h-20 rounded-full bg-muted-foreground/25" />
+                                  <span className="block w-[7.5rem] h-12 mt-3 rounded-t-full bg-muted-foreground/20" />
+
+                                  {/* Box = finger B path: left/top = start, w/h = delta */}
+                                  <div
+                                    className="device-redact-box absolute z-[5] rounded-sm bg-foreground pointer-events-none"
+                                    style={{
+                                      left: 74,
+                                      top: 46,
+                                      width: 92,
+                                      height: 88,
+                                    }}
+                                  />
+
+                                  {/* Finger B — face drag; -22px baked in keyframes */}
+                                  <div
+                                    className="device-touch-b absolute z-10 w-11 h-11 rounded-full bg-foreground/80 ring-2 ring-background/80 shadow-md pointer-events-none"
+                                    style={{ left: 74, top: 46 }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
+                              <span className="font-medium truncate max-w-[150px]">
+                                photo.jpg
+                              </span>
+                              <span className="font-semibold shrink-0">
+                                1600 × 1600 · JPEG
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Replace / Remove bar */}
+                          <div className="flex items-center justify-end p-3 bg-card rounded-2xl border border-border/60 shadow-sm w-full gap-2">
+                            <span className="text-xs border border-border rounded-xl h-9 px-3 inline-flex items-center font-medium text-foreground">
+                              Replace Image
+                            </span>
+                            <span className="text-xs rounded-xl h-9 px-3 inline-flex items-center gap-1.5 text-destructive">
+                              <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                              Remove
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Full sidebar — Solid Fill selected; no strength slider */}
+                        <div className="p-4 rounded-2xl bg-card border border-border/60 shadow-md w-full">
+                          <div className="space-y-5">
+                            <div className="flex items-center gap-2 border-b border-border/40 pb-2.5">
+                              <Sliders className="w-4 h-4 text-primary" aria-hidden="true" />
+                              <span className="font-extrabold text-sm uppercase tracking-wider text-muted-foreground">
+                                Redact Controls
+                              </span>
+                            </div>
+
+                            <div className="space-y-2">
+                              <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                                Automation
+                              </span>
+                              <div className="w-full text-xs font-bold py-2.5 rounded-xl bg-primary text-primary-foreground flex items-center justify-center gap-2 h-10">
+                                <EyeOff className="w-4 h-4" aria-hidden="true" />
+                                <span>Auto-Detect Faces</span>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground leading-relaxed mt-1">
+                                ⚡ Local face detection. Works best on clear, front-facing faces. Manual touch-up is available.
+                              </p>
+                            </div>
+
+                            <div className="space-y-2">
+                              <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                                Selection Method
+                              </span>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="text-[10px] font-bold py-2 rounded-xl border border-border/40 flex items-center justify-center gap-1.5 bg-primary text-primary-foreground">
+                                  <Box className="w-3.5 h-3.5" aria-hidden="true" />
+                                  Box Mode
+                                </div>
+                                <div className="text-[10px] font-bold py-2 rounded-xl border border-border/40 flex items-center justify-center gap-1.5 bg-secondary text-secondary-foreground">
+                                  <Brush className="w-3.5 h-3.5" aria-hidden="true" />
+                                  Brush Mode
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                                Redaction Effect
+                              </span>
+                              <div className="grid grid-cols-3 gap-1.5">
+                                <div className="text-[9px] font-bold py-2.5 rounded-xl border border-border/40 bg-secondary text-secondary-foreground text-center">
+                                  Blur
+                                </div>
+                                <div className="text-[9px] font-bold py-2.5 rounded-xl border border-border/40 bg-secondary text-secondary-foreground text-center">
+                                  Pixelate
+                                </div>
+                                <div className="text-[9px] font-bold py-2.5 rounded-xl border border-border/40 bg-primary text-primary-foreground text-center">
+                                  Solid Fill
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="p-3 rounded-xl bg-secondary/50 border border-border/40 text-[10px] text-muted-foreground leading-relaxed flex gap-2">
+                              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-foreground" aria-hidden="true" />
+                              <p>
+                                <span className="font-bold text-foreground">Security Note:</span> For truly sensitive text or info, use{" "}
+                                <strong className="text-foreground">Solid Fill</strong>. Blur and pixelate algorithms can sometimes be partially reversed via reconstruction tools.
+                              </p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="text-[10px] font-bold py-2 rounded-xl border border-border/40 flex items-center justify-center gap-1.5 bg-secondary text-secondary-foreground">
+                                <Undo className="w-3.5 h-3.5" aria-hidden="true" />
+                                Undo Last
+                              </div>
+                              <div className="text-[10px] font-bold py-2 rounded-xl border border-border/40 flex items-center justify-center gap-1.5 bg-secondary text-secondary-foreground">
+                                <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                                Clear All
+                              </div>
+                            </div>
+
+                            <div className="mt-4 pt-5 border-t border-border/40 space-y-4">
+                              <div className="space-y-1.5">
+                                <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest block">
+                                  Export Format
+                                </span>
+                                <div className="h-10 w-full rounded-xl border border-border bg-popover px-3 flex items-center text-xs font-medium text-foreground">
+                                  PNG
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 text-[10px] font-semibold text-muted-foreground">
+                                <Shield className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                                <span>Privacy Mode Active · Metadata removed on export</span>
+                              </div>
+
+                              <div className="flex flex-col gap-1 w-full">
+                                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                  File Name
+                                </span>
+                                <div className="flex items-center gap-1.5 w-full">
+                                  <div className="flex-1 min-w-0 h-9 px-2.5 rounded-lg border border-border bg-popover text-popover-foreground text-xs font-mono flex items-center">
+                                    photo-redacted
+                                  </div>
+                                  <span className="text-xs font-mono text-muted-foreground shrink-0">.png</span>
+                                </div>
+                              </div>
+
+                              {/* Download + finger C (scrolls with button) */}
+                              <div className="relative">
+                                <div className="device-dl-btn w-full h-11 rounded-xl bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center gap-2">
+                                  <Download className="w-4 h-4" aria-hidden="true" />
+                                  Download Redacted Image
+                                </div>
+                                <div
+                                  className="device-touch-c absolute z-10 w-11 h-11 rounded-full bg-foreground/80 ring-2 ring-background/80 shadow-md pointer-events-none"
+                                  style={{ left: "50%", top: "50%" }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Confirmation — stage child, clear of bezel */}
-                <div className="device-anim device-delay-2 absolute left-1/2 -translate-x-1/2 bottom-4 flex items-center gap-1 rounded-full bg-card border border-border px-2 py-0.5 shadow-sm z-10">
-                  <span className="block w-2 h-2 rounded-full bg-foreground" />
-                  <span className="text-[9px] font-semibold text-foreground leading-none">
-                    {t("home.device.blur.done")}
-                  </span>
+                {/* Chip toast over canvas well bottom; outside scale; not scrolled */}
+                <div
+                  className="absolute left-1/2 -translate-x-1/2 z-20 pointer-events-none"
+                  style={{ top: 236 }}
+                >
+                  <div className="device-chip-inner flex items-center gap-1 rounded-full bg-card border border-border px-2 py-0.5 shadow-sm">
+                    <span className="block w-2 h-2 rounded-full bg-foreground" />
+                    <span className="text-[9px] font-semibold text-foreground leading-none">
+                      {t("home.device.blur.done")}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

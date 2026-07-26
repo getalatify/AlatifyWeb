@@ -692,6 +692,356 @@
   animation: device-progress 1.2s ease-out 0.5s forwards;
 }
 
+/* ========== HOMEPAGE DEVICE BLUR REPLICA (M41) ==========
+ * Viewport: one-shot fade on first inview (kept).
+ * Scale: static on .device-replica-scale — NEVER animate / never transform:none.
+ * Loop: under .device-phone-loop only (desktop one-shots untouched).
+ */
+
+.device-replica-view {
+  opacity: 0;
+}
+
+.device-inview .device-replica-view {
+  animation: device-replica-fade 0.35s ease-out forwards;
+}
+
+@keyframes device-replica-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.device-replica-scale {
+  pointer-events: none;
+  position: relative;
+}
+
+/* Tuning knobs — adjust after visual QA; keyframes read these only.
+ * --phone-loop-dur: full scene cycle length (percentages scale with it).
+ * --phone-scroll-y: translateY end so Download sits ~24src px above viewport bottom.
+ */
+.device-phone-loop {
+  --phone-loop-dur: 12s;
+  --phone-scroll-y: -657px;
+}
+
+/* Base (pre-loop / pre-inview resting states) */
+.device-scene-a {
+  opacity: 0;
+}
+
+.device-scene-b {
+  opacity: 0;
+}
+
+.device-replica-scroll {
+  transform: translateY(0);
+  width: 100%;
+}
+
+.device-redact-box {
+  opacity: 0;
+  transform: scale(0);
+  transform-origin: top left;
+}
+
+.device-touch-a,
+.device-touch-b,
+.device-touch-c {
+  opacity: 0;
+}
+
+.device-chip-inner {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.device-drop-accept {
+  opacity: 0;
+}
+
+.device-title-idle {
+  opacity: 1;
+}
+
+.device-title-accept {
+  opacity: 0;
+}
+
+.device-dl-btn {
+  transform: scale(1);
+}
+
+/* ---- Loop animations (only under .device-phone-loop) ---- */
+
+.device-phone-loop .device-scene-a {
+  animation: device-scene-a var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-scene-b {
+  animation: device-scene-b var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-replica-scroll {
+  animation: device-replica-scroll var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-touch-a {
+  animation: device-touch-a var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-touch-b {
+  animation: device-touch-b var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-touch-c {
+  animation: device-touch-c var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-redact-box {
+  animation: device-redact-draw var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-chip-inner {
+  animation: device-chip-loop var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-drop-accept {
+  animation: device-drop-accept var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-title-idle {
+  animation: device-title-idle var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-title-accept {
+  animation: device-title-accept var(--phone-loop-dur) linear infinite;
+}
+
+.device-phone-loop .device-dl-btn {
+  animation: device-dl-press var(--phone-loop-dur) linear infinite;
+}
+
+/* Sequential swap: A out 14–16%, B in 16–18%; B out 88–91%, A in 91–94%. Never both > 0. */
+@keyframes device-scene-a {
+  0%,
+  14% {
+    opacity: 1;
+  }
+  16%,
+  91% {
+    opacity: 0;
+  }
+  94%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes device-scene-b {
+  0%,
+  16% {
+    opacity: 0;
+  }
+  18%,
+  88% {
+    opacity: 1;
+  }
+  91%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Scroll: top until 56%, ease to Download, hold, reset while B invisible */
+@keyframes device-replica-scroll {
+  0%,
+  56% {
+    transform: translateY(0);
+    animation-timing-function: ease-in-out;
+  }
+  66%,
+  94% {
+    transform: translateY(var(--phone-scroll-y));
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Finger A — dropzone tap */
+@keyframes device-touch-a {
+  0%,
+  4% {
+    opacity: 0;
+    transform: translate(-22px, -22px) scale(1);
+  }
+  8% {
+    opacity: 1;
+    transform: translate(-22px, -22px) scale(1);
+  }
+  8.01%,
+  11% {
+    opacity: 1;
+    transform: translate(-22px, -22px) scale(0.92);
+  }
+  14%,
+  100% {
+    opacity: 0;
+    transform: translate(-22px, -22px) scale(0.92);
+  }
+}
+
+/* Finger B + redact: SAME stops 26%/40%, SAME ease-in-out at 26%, SAME dur var */
+@keyframes device-touch-b {
+  0%,
+  22% {
+    opacity: 0;
+    transform: translate(-22px, -22px) translate(0, 0);
+  }
+  26% {
+    opacity: 1;
+    transform: translate(-22px, -22px) translate(0, 0);
+    animation-timing-function: ease-in-out;
+  }
+  40% {
+    opacity: 1;
+    transform: translate(-22px, -22px) translate(92px, 88px);
+  }
+  44%,
+  100% {
+    opacity: 0;
+    transform: translate(-22px, -22px) translate(92px, 88px);
+  }
+}
+
+@keyframes device-redact-draw {
+  0%,
+  26% {
+    opacity: 1;
+    transform: scale(0);
+    animation-timing-function: ease-in-out;
+  }
+  40%,
+  88% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(0);
+  }
+}
+
+/* Finger C — Download press */
+@keyframes device-touch-c {
+  0%,
+  66% {
+    opacity: 0;
+    transform: translate(-22px, -22px) scale(1);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-22px, -22px) scale(1);
+    animation-timing-function: ease-out;
+  }
+  70.01%,
+  73% {
+    opacity: 1;
+    transform: translate(-22px, -22px) scale(0.92);
+  }
+  78%,
+  100% {
+    opacity: 0;
+    transform: translate(-22px, -22px) scale(0.92);
+  }
+}
+
+@keyframes device-dl-press {
+  0%,
+  70% {
+    transform: scale(1);
+    animation-timing-function: ease-out;
+  }
+  73% {
+    transform: scale(0.96);
+  }
+  78%,
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Accept skin: on through Scene A exit (16%), reset while A opacity 0 */
+@keyframes device-drop-accept {
+  0%,
+  8% {
+    opacity: 0;
+  }
+  11%,
+  16% {
+    opacity: 1;
+  }
+  16.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Title crossfade inside fixed-height box — opacity only; reset while A is 0 */
+@keyframes device-title-idle {
+  0%,
+  8% {
+    opacity: 1;
+  }
+  11%,
+  16% {
+    opacity: 0;
+  }
+  16.01%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes device-title-accept {
+  0%,
+  8% {
+    opacity: 0;
+  }
+  11%,
+  16% {
+    opacity: 1;
+  }
+  16.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Chip toast: rise + fade (translateY baked; outer owns -translate-x-1/2) */
+@keyframes device-chip-loop {
+  0%,
+  42% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  48%,
+  54% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  56%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .device-anim,
   .device-progress-fill {
@@ -704,6 +1054,66 @@
   .device-browser-bezel {
     animation: none !important;
     transform: none !important;
+  }
+
+  .device-replica-view {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Static frame: Scene B + full box + chip; fingers hidden; scale UNTOUCHED */
+  .device-scene-a {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .device-scene-b {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .device-replica-scroll {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .device-redact-box {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .device-chip-inner {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .device-touch-a,
+  .device-touch-b,
+  .device-touch-c {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .device-dl-btn {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .device-drop-accept {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .device-title-idle {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .device-title-accept {
+    animation: none !important;
+    opacity: 0 !important;
   }
 }
 
