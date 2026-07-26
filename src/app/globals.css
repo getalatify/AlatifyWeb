@@ -1720,27 +1720,57 @@
   }
 }
 
-/* ========== HOMEPAGE DEVICE SCROLL TILT (M40) ==========
- * Base bezels: no transform (square-on). Rotation only in keyframes,
- * only when animation-timeline is supported.
+/* ========== HOMEPAGE DEVICE SCROLL TILT (M40 / M42) ==========
+ * Base bezels (outside @supports): no transform — square-on always.
+ * Scroll-driven fold only when animation-timeline is supported.
+ *
+ * Tuning knobs (Akira): --device-tilt-y / -x / -scale / -perspective
+ * on .device-phone-bezel + .device-browser-bezel below. Raising angles
+ * trades fold visibility against text sharpness (phone already scaled).
  */
 @supports (animation-timeline: view()) {
-  @keyframes device-tilt-in {
-    from {
-      transform: perspective(900px) rotateY(14deg) rotateX(6deg) scale(0.97);
+  /*
+   * Symmetric fold: tilted rest at 0% and 100% (byte-identical),
+   * flat hold while the device is mid-viewport, same-direction return
+   * (does not flip to the opposite side).
+   */
+  @keyframes device-tilt-fold {
+    0%,
+    100% {
+      transform: perspective(var(--device-tilt-perspective))
+        rotateY(var(--device-tilt-y)) rotateX(var(--device-tilt-x))
+        scale(var(--device-tilt-scale));
     }
-    to {
-      transform: perspective(900px) rotateY(0deg) rotateX(0deg) scale(1);
+    20%,
+    80% {
+      transform: perspective(var(--device-tilt-perspective)) rotateY(0deg)
+        rotateX(0deg) scale(1);
     }
   }
 
   .device-phone-bezel,
   .device-browser-bezel {
-    animation-name: device-tilt-in;
+    /* M42 knobs — edit here (defaults more pronounced than M40 14/6/0.97/900) */
+    --device-tilt-y: 22deg;
+    --device-tilt-x: 10deg;
+    --device-tilt-scale: 0.94;
+    --device-tilt-perspective: 800px;
+
+    animation-name: device-tilt-fold;
     animation-timing-function: linear;
     animation-fill-mode: both;
     animation-timeline: view();
-    animation-range: entry 0% cover 45%;
+    /* Full pass: enter → mid-viewport → exit (not entry-only cover 45%) */
+    animation-range: entry 0% exit 100%;
+  }
+
+  /*
+   * Mirror: browser on the right of its section. Negate Y so each bezel
+   * leans its text-adjacent edge forward. If the lean looks backwards in
+   * preview, swap phone/browser --device-tilt-y signs (one-line fix).
+   */
+  .device-browser-bezel {
+    --device-tilt-y: -22deg;
   }
 }
 
