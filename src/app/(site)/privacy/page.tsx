@@ -4,7 +4,7 @@ import PrivacyClient from "./privacy-client";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Alatify privacy policy. We run entirely in your web browser. Zero server uploads, zero data collection, and absolute confidentiality.",
+  description: "Alatify privacy policy. Your files are processed in your browser and never uploaded to a server. Read what we collect and what we do not.",
   openGraph: {
     title: "Privacy Policy | Alatify",
     description: "Your files never leave your device. Read about our local-first privacy architecture.",

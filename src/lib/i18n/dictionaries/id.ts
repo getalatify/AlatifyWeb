@@ -1022,7 +1022,7 @@ export const id = {
   },
   footer: {
     tagline:
-      "Alat gambar yang mengutamakan privasi, berjalan sepenuhnya di browser kamu. Tanpa unggah ke server, privasimu benar-benar terjaga.",
+      "Tool berbasis browser untuk gambar, PDF, dan privasi. Filemu diproses di perangkatmu sendiri, tidak pernah diunggah ke server.",
     builtWithCare: "© 2026 Alatify. Dibuat dengan sepenuh hati.",
     product: "Produk",
     allTools: "Semua Tools",

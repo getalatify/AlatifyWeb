@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     default: 'Alatify: Privacy-First Image Tools',
     template: '%s | Alatify',
   },
-  description: 'Free online image tools that run entirely in your browser. Compress, resize, convert formats, remove backgrounds, and crop images without uploading to servers. Your files never leave your device.',
+  description: 'Free browser-based tools for images, PDFs, and privacy. Compress, convert, remove backgrounds, strip EXIF, and redact documents. Your files never leave your device.',
   keywords: [
     'image compressor',
     'image resizer',
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     url: 'https://getalatify.com',
     siteName: 'Alatify',
     title: 'Alatify: Privacy-First Image Tools',
-    description: 'Free online image tools that run entirely in your browser. No uploads, no tracking, unlimited use.',
+    description: 'Free browser-based tools for images, PDFs, and privacy. Your files never leave your device. Open source, no tracking, no sign-up.',
     images: [
       {
         url: '/opengraph-image',
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Alatify: Privacy-First Image Tools',
-    description: 'Free online image tools that run entirely in your browser. No uploads, no tracking, unlimited use.',
+    description: 'Free browser-based tools for images, PDFs, and privacy. Your files never leave your device. Open source, no tracking, no sign-up.',
     images: ['/opengraph-image'],
     creator: '@getalatify',
     site: '@getalatify',

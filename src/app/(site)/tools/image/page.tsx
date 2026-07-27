@@ -5,13 +5,13 @@ const ToolsClient = dynamic(() => import("../tools-client"));
 
 export const metadata: Metadata = {
   title: "Free Image Editing & Optimization Tools | Alatify",
-  description: "Browse our privacy-first image tools. Crop, resize, compress, convert, remove backgrounds, and edit photos entirely in your browser without any server uploads.",
+  description: "Browse Alatify's image tools. Crop, resize, compress, convert, remove backgrounds, and clean metadata. Your photos are never uploaded to a server.",
   alternates: {
     canonical: "https://getalatify.com/tools/image",
   },
   openGraph: {
     title: "Free Image Editing & Optimization Tools | Alatify",
-    description: "Browse our privacy-first image tools. Crop, resize, compress, convert, remove backgrounds, and edit photos entirely in your browser without any server uploads.",
+    description: "Browse Alatify's image tools. Crop, resize, compress, convert, remove backgrounds, and clean metadata. Your photos are never uploaded to a server.",
   },
 };
 

@@ -122,7 +122,7 @@ export default async function Image() {
                 marginBottom: '0px',
               }}
             >
-              Compress, resize, convert, crop, and remove backgrounds locally. Zero server uploads. Absolute confidentiality.
+              Image, PDF, and privacy tools that run in your browser. Your files never leave your device.
             </p>
           </div>
 
@@ -156,7 +156,7 @@ export default async function Image() {
         {/* Bottom Banner */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '32px' }}>
           <div style={{ display: 'flex', gap: '24px' }}>
-            <span style={{ color: '#f5f5f5', fontSize: '14px', fontWeight: '700' }}>✓ 100% Client-Side</span>
+            <span style={{ color: '#f5f5f5', fontSize: '14px', fontWeight: '700' }}>✓ Open Source</span>
             <span style={{ color: '#f5f5f5', fontSize: '14px', fontWeight: '700' }}>✓ No Server Uploads</span>
             <span style={{ color: '#f5f5f5', fontSize: '14px', fontWeight: '700' }}>✓ Free & Unlimited</span>
           </div>

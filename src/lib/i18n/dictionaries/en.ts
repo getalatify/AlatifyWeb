@@ -993,7 +993,7 @@ export const en = {
   },
   footer: {
     tagline:
-      "Privacy-first image tools that run entirely in your browser. No server uploads, absolute confidentiality.",
+      "Browser-based tools for images, PDFs, and privacy. Your files are processed on your device, never uploaded to a server.",
     builtWithCare: "© 2026 Alatify. Built with care.",
     product: "Product",
     allTools: "All Tools",
