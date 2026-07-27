@@ -23,13 +23,13 @@ export default function PrivacyClient() {
         <section className="text-center sm:text-left space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-sm">
             <Shield className="w-3.5 h-3.5" />
-            Legal Suite
+            {t("privacy.badge")}
           </div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
-            Privacy Policy
+            {t("privacy.title")}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            Last updated: June 2026
+            {t("privacy.lastUpdated")}
           </p>
         </section>
 
@@ -40,7 +40,7 @@ export default function PrivacyClient() {
         <section className="p-5 sm:p-6 rounded-2xl border-l-4 border-primary bg-primary/5 border border-border/40 space-y-2.5">
           <h2 className="text-xs font-extrabold uppercase tracking-widest text-primary flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4" />
-            The Short Version
+            {t("privacy.shortHeading")}
           </h2>
           <p className="text-xs sm:text-sm font-semibold text-foreground leading-relaxed">
             {t("privacy.short")}
@@ -51,26 +51,26 @@ export default function PrivacyClient() {
         <section className="space-y-4">
           <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <EyeOff className="w-5 h-5 text-destructive" />
-            What we don&apos;t collect
+            {t("privacy.collect.heading")}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
             {t("privacy.collect.p1")}
           </p>
           <ul className="space-y-2.5 pl-5 list-disc text-xs sm:text-sm text-muted-foreground">
             <li>
-              <strong className="text-foreground">Your images:</strong> {t("privacy.collect.li1")}
+              {t("privacy.collect.li1")}
             </li>
             <li>
-              <strong className="text-foreground">Your IP address:</strong> {t("privacy.collect.li2")}
+              {t("privacy.collect.li2")}
             </li>
             <li>
-              <strong className="text-foreground">Usage patterns & analytics:</strong> {t("privacy.collect.li3")}
+              {t("privacy.collect.li3")}
             </li>
             <li>
-              <strong className="text-foreground">Tracking cookies:</strong> {t("privacy.collect.li4")}
+              {t("privacy.collect.li4")}
             </li>
             <li>
-              <strong className="text-foreground">Personal information:</strong> {t("privacy.collect.li5")}
+              {t("privacy.collect.li5")}
             </li>
           </ul>
         </section>
@@ -79,20 +79,20 @@ export default function PrivacyClient() {
         <section className="space-y-4">
           <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-primary" />
-            What we do
+            {t("privacy.do.heading")}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
             {t("privacy.do.p1")}
           </p>
           <ul className="space-y-2.5 pl-5 list-disc text-xs sm:text-sm text-muted-foreground">
             <li>
-              <strong className="text-foreground">Client-side processing:</strong> {t("privacy.do.li1")}
+              {t("privacy.do.li1")}
             </li>
             <li>
-              <strong className="text-foreground">Local cache management:</strong> {t("privacy.do.li2")}
+              {t("privacy.do.li2")}
             </li>
             <li>
-              <strong className="text-foreground">Static delivery:</strong> {t("privacy.do.li3")}
+              {t("privacy.do.li3")}
             </li>
           </ul>
         </section>
@@ -101,20 +101,20 @@ export default function PrivacyClient() {
         <section className="space-y-4">
           <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-primary" />
-            Third-party services
+            {t("privacy.thirdParty.heading")}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
             {t("privacy.thirdParty.p1")}
           </p>
           <ul className="space-y-2.5 pl-5 list-disc text-xs sm:text-sm text-muted-foreground">
             <li>
-              <strong className="text-foreground font-semibold">Hosting environment:</strong> {t("privacy.thirdParty.li1")}
+              {t("privacy.thirdParty.li1")}
             </li>
             <li>
-              <strong className="text-foreground font-semibold">Model assets:</strong> {t("privacy.thirdParty.li2")}
+              {t("privacy.thirdParty.li2")}
             </li>
             <li>
-              <strong className="text-foreground font-semibold font-sans">No external tracking scripts:</strong> {t("privacy.thirdParty.li3")}
+              {t("privacy.thirdParty.li3")}
             </li>
           </ul>
         </section>
@@ -123,20 +123,20 @@ export default function PrivacyClient() {
         <section className="space-y-4">
           <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Shield className="w-5 h-5 text-primary" />
-            Your rights
+            {t("privacy.rights.heading")}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
             {t("privacy.rights.p1")}
           </p>
           <ul className="space-y-2.5 pl-5 list-disc text-xs sm:text-sm text-muted-foreground">
             <li>
-              <strong className="text-foreground">Right to be forgotten:</strong> {t("privacy.rights.li1")}
+              {t("privacy.rights.li1")}
             </li>
             <li>
-              <strong className="text-foreground">Manage local cache:</strong> {t("privacy.rights.li2")}
+              {t("privacy.rights.li2")}
             </li>
             <li>
-              <strong className="text-foreground">No opt-out required:</strong> {t("privacy.rights.li3")}
+              {t("privacy.rights.li3")}
             </li>
           </ul>
         </section>

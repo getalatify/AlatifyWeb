@@ -74,9 +74,14 @@ export const en = {
     },
   },
   privacy: {
+    badge: "Legal",
+    title: "Privacy Policy",
+    lastUpdated: "Last updated: July 2026",
+    shortHeading: "The Short Version",
     short:
       "Alatify never uploads your files. Every tool processes what you open on your own device, and you can verify that in your browser's Network tab. There are no accounts, no tracking, and no analytics. A few features do need the internet, and this page explains exactly which ones and what they send.",
     collect: {
+      heading: "What we don't keep",
       p1: "File processing runs on your own device, and we operate no user database. We do not access or collect any of the following:",
       li1: "Your files. Nothing you open in a tool is sent anywhere. Files are read and modified inside your browser sandbox and are gone when you close the tab.",
       li2: "Your IP address. Our API endpoints read it in memory to enforce rate limits, then discard it. We never store it ourselves. Our hosting provider does keep standard access logs, which is described below.",
@@ -85,18 +90,21 @@ export const en = {
       li5: "Your identity. No name, email address, payment details, or account is ever required.",
     },
     do: {
+      heading: "What we do",
       p1: "Alatify is built so that your files stay with you. Here is how that works, and where the exceptions are:",
       li1: "Tools run on your device. Each tool is built from client-side JavaScript, with WebAssembly where the work is heavy, and every computation uses your own hardware.",
       li2: "AI models download once, then stay. The Background Remover, AI Upscaler, and face detection in Blur and Redact each need a model file. It is fetched the first time you use that tool, cached on your device, and reused offline afterwards. Your images are never part of that request.",
       li3: "Some features need the internet, and here is exactly what they send. Stock Image Finder sends your search words to our server, which forwards them to the stock photo providers; no file of yours is involved. If you paste an image URL instead of choosing a file, that URL is fetched through our server so the image can reach the tool. An online check requests an empty response to tell you when you have lost connection. Nothing else leaves your browser.",
     },
     thirdParty: {
+      heading: "Third-party services",
       p1: "We keep outside connections to a minimum. These are all of them:",
       li1: "Vercel hosts the site. Like every web host, Vercel sees the requests that reach it and keeps standard access logs containing details such as IP address and browser type. This is how the site is delivered and protected from abuse, and it is outside our control.",
       li2: "The Background Remover model is downloaded from imgly's CDN. That is the only model we do not host ourselves; the AI Upscaler and face detection models are served from our own domain. The request asks for a file and carries nothing about you beyond what any browser sends.",
       li3: "Stock Image Finder queries Unsplash, Pexels, and Pixabay. When you search, your words are sent to those services and the photos you see are loaded from their servers. This tool is the one part of Alatify that is not local, which is why it is kept separate and never feeds into any other tool.",
     },
     rights: {
+      heading: "Your rights",
       p1: "Because there is no account and no user data on our side, most privacy requests have nothing to act on:",
       li1: "There is nothing to delete. We hold no file, no profile, and no history belonging to you.",
       li2: "Everything stored is stored on your device. Cached AI models, your language choice, and your light or dark preference all live in your own browser, and clearing your browser data removes them completely.",

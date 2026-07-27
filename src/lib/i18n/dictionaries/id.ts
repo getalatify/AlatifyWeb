@@ -74,9 +74,14 @@ export const id = {
     },
   },
   privacy: {
+    badge: "Legal",
+    title: "Kebijakan Privasi",
+    lastUpdated: "Terakhir diperbarui: Juli 2026",
+    shortHeading: "Versi Singkatnya",
     short:
       "Alatify tidak pernah mengunggah filemu. Setiap tool memproses file yang kamu buka langsung di perangkatmu sendiri, dan kamu bisa membuktikannya lewat Network tab di browser. Tanpa akun, tanpa pelacakan, tanpa analitik. Ada beberapa fitur yang memang butuh internet, dan halaman ini menjelaskan persis fitur mana saja dan apa yang dikirim.",
     collect: {
+      heading: "Yang tidak kami simpan",
       p1: "Pemrosesan file berjalan di perangkatmu sendiri, dan kami tidak punya database pengguna. Kami tidak mengakses atau mengumpulkan hal-hal ini:",
       li1: "Filemu. Tidak ada yang kamu buka di tool ini dikirim ke mana pun. File dibaca dan diubah di dalam sandbox browser kamu, dan hilang begitu tab ditutup.",
       li2: "Alamat IP kamu. Endpoint API kami membacanya di memori untuk membatasi laju permintaan, lalu membuangnya. Kami tidak pernah menyimpannya sendiri. Penyedia hosting kami memang menyimpan log akses standar, dan itu dijelaskan di bawah.",
@@ -85,18 +90,21 @@ export const id = {
       li5: "Identitasmu. Tidak pernah butuh nama, alamat email, data pembayaran, atau akun.",
     },
     do: {
+      heading: "Yang kami lakukan",
       p1: "Alatify dibangun supaya filemu tetap jadi milikmu. Begini cara kerjanya, dan di mana pengecualiannya:",
       li1: "Tool berjalan di perangkatmu. Setiap tool dibangun dari JavaScript sisi klien, dengan WebAssembly untuk pekerjaan yang berat, dan semua komputasi memakai hardware-mu sendiri.",
       li2: "Model AI diunduh sekali, lalu menetap. Background Remover, AI Upscaler, dan deteksi wajah di Blur & Redact masing-masing butuh file model. File itu diambil saat pertama kali kamu memakai tool tersebut, disimpan di perangkatmu, dan dipakai ulang secara offline setelahnya. Gambarmu sama sekali tidak ikut dalam permintaan itu.",
       li3: "Beberapa fitur butuh internet, dan ini persis apa yang dikirim. Stock Image Finder mengirim kata pencarianmu ke server kami, lalu diteruskan ke penyedia foto; tidak ada filemu yang terlibat. Kalau kamu menempelkan URL gambar alih-alih memilih file, URL itu diambil lewat server kami supaya gambarnya bisa sampai ke tool. Pengecekan koneksi meminta respons kosong untuk memberi tahu kamu saat internet terputus. Selain itu, tidak ada yang keluar dari browser kamu.",
     },
     thirdParty: {
+      heading: "Layanan pihak ketiga",
       p1: "Kami menekan koneksi ke luar seminimal mungkin. Ini semuanya:",
       li1: "Vercel meng-host situs ini. Seperti semua web host, Vercel melihat permintaan yang masuk dan menyimpan log akses standar berisi hal seperti alamat IP dan jenis browser. Begitulah situs ini dikirim dan dilindungi dari penyalahgunaan, dan itu di luar kendali kami.",
       li2: "Model Background Remover diunduh dari CDN imgly. Itu satu-satunya model yang tidak kami host sendiri; model AI Upscaler dan deteksi wajah dilayani dari domain kami. Permintaannya cuma meminta file dan tidak membawa apa pun tentang kamu di luar yang dikirim browser mana pun.",
       li3: "Stock Image Finder mengambil data dari Unsplash, Pexels, dan Pixabay. Saat kamu mencari, kata pencarianmu dikirim ke layanan itu dan foto yang muncul dimuat dari server mereka. Tool ini satu-satunya bagian Alatify yang tidak lokal, dan itulah kenapa dia dipisah dari yang lain dan tidak pernah menyuplai tool mana pun.",
     },
     rights: {
+      heading: "Hak kamu",
       p1: "Karena tidak ada akun dan tidak ada data pengguna di sisi kami, sebagian besar permintaan privasi tidak punya objek untuk ditindak:",
       li1: "Tidak ada yang perlu dihapus. Kami tidak memegang file, profil, maupun riwayat milikmu.",
       li2: "Semua yang tersimpan, tersimpan di perangkatmu. Model AI yang di-cache, pilihan bahasa, dan preferensi terang atau gelap semuanya ada di browser kamu sendiri, dan membersihkan data browser menghapusnya sepenuhnya.",
