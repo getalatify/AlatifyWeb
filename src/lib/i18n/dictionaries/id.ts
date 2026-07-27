@@ -4,7 +4,7 @@ export const id = {
       badge: "{count} tools · open source",
       title: "Matikan WiFi kamu. Tool-nya tetap jalan.",
       tagline:
-        "Filemu tidak pernah diunggah, karena memang tidak ada tempat untuk mengunggahnya. Semua tool jalan di dalam tab browser kamu sendiri.",
+        "Filemu tidak pernah diunggah, karena memang tidak ada tempat untuk mengunggahnya. Semua file yang kamu buka tetap ada di dalam tab browser kamu sendiri.",
       ctaPrimary: "Coba tool",
       ctaSecondary: "Cara kerjanya",
       proof: {
@@ -983,7 +983,7 @@ export const id = {
   },
   toolsPage: {
     intro:
-      "Koleksi pilihan alat gambar yang mengutamakan privasi dan berjalan sepenuhnya di browser kamu. Tanpa unggah, tanpa daftar akun, sepenuhnya privat. Mulai dari Background Remover dan Image Compressor hingga konversi format, pengubahan ukuran, dan lainnya, setiap alat memproses gambar kamu langsung di perangkat.",
+      "Koleksi pilihan tool yang mengutamakan privasi untuk gambar, PDF, dan dokumen. Tanpa unggah, tanpa daftar akun. Mulai dari Background Remover dan Image Compressor hingga konversi PDF, sensor dokumen, dan lainnya, setiap tool memproses filemu langsung di perangkatmu.",
     backToHome: "Kembali ke beranda",
     title: "Tools",
     scrollExplore: "Gulir untuk menjelajah",
@@ -996,7 +996,7 @@ export const id = {
     section: {
       title: "Tools kami",
       subtitle:
-        "Setiap alat berjalan 100% di browser kamu, jadi tidak ada data yang keluar dari perangkatmu.",
+        "Setiap tool memproses filemu langsung di browser kamu. Tidak ada file yang diunggah ke server.",
     },
   },
   "tools-image": {

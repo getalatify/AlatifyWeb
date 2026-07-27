@@ -4,7 +4,7 @@ export const en = {
       badge: "{count} tools · open source",
       title: "Turn off your WiFi. The tools still work.",
       tagline:
-        "Your files are never uploaded, because there is nowhere to upload them to. Every tool runs inside your own browser tab.",
+        "Your files are never uploaded, because there is nowhere to upload them to. Every file you open stays inside your own browser tab.",
       ctaPrimary: "Try a tool",
       ctaSecondary: "How it works",
       proof: {
@@ -954,7 +954,7 @@ export const en = {
   },
   toolsPage: {
     intro:
-      "A curated collection of privacy-first image tools that run entirely in your browser, no uploads, no sign-up, fully private. From Background Remover and Image Compressor to format conversion, resizing, and more, every tool processes your images right on your device.",
+      "A curated collection of privacy-first tools for images, PDFs, and documents. No uploads, no sign-up, no account. From Background Remover and Image Compressor to PDF conversion, redaction, and more, every tool processes your files right on your device.",
     backToHome: "Back to home",
     title: "Tools",
     scrollExplore: "Scroll to explore",
@@ -967,7 +967,7 @@ export const en = {
     section: {
       title: "Our tools",
       subtitle:
-        "Every tool runs 100% locally in your browser, so nothing ever leaves your device.",
+        "Every tool processes your files in your browser. Nothing you open is ever uploaded to a server.",
     },
   },
   "tools-image": {
